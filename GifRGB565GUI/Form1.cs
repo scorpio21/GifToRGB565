@@ -166,12 +166,28 @@ namespace GifRGB565GUI
 
         private void btnPlay_Click(object sender, EventArgs e)
         {
+            int total = usingGif ? gifFrames.Length : frameFiles.Length;
+            if (total == 0)
+            {
+                MessageBox.Show("No hay frames cargados.");
+                return;
+            }
+
+            // Ensure timer interval is set from the slider and at least 1 ms
+            try
+            {
+                animTimer.Interval = Math.Max(1, speedSlider.Value);
+            }
+            catch { animTimer.Interval = 50; }
+
+            animTimer.Enabled = true;
             animTimer.Start();
         }
 
         private void btnStop_Click(object sender, EventArgs e)
         {
             animTimer.Stop();
+            animTimer.Enabled = false;
         }
 
         private void animTimer_Tick(object sender, EventArgs e)
@@ -478,6 +494,35 @@ namespace GifRGB565GUI
         private void Log(string msg)
         {
             txtLog.AppendText(msg + Environment.NewLine);
+        }
+
+        private void ayudaDitherToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            MessageBox.Show("Dithering: aplica un patrón para mitigar bandas de color reduciendo el efecto de posterización. Puede mejorar apariencia en paletas reducidas, pero puede introducir ruido visual.", "Dithering", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+
+        private void ayudaNoiseToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            MessageBox.Show("Noise Reduction: filtra el ruido de la imagen antes de la conversión para suavizar áreas con grano. Útil si las imágenes tienen mucho ruido, pero puede perder detalle fino.", "Noise Reduction", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+
+        private void ayudaSharpenToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            MessageBox.Show("Sharpen: aplica un filtro de realce para enfatizar bordes y detalles antes de la conversión. Útil cuando la conversión y reducción de paleta hacen las imágenes más suaves.", "Sharpen", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+
+        private void ayudaGzipToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            MessageBox.Show("GZip: comprime el archivo binario de salida usando GZip (.gz). Reduce tamaño a costa de tiempo de compresión y uso de CPU en dispositivo que lo descomprima.", "GZip (if applicable)", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+
+        private void acercaToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            string version = "v1.0"; // actualizar si hay versión real
+            string repo = "https://github.com/scorpio21/GifToRGB565";
+            string author = "scorpio21";
+
+            MessageBox.Show($"GifToRGB565 {version}\nRepositorio: {repo}\nAutor: {author}", "Acerca de", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
     }
 }
