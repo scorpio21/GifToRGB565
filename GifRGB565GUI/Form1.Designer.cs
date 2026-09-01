@@ -1,14 +1,20 @@
 using System;
 using System.Windows.Forms;
+using System.Drawing;
 
 namespace GifRGB565GUI
 {
-    partial class Form1 : Form
+    partial class Form1
     {
         private System.ComponentModel.IContainer components = null;
 
         private System.Windows.Forms.MenuStrip menuStrip1;
         private System.Windows.Forms.ToolStripMenuItem archivoToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem recentToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem clearRecentToolStripMenuItem;
+        private System.Windows.Forms.ToolStripSeparator recentSeparator;
+        private System.Windows.Forms.ToolStripMenuItem cargarHeaderToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem utilidadesToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem salirToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem compresionToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem compN64ToolStripMenuItem;
@@ -25,6 +31,8 @@ namespace GifRGB565GUI
 
         private System.Windows.Forms.Button btnSelectFolder;
         private System.Windows.Forms.TextBox txtFolder;
+        private System.Windows.Forms.Label lblOutName;
+        private System.Windows.Forms.TextBox txtOutName;
         private System.Windows.Forms.Button btnGenerate;
         private System.Windows.Forms.ProgressBar progressBar;
         private System.Windows.Forms.TextBox txtLog;
@@ -43,6 +51,7 @@ namespace GifRGB565GUI
         private System.Windows.Forms.CheckBox chkSharpen;
         private System.Windows.Forms.CheckBox chkGzip;
         private System.Windows.Forms.Button btnSimulate;
+        private System.Windows.Forms.ToolStripMenuItem exportarFramesToolStripMenuItem;
 
         protected override void Dispose(bool disposing)
         {
@@ -58,20 +67,22 @@ namespace GifRGB565GUI
             components = new System.ComponentModel.Container();
             menuStrip1 = new MenuStrip();
             archivoToolStripMenuItem = new ToolStripMenuItem();
+            recentToolStripMenuItem = new ToolStripMenuItem();
+            clearRecentToolStripMenuItem = new ToolStripMenuItem();
             salirToolStripMenuItem = new ToolStripMenuItem();
             compresionToolStripMenuItem = new ToolStripMenuItem();
             compN64ToolStripMenuItem = new ToolStripMenuItem();
             compBinToolStripMenuItem = new ToolStripMenuItem();
             compBinGzToolStripMenuItem = new ToolStripMenuItem();
-
-            // Ayuda menu
+            utilidadesToolStripMenuItem = new ToolStripMenuItem();
+            cargarHeaderToolStripMenuItem = new ToolStripMenuItem();
+            exportarFramesToolStripMenuItem = new ToolStripMenuItem();
             ayudaToolStripMenuItem = new ToolStripMenuItem();
             ayudaDitherToolStripMenuItem = new ToolStripMenuItem();
             ayudaNoiseToolStripMenuItem = new ToolStripMenuItem();
             ayudaSharpenToolStripMenuItem = new ToolStripMenuItem();
             ayudaGzipToolStripMenuItem = new ToolStripMenuItem();
             acercaToolStripMenuItem = new ToolStripMenuItem();
-
             btnSelectFolder = new Button();
             txtFolder = new TextBox();
             btnGenerate = new Button();
@@ -92,6 +103,9 @@ namespace GifRGB565GUI
             chkSharpen = new CheckBox();
             chkGzip = new CheckBox();
             btnSimulate = new Button();
+            recentSeparator = new ToolStripSeparator();
+            lblOutName = new Label();
+            txtOutName = new TextBox();
             menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)picPreview).BeginInit();
             ((System.ComponentModel.ISupportInitialize)speedSlider).BeginInit();
@@ -99,7 +113,7 @@ namespace GifRGB565GUI
             // 
             // menuStrip1
             // 
-            menuStrip1.Items.AddRange(new ToolStripItem[] { archivoToolStripMenuItem, compresionToolStripMenuItem, ayudaToolStripMenuItem });
+            menuStrip1.Items.AddRange(new ToolStripItem[] { archivoToolStripMenuItem, compresionToolStripMenuItem, utilidadesToolStripMenuItem, ayudaToolStripMenuItem });
             menuStrip1.Location = new Point(0, 0);
             menuStrip1.Name = "menuStrip1";
             menuStrip1.Size = new Size(582, 24);
@@ -107,15 +121,29 @@ namespace GifRGB565GUI
             // 
             // archivoToolStripMenuItem
             // 
-            archivoToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { salirToolStripMenuItem });
+            archivoToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { recentToolStripMenuItem, salirToolStripMenuItem });
             archivoToolStripMenuItem.Name = "archivoToolStripMenuItem";
             archivoToolStripMenuItem.Size = new Size(60, 20);
             archivoToolStripMenuItem.Text = "Archivo";
             // 
+            // recentToolStripMenuItem
+            // 
+            recentToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { clearRecentToolStripMenuItem });
+            recentToolStripMenuItem.Name = "recentToolStripMenuItem";
+            recentToolStripMenuItem.Size = new Size(158, 22);
+            recentToolStripMenuItem.Text = "Abierto reciente";
+            // 
+            // clearRecentToolStripMenuItem
+            // 
+            clearRecentToolStripMenuItem.Name = "clearRecentToolStripMenuItem";
+            clearRecentToolStripMenuItem.Size = new Size(151, 22);
+            clearRecentToolStripMenuItem.Text = "Borrar historial";
+            clearRecentToolStripMenuItem.Click += clearRecentToolStripMenuItem_Click;
+            // 
             // salirToolStripMenuItem
             // 
             salirToolStripMenuItem.Name = "salirToolStripMenuItem";
-            salirToolStripMenuItem.Size = new Size(96, 22);
+            salirToolStripMenuItem.Size = new Size(158, 22);
             salirToolStripMenuItem.Text = "Salir";
             salirToolStripMenuItem.Click += salirToolStripMenuItem_Click;
             // 
@@ -152,7 +180,29 @@ namespace GifRGB565GUI
             compBinGzToolStripMenuItem.Text = "esp32.bin.gz";
             compBinGzToolStripMenuItem.Click += compBinGzToolStripMenuItem_Click;
             // 
-            // ayudaToolStripMenuItem (aligned right)
+            // utilidadesToolStripMenuItem
+            // 
+            utilidadesToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { cargarHeaderToolStripMenuItem, exportarFramesToolStripMenuItem });
+            utilidadesToolStripMenuItem.Name = "utilidadesToolStripMenuItem";
+            utilidadesToolStripMenuItem.Size = new Size(71, 20);
+            utilidadesToolStripMenuItem.Text = "Utilidades";
+            // 
+            // cargarHeaderToolStripMenuItem
+            // 
+            cargarHeaderToolStripMenuItem.Name = "cargarHeaderToolStripMenuItem";
+            cargarHeaderToolStripMenuItem.ShortcutKeys = Keys.Control | Keys.L;
+            cargarHeaderToolStripMenuItem.Size = new Size(209, 22);
+            cargarHeaderToolStripMenuItem.Text = "Cargar .h";
+            cargarHeaderToolStripMenuItem.Click += cargarHeaderToolStripMenuItem_Click;
+            // 
+            // exportarFramesToolStripMenuItem
+            // 
+            exportarFramesToolStripMenuItem.Name = "exportarFramesToolStripMenuItem";
+            exportarFramesToolStripMenuItem.Size = new Size(209, 22);
+            exportarFramesToolStripMenuItem.Text = "Exportar todos los Frames";
+            exportarFramesToolStripMenuItem.Click += exportarFramesToolStripMenuItem_Click;
+            // 
+            // ayudaToolStripMenuItem
             // 
             ayudaToolStripMenuItem.Alignment = ToolStripItemAlignment.Right;
             ayudaToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { ayudaDitherToolStripMenuItem, ayudaNoiseToolStripMenuItem, ayudaSharpenToolStripMenuItem, ayudaGzipToolStripMenuItem, acercaToolStripMenuItem });
@@ -163,35 +213,35 @@ namespace GifRGB565GUI
             // ayudaDitherToolStripMenuItem
             // 
             ayudaDitherToolStripMenuItem.Name = "ayudaDitherToolStripMenuItem";
-            ayudaDitherToolStripMenuItem.Size = new Size(220, 22);
+            ayudaDitherToolStripMenuItem.Size = new Size(174, 22);
             ayudaDitherToolStripMenuItem.Text = "Dithering ON";
             ayudaDitherToolStripMenuItem.Click += ayudaDitherToolStripMenuItem_Click;
             // 
             // ayudaNoiseToolStripMenuItem
             // 
             ayudaNoiseToolStripMenuItem.Name = "ayudaNoiseToolStripMenuItem";
-            ayudaNoiseToolStripMenuItem.Size = new Size(220, 22);
+            ayudaNoiseToolStripMenuItem.Size = new Size(174, 22);
             ayudaNoiseToolStripMenuItem.Text = "Noise Reduction";
             ayudaNoiseToolStripMenuItem.Click += ayudaNoiseToolStripMenuItem_Click;
             // 
             // ayudaSharpenToolStripMenuItem
             // 
             ayudaSharpenToolStripMenuItem.Name = "ayudaSharpenToolStripMenuItem";
-            ayudaSharpenToolStripMenuItem.Size = new Size(220, 22);
+            ayudaSharpenToolStripMenuItem.Size = new Size(174, 22);
             ayudaSharpenToolStripMenuItem.Text = "Sharpen";
             ayudaSharpenToolStripMenuItem.Click += ayudaSharpenToolStripMenuItem_Click;
             // 
             // ayudaGzipToolStripMenuItem
             // 
             ayudaGzipToolStripMenuItem.Name = "ayudaGzipToolStripMenuItem";
-            ayudaGzipToolStripMenuItem.Size = new Size(220, 22);
+            ayudaGzipToolStripMenuItem.Size = new Size(174, 22);
             ayudaGzipToolStripMenuItem.Text = "GZip (if applicable)";
             ayudaGzipToolStripMenuItem.Click += ayudaGzipToolStripMenuItem_Click;
             // 
             // acercaToolStripMenuItem
             // 
             acercaToolStripMenuItem.Name = "acercaToolStripMenuItem";
-            acercaToolStripMenuItem.Size = new Size(220, 22);
+            acercaToolStripMenuItem.Size = new Size(174, 22);
             acercaToolStripMenuItem.Text = "Acerca de...";
             acercaToolStripMenuItem.Click += acercaToolStripMenuItem_Click;
             // 
@@ -231,17 +281,17 @@ namespace GifRGB565GUI
             // 
             // txtLog
             // 
-            txtLog.Location = new Point(12, 124);
+            txtLog.Location = new Point(12, 154);
             txtLog.Multiline = true;
             txtLog.Name = "txtLog";
             txtLog.ScrollBars = ScrollBars.Vertical;
-            txtLog.Size = new Size(558, 250);
+            txtLog.Size = new Size(558, 234);
             txtLog.TabIndex = 15;
             // 
             // lstFrames
             // 
             lstFrames.ItemHeight = 15;
-            lstFrames.Location = new Point(12, 384);
+            lstFrames.Location = new Point(12, 430);
             lstFrames.Name = "lstFrames";
             lstFrames.Size = new Size(250, 199);
             lstFrames.TabIndex = 14;
@@ -249,7 +299,7 @@ namespace GifRGB565GUI
             // 
             // picPreview
             // 
-            picPreview.Location = new Point(270, 384);
+            picPreview.Location = new Point(270, 430);
             picPreview.Name = "picPreview";
             picPreview.Size = new Size(300, 200);
             picPreview.SizeMode = PictureBoxSizeMode.Zoom;
@@ -258,7 +308,7 @@ namespace GifRGB565GUI
             // 
             // btnPlay
             // 
-            btnPlay.Location = new Point(12, 594);
+            btnPlay.Location = new Point(12, 636);
             btnPlay.Name = "btnPlay";
             btnPlay.Size = new Size(120, 30);
             btnPlay.TabIndex = 11;
@@ -268,17 +318,22 @@ namespace GifRGB565GUI
             // 
             // btnStop
             // 
-            btnStop.Location = new Point(150, 594);
+            btnStop.Location = new Point(150, 636);
             btnStop.Name = "btnStop";
             btnStop.Size = new Size(120, 30);
             btnStop.TabIndex = 12;
-            btnStop.Text = "■ Stop";
+            btnStop.Text = "■ Parar";
             btnStop.UseVisualStyleBackColor = true;
             btnStop.Click += btnStop_Click;
             // 
+            // animTimer
+            // 
+            animTimer.Interval = 50;
+            animTimer.Tick += animTimer_Tick;
+            // 
             // speedSlider
             // 
-            speedSlider.Location = new Point(300, 594);
+            speedSlider.Location = new Point(300, 636);
             speedSlider.Maximum = 200;
             speedSlider.Minimum = 10;
             speedSlider.Name = "speedSlider";
@@ -288,14 +343,9 @@ namespace GifRGB565GUI
             speedSlider.Value = 50;
             speedSlider.Scroll += speedSlider_Scroll;
             // 
-            // animTimer
-            // 
-            animTimer.Interval = speedSlider.Value;
-            animTimer.Tick += animTimer_Tick;
-            // 
             // lblSpeed
             // 
-            lblSpeed.Location = new Point(510, 594);
+            lblSpeed.Location = new Point(510, 636);
             lblSpeed.Name = "lblSpeed";
             lblSpeed.Size = new Size(60, 30);
             lblSpeed.TabIndex = 9;
@@ -303,21 +353,21 @@ namespace GifRGB565GUI
             // 
             // btnNext
             // 
-            btnNext.Location = new Point(150, 634);
+            btnNext.Location = new Point(150, 676);
             btnNext.Name = "btnNext";
             btnNext.Size = new Size(120, 30);
             btnNext.TabIndex = 7;
-            btnNext.Text = "Next ⟩";
+            btnNext.Text = "Siguiente ⟩";
             btnNext.UseVisualStyleBackColor = true;
             btnNext.Click += btnNext_Click;
             // 
             // btnPrev
             // 
-            btnPrev.Location = new Point(12, 634);
+            btnPrev.Location = new Point(12, 676);
             btnPrev.Name = "btnPrev";
             btnPrev.Size = new Size(120, 30);
             btnPrev.TabIndex = 8;
-            btnPrev.Text = "⟨ Prev";
+            btnPrev.Text = "⟨ Anterior";
             btnPrev.UseVisualStyleBackColor = true;
             btnPrev.Click += btnPrev_Click;
             // 
@@ -325,41 +375,45 @@ namespace GifRGB565GUI
             // 
             chkLoop.Checked = true;
             chkLoop.CheckState = CheckState.Checked;
-            chkLoop.Location = new Point(300, 634);
+            chkLoop.Location = new Point(300, 677);
             chkLoop.Name = "chkLoop";
-            chkLoop.Size = new Size(120, 30);
+            chkLoop.Size = new Size(163, 30);
             chkLoop.TabIndex = 6;
-            chkLoop.Text = "Loop ON";
+            chkLoop.Text = "Repetición activada";
+            chkLoop.CheckedChanged += chkLoop_CheckedChanged;
             // 
             // chkDither
             // 
             chkDither.Checked = true;
             chkDither.CheckState = CheckState.Checked;
-            chkDither.Location = new Point(12, 344);
+            chkDither.Location = new Point(12, 394);
             chkDither.Name = "chkDither";
             chkDither.Size = new Size(200, 30);
             chkDither.TabIndex = 5;
-            chkDither.Text = "Dithering ON";
+            chkDither.Text = "Dithering activado";
+            chkDither.CheckedChanged += chkDither_CheckedChanged;
             // 
             // chkNoise
             // 
-            chkNoise.Location = new Point(220, 344);
+            chkNoise.Location = new Point(220, 394);
             chkNoise.Name = "chkNoise";
             chkNoise.Size = new Size(200, 30);
             chkNoise.TabIndex = 4;
-            chkNoise.Text = "Noise Reduction";
+            chkNoise.Text = "Reducción de ruido";
+            chkNoise.CheckedChanged += chkNoise_CheckedChanged;
             // 
             // chkSharpen
             // 
-            chkSharpen.Location = new Point(430, 344);
+            chkSharpen.Location = new Point(430, 394);
             chkSharpen.Name = "chkSharpen";
-            chkSharpen.Size = new Size(200, 30);
+            chkSharpen.Size = new Size(152, 30);
             chkSharpen.TabIndex = 3;
-            chkSharpen.Text = "Sharpen";
+            chkSharpen.Text = " Enfoque";
+            chkSharpen.CheckedChanged += chkSharpen_CheckedChanged;
             // 
             // chkGzip
             // 
-            chkGzip.Location = new Point(220, 740);
+            chkGzip.Location = new Point(300, 704);
             chkGzip.Name = "chkGzip";
             chkGzip.Size = new Size(137, 23);
             chkGzip.TabIndex = 2;
@@ -367,13 +421,33 @@ namespace GifRGB565GUI
             // 
             // btnSimulate
             // 
-            btnSimulate.Location = new Point(380, 733);
+            btnSimulate.Location = new Point(443, 699);
             btnSimulate.Name = "btnSimulate";
             btnSimulate.Size = new Size(120, 30);
             btnSimulate.TabIndex = 1;
             btnSimulate.Text = "Simular .h";
             btnSimulate.UseVisualStyleBackColor = true;
             btnSimulate.Click += btnSimulate_Click;
+            // 
+            // recentSeparator
+            // 
+            recentSeparator.Name = "recentSeparator";
+            recentSeparator.Size = new Size(6, 6);
+            // 
+            // lblOutName
+            // 
+            lblOutName.Location = new Point(170, 115);
+            lblOutName.Name = "lblOutName";
+            lblOutName.Size = new Size(80, 23);
+            lblOutName.TabIndex = 18;
+            lblOutName.Text = "Nombre salida:";
+            // 
+            // txtOutName
+            // 
+            txtOutName.Location = new Point(260, 115);
+            txtOutName.Name = "txtOutName";
+            txtOutName.Size = new Size(308, 23);
+            txtOutName.TabIndex = 18;
             // 
             // Form1
             // 
@@ -396,6 +470,8 @@ namespace GifRGB565GUI
             Controls.Add(txtLog);
             Controls.Add(progressBar);
             Controls.Add(btnGenerate);
+            Controls.Add(lblOutName);
+            Controls.Add(txtOutName);
             Controls.Add(txtFolder);
             Controls.Add(btnSelectFolder);
             MainMenuStrip = menuStrip1;
