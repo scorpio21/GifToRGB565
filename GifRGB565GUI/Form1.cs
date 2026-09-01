@@ -18,7 +18,7 @@ namespace GifRGB565GUI
         private int currentFrameIndex = 0;
         private bool usingGif = false;
         // Header-loaded frames
-        private List<ushort[]> headerFrames = null;
+        private List<ushort[]>? headerFrames = null;
         private int headerWidth = 0;
         private int headerHeight = 0;
         private bool usingHeader = false;
@@ -169,7 +169,7 @@ namespace GifRGB565GUI
             {
                 // Individual file (e.g. PNG) — load its parent folder
                 usingGif = false;
-                framesFolder = Path.GetDirectoryName(path);
+                framesFolder = Path.GetDirectoryName(path) ?? "";
                 txtFolder.Text = framesFolder;
                 Log($"Carpeta seleccionada (reciente): {framesFolder}");
                 LoadFrames();
@@ -286,7 +286,7 @@ namespace GifRGB565GUI
                     else
                     {
                         usingGif = false;
-                        framesFolder = Path.GetDirectoryName(path);
+                        framesFolder = Path.GetDirectoryName(path) ?? "";
                         txtFolder.Text = framesFolder;
                         Log($"Carpeta seleccionada: {framesFolder}");
                         LoadFrames();
@@ -823,7 +823,7 @@ namespace GifRGB565GUI
                     }
 
                     // populate main UI list and preview
-                    headerFrames = result.FramesData;
+                    headerFrames = result.FramesData ?? new List<ushort[]>();
                     headerWidth = result.Width;
                     headerHeight = result.Height;
                     usingHeader = true;
@@ -842,7 +842,7 @@ namespace GifRGB565GUI
                         picPreview.Image = ConvertRgb565ToBitmap(headerFrames[0], headerWidth, headerHeight);
                     }
 
-                    Log($"Header cargado: {path} - frames: {result.FramesData.Count}");
+                    Log($"Header cargado: {path} - frames: {result.FramesData?.Count ?? 0}");
                     AddToRecentFiles(path);
                 }
                 catch (Exception ex)
@@ -852,7 +852,7 @@ namespace GifRGB565GUI
             }
         }
 
-        private (bool Success, string Error, int Width, int Height, List<ushort[]> FramesData) ParseHeaderFile(string path)
+        private (bool Success, string Error, int Width, int Height, List<ushort[]>? FramesData) ParseHeaderFile(string path)
         {
             string text = File.ReadAllText(path);
 
@@ -965,7 +965,7 @@ namespace GifRGB565GUI
                 if (framesList.Count == 0)
                     return (false, "No se encontraron frames dentro del bloque después del parseo.", width, height, null);
 
-                return (true, null, width, height, framesList);
+                return (true, "", width, height, framesList);
             }
             catch (Exception ex)
             {
