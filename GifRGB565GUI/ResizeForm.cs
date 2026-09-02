@@ -344,55 +344,21 @@ namespace GifRGB565GUI
         {
             if (frames.Length == 0) return;
 
-            var tempFiles = new List<string>();
+            var palette = GifEncoder.BuildPalette(frames, 256);
 
-            try
+            using var fs = new FileStream(path, FileMode.Create);
+            var encoder = new GifEncoder(fs);
+
+            encoder.WriteHeader(frames[0].Width, frames[0].Height, palette);
+            encoder.WriteNetscapeExtension(0);
+
+            for (int i = 0; i < frames.Length; i++)
             {
-                for (int i = 0; i < frames.Length; i++)
-                {
-                    string tempFrame = Path.Combine(Path.GetTempPath(), $"frame_{i}_{Guid.NewGuid():N}.gif");
-                    frames[i].Save(tempFrame, ImageFormat.Gif);
-                    tempFiles.Add(tempFrame);
-                }
-
-                byte[] firstBytes = File.ReadAllBytes(tempFiles[0]);
-                using var ms0 = new MemoryStream(firstBytes);
-                var mainImage = Image.FromStream(ms0);
-
-                if (frames.Length > 1)
-                {
-                    var eps = new EncoderParameters(1);
-                    eps.Param[0] = new EncoderParameter(Encoder.Compression, (long)EncoderValue.CompressionLZW);
-
-                    for (int i = 1; i < tempFiles.Count; i++)
-                    {
-                        byte[] frameBytes = File.ReadAllBytes(tempFiles[i]);
-                        using var ms = new MemoryStream(frameBytes);
-                        var frameImage = Image.FromStream(ms);
-                        mainImage.SaveAdd(frameImage, eps);
-                        frameImage.Dispose();
-                    }
-                }
-
-                try
-                {
-                    var prop = mainImage.GetPropertyItem(0x5100);
-                    byte[] delayBytes = new byte[delays.Length * 4];
-                    for (int i = 0; i < delays.Length; i++)
-                        BitConverter.GetBytes(delays[i]).CopyTo(delayBytes, i * 4);
-                    prop.Value = delayBytes;
-                    prop.Len = delayBytes.Length;
-                    mainImage.SetPropertyItem(prop);
-                }
-                catch { }
-
-                mainImage.Save(path, ImageFormat.Gif);
+                int delay = delays[i / (delays.Length / frames.Length)];
+                encoder.WriteFrame(frames[i], delay, palette);
             }
-            finally
-            {
-                foreach (var f in tempFiles)
-                    try { File.Delete(f); } catch { }
-            }
+
+            encoder.WriteTrailer();
         }
 
         private void ShowResultPanel(int w, int h)
