@@ -260,7 +260,9 @@ namespace GifRGB565GUI
             // Estado inicial de botones de reproducción
             btnPlay.Enabled = true;
             btnStop.Enabled = false;
-           
+            // Valores por defecto para resize
+            cmbResizeMethod.SelectedIndex = 0;
+            cmbAspectRatio.SelectedIndex = 0;
         }
 
         private void UpdateGenerateButtonText()
@@ -1435,7 +1437,12 @@ namespace GifRGB565GUI
             var resized = new Bitmap(targetW, targetH);
             using (var g = Graphics.FromImage(resized))
             {
-                g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
+                g.InterpolationMode = cmbResizeMethod.SelectedIndex switch
+                {
+                    1 => System.Drawing.Drawing2D.InterpolationMode.HighQualityBilinear,
+                    2 => System.Drawing.Drawing2D.InterpolationMode.NearestNeighbor,
+                    _ => System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic
+                };
                 g.DrawImage(source, 0, 0, targetW, targetH);
             }
             return resized;
@@ -1489,6 +1496,22 @@ namespace GifRGB565GUI
             else if (usingHeader) { origW = headerWidth; origH = headerHeight; }
             if (origW <= 0 || origH <= 0) return;
             nudRescaleW.Value = (int)(nudRescaleH.Value * origW / origH);
+        }
+
+        private void nudRescalePercent_ValueChanged(object? sender, EventArgs e)
+        {
+            int origW = 0, origH = 0;
+            if (usingGif && gifFrames.Length > 0) { origW = gifFrames[0].Width; origH = gifFrames[0].Height; }
+            else if (usingHeader) { origW = headerWidth; origH = headerHeight; }
+            else if (frameFiles.Length > 0)
+            {
+                try { var bmp = Image.FromFile(frameFiles[0]); origW = bmp.Width; origH = bmp.Height; bmp.Dispose(); } catch { }
+            }
+            if (origW <= 0 || origH <= 0) return;
+
+            decimal pct = nudRescalePercent.Value / 100m;
+            nudRescaleW.Value = Math.Max(8, (int)(origW * pct));
+            nudRescaleH.Value = Math.Max(8, (int)(origH * pct));
         }
 
         private void picPreview_MouseWheel(object? sender, MouseEventArgs e)

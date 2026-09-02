@@ -71,7 +71,10 @@ namespace GifRGB565GUI
         private System.Windows.Forms.ComboBox cmbRescalePreset;
         private System.Windows.Forms.NumericUpDown nudRescaleW;
         private System.Windows.Forms.NumericUpDown nudRescaleH;
+        private System.Windows.Forms.NumericUpDown nudRescalePercent;
         private System.Windows.Forms.CheckBox chkKeepRatio;
+        private System.Windows.Forms.ComboBox cmbResizeMethod;
+        private System.Windows.Forms.ComboBox cmbAspectRatio;
         private System.Windows.Forms.Button btnCancelar;
         private System.Windows.Forms.PictureBox picPreviewRGB565;
         private System.Windows.Forms.Label lblPreviewRGB565;
@@ -120,7 +123,10 @@ namespace GifRGB565GUI
             cmbRescalePreset = new ComboBox();
             nudRescaleW = new NumericUpDown();
             nudRescaleH = new NumericUpDown();
+            nudRescalePercent = new NumericUpDown();
             chkKeepRatio = new CheckBox();
+            cmbResizeMethod = new ComboBox();
+            cmbAspectRatio = new ComboBox();
             btnCancelar = new Button();
             picPreviewRGB565 = new PictureBox();
             lblPreviewRGB565 = new Label();
@@ -158,6 +164,7 @@ namespace GifRGB565GUI
             grpRescale.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)nudRescaleW).BeginInit();
             ((System.ComponentModel.ISupportInitialize)nudRescaleH).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)nudRescalePercent).BeginInit();
             ((System.ComponentModel.ISupportInitialize)picPreview).BeginInit();
             ((System.ComponentModel.ISupportInitialize)picPreviewRGB565).BeginInit();
             ((System.ComponentModel.ISupportInitialize)speedSlider).BeginInit();
@@ -363,58 +370,99 @@ namespace GifRGB565GUI
             // 
             // grpRescale
             // 
-            grpRescale.Controls.Add(cmbRescalePreset);
+            grpRescale.Controls.Add(new Label { Text = "Width:", AutoSize = true, Location = new Point(15, 22) });
             grpRescale.Controls.Add(nudRescaleW);
+            grpRescale.Controls.Add(new Label { Text = "px", AutoSize = true, Location = new Point(145, 24) });
+            grpRescale.Controls.Add(new Label { Text = "Height:", AutoSize = true, Location = new Point(170, 22) });
             grpRescale.Controls.Add(nudRescaleH);
+            grpRescale.Controls.Add(new Label { Text = "px", AutoSize = true, Location = new Point(300, 24) });
+            grpRescale.Controls.Add(new Label { Text = "Percentage:", AutoSize = true, Location = new Point(330, 22) });
+            grpRescale.Controls.Add(nudRescalePercent);
+            grpRescale.Controls.Add(new Label { Text = "%", AutoSize = true, Location = new Point(415, 24) });
+            grpRescale.Controls.Add(new Label { Text = "Resize method:", AutoSize = true, Location = new Point(15, 50) });
+            grpRescale.Controls.Add(cmbResizeMethod);
+            grpRescale.Controls.Add(new Label { Text = "Aspect ratio:", AutoSize = true, Location = new Point(250, 50) });
+            grpRescale.Controls.Add(cmbAspectRatio);
+            grpRescale.Controls.Add(cmbRescalePreset);
             grpRescale.Controls.Add(chkKeepRatio);
             grpRescale.Location = new Point(12, 387);
             grpRescale.Name = "grpRescale";
-            grpRescale.Size = new Size(558, 55);
+            grpRescale.Size = new Size(558, 80);
             grpRescale.TabIndex = 20;
             grpRescale.TabStop = false;
-            grpRescale.Text = "Rescale";
+            grpRescale.Text = "Resize";
             // 
             // cmbRescalePreset
             // 
             cmbRescalePreset.DropDownStyle = ComboBoxStyle.DropDownList;
             cmbRescalePreset.Items.AddRange(new object[] { "Original", "50%", "25%", "160x120", "320x240", "Personalizado" });
-            cmbRescalePreset.Location = new Point(18, 20);
+            cmbRescalePreset.Location = new Point(15, 72);
             cmbRescalePreset.Name = "cmbRescalePreset";
             cmbRescalePreset.Size = new Size(120, 23);
             cmbRescalePreset.TabIndex = 0;
+            cmbRescalePreset.Visible = false;
             cmbRescalePreset.SelectedIndexChanged += cmbRescalePreset_SelectedIndexChanged;
             // 
             // nudRescaleW
             // 
-            nudRescaleW.Location = new Point(158, 21);
-            nudRescaleW.Maximum = new decimal(new int[] { 2048, 0, 0, 0 });
+            nudRescaleW.Location = new Point(60, 19);
+            nudRescaleW.Maximum = new decimal(new int[] { 4096, 0, 0, 0 });
             nudRescaleW.Minimum = new decimal(new int[] { 8, 0, 0, 0 });
             nudRescaleW.Name = "nudRescaleW";
-            nudRescaleW.Size = new Size(70, 23);
+            nudRescaleW.Size = new Size(80, 23);
             nudRescaleW.TabIndex = 1;
             nudRescaleW.Value = new decimal(new int[] { 320, 0, 0, 0 });
             nudRescaleW.ValueChanged += nudRescaleW_ValueChanged;
             // 
             // nudRescaleH
             // 
-            nudRescaleH.Location = new Point(248, 21);
-            nudRescaleH.Maximum = new decimal(new int[] { 2048, 0, 0, 0 });
+            nudRescaleH.Location = new Point(215, 19);
+            nudRescaleH.Maximum = new decimal(new int[] { 4096, 0, 0, 0 });
             nudRescaleH.Minimum = new decimal(new int[] { 8, 0, 0, 0 });
             nudRescaleH.Name = "nudRescaleH";
-            nudRescaleH.Size = new Size(70, 23);
+            nudRescaleH.Size = new Size(80, 23);
             nudRescaleH.TabIndex = 2;
             nudRescaleH.Value = new decimal(new int[] { 240, 0, 0, 0 });
             nudRescaleH.ValueChanged += nudRescaleH_ValueChanged;
+            // 
+            // nudRescalePercent
+            // 
+            nudRescalePercent.Location = new Point(360, 19);
+            nudRescalePercent.Maximum = new decimal(new int[] { 400, 0, 0, 0 });
+            nudRescalePercent.Minimum = new decimal(new int[] { 1, 0, 0, 0 });
+            nudRescalePercent.Name = "nudRescalePercent";
+            nudRescalePercent.Size = new Size(50, 23);
+            nudRescalePercent.TabIndex = 4;
+            nudRescalePercent.Value = new decimal(new int[] { 100, 0, 0, 0 });
+            nudRescalePercent.ValueChanged += nudRescalePercent_ValueChanged;
+            // 
+            // cmbResizeMethod
+            // 
+            cmbResizeMethod.DropDownStyle = ComboBoxStyle.DropDownList;
+            cmbResizeMethod.Items.AddRange(new object[] { "Bicúbica (calidad)", "Bilineal", "Vecino cercano (rápido)" });
+            cmbResizeMethod.Location = new Point(100, 47);
+            cmbResizeMethod.Name = "cmbResizeMethod";
+            cmbResizeMethod.Size = new Size(140, 23);
+            cmbResizeMethod.TabIndex = 5;
+            // 
+            // cmbAspectRatio
+            // 
+            cmbAspectRatio.DropDownStyle = ComboBoxStyle.DropDownList;
+            cmbAspectRatio.Items.AddRange(new object[] { "Mantener proporción", "Centrar y recortar", "Estirar para ajustar" });
+            cmbAspectRatio.Location = new Point(330, 47);
+            cmbAspectRatio.Name = "cmbAspectRatio";
+            cmbAspectRatio.Size = new Size(160, 23);
+            cmbAspectRatio.TabIndex = 6;
             // 
             // chkKeepRatio
             // 
             chkKeepRatio.Checked = true;
             chkKeepRatio.CheckState = CheckState.Checked;
-            chkKeepRatio.Location = new Point(328, 21);
+            chkKeepRatio.Location = new Point(495, 19);
             chkKeepRatio.Name = "chkKeepRatio";
-            chkKeepRatio.Size = new Size(160, 23);
+            chkKeepRatio.Size = new Size(20, 23);
             chkKeepRatio.TabIndex = 3;
-            chkKeepRatio.Text = "Mantener proporción";
+            chkKeepRatio.Visible = false;
             // 
             // btnSelectFolder
             // 
@@ -744,6 +792,7 @@ namespace GifRGB565GUI
             grpRescale.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)nudRescaleW).EndInit();
             ((System.ComponentModel.ISupportInitialize)nudRescaleH).EndInit();
+            ((System.ComponentModel.ISupportInitialize)nudRescalePercent).EndInit();
             ((System.ComponentModel.ISupportInitialize)picPreview).EndInit();
             ((System.ComponentModel.ISupportInitialize)picPreviewRGB565).EndInit();
             ((System.ComponentModel.ISupportInitialize)speedSlider).EndInit();

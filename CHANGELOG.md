@@ -47,6 +47,14 @@
   - **Superpuesta:** Muestra solo el RGB565 a pantalla completa.
 - **Actualización automática:** Aplica los filtros activos (dithering, noise, sharpen) al generar la comparación.
 
+### Improved — Rescale mejorado con más opciones
+- **GroupBox "Resize":** Rediseñado con etiquetas y controles más profesionales.
+- **Width/Height en píxeles:** Entrada manual de dimensiones destino (8–4096).
+- **Percentage:** Campo de porcentaje (1–400%) que calcula automáticamente ancho/alto.
+- **Resize method:** ComboBox con opciones: Bicúbica (calidad), Bilineal, Vecino cercano (rápido).
+- **Aspect ratio:** ComboBox con opciones: Mantener proporción, Centrar y recortar, Estirar para ajustar.
+- **`ResizeFrame`:** Usa el método de interpolación seleccionado (`HighQualityBicubic`, `HighQualityBilinear`, `NearestNeighbor`).
+
 ---
 
 ## [1.1.3] — 2026-09-02
