@@ -64,6 +64,7 @@ namespace GifRGB565GUI
         private System.Windows.Forms.CheckBox chkGzip;
         private System.Windows.Forms.Button btnSimulate;
         private System.Windows.Forms.ToolStripMenuItem exportarFramesToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem compararToolStripMenuItem;
         private System.Windows.Forms.GroupBox grpRescale;
         private System.Windows.Forms.ComboBox cmbRescalePreset;
         private System.Windows.Forms.NumericUpDown nudRescaleW;
@@ -102,6 +103,7 @@ namespace GifRGB565GUI
             utilidadesToolStripMenuItem = new ToolStripMenuItem();
             cargarHeaderToolStripMenuItem = new ToolStripMenuItem();
             exportarFramesToolStripMenuItem = new ToolStripMenuItem();
+            compararToolStripMenuItem = new ToolStripMenuItem();
             ayudaToolStripMenuItem = new ToolStripMenuItem();
             ayudaDitherToolStripMenuItem = new ToolStripMenuItem();
             ayudaNoiseToolStripMenuItem = new ToolStripMenuItem();
@@ -257,7 +259,7 @@ namespace GifRGB565GUI
             // 
             // utilidadesToolStripMenuItem
             // 
-            utilidadesToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { cargarHeaderToolStripMenuItem, exportarFramesToolStripMenuItem });
+            utilidadesToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { cargarHeaderToolStripMenuItem, exportarFramesToolStripMenuItem, compararToolStripMenuItem });
             utilidadesToolStripMenuItem.Name = "utilidadesToolStripMenuItem";
             utilidadesToolStripMenuItem.Size = new Size(71, 20);
             utilidadesToolStripMenuItem.Text = "Utilidades";
@@ -276,6 +278,13 @@ namespace GifRGB565GUI
             exportarFramesToolStripMenuItem.Size = new Size(209, 22);
             exportarFramesToolStripMenuItem.Text = "Exportar todos los Frames";
             exportarFramesToolStripMenuItem.Click += exportarFramesToolStripMenuItem_Click;
+            // 
+            // compararToolStripMenuItem
+            // 
+            compararToolStripMenuItem.Name = "compararToolStripMenuItem";
+            compararToolStripMenuItem.Size = new Size(209, 22);
+            compararToolStripMenuItem.Text = "Comparar Original vs RGB565";
+            compararToolStripMenuItem.Click += compararToolStripMenuItem_Click;
             // 
             // ayudaToolStripMenuItem
             // 

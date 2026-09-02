@@ -39,6 +39,14 @@
 - **`GetGzipLevel()`:** Mapea selección a `CompressionLevel.Fastest`, `Optimal` o `SmallestSize`.
 - **Visibilidad dinámica:** Se oculta para formatos N64 y BIN, solo visible para BINGZ.
 
+### Added — Comparación lado a lado Original vs RGB565
+- **Menú Utilidades → "Comparar Original vs RGB565":** Abre formulario dedicado de comparación.
+- **`CompareForm`:** Ventana con 3 modos de visualización:
+  - **Lado a lado:** Panel izquierdo (original) + panel derecho (RGB565).
+  - **Wipe (división):** Slider que controla la posición de división entre original y RGB565.
+  - **Superpuesta:** Muestra solo el RGB565 a pantalla completa.
+- **Actualización automática:** Aplica los filtros activos (dithering, noise, sharpen) al generar la comparación.
+
 ---
 
 ## [1.1.3] — 2026-09-02

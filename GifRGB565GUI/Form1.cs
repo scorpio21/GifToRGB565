@@ -1186,6 +1186,27 @@ namespace GifRGB565GUI
             }
         }
 
+        private void compararToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (picPreview.Image == null)
+            {
+                MessageBox.Show("No hay imagen cargada para comparar.", "Comparar", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            ImageConverter.EnableDithering = chkDither.Checked;
+            ImageConverter.EnableNoiseReduction = chkNoise.Checked;
+            ImageConverter.EnableSharpen = chkSharpen.Checked;
+
+            using var src = new Bitmap(picPreview.Image);
+            var rgb565 = ImageConverter.ToRGB565(src);
+            var rgb565Bmp = ConvertRgb565ToBitmap(rgb565.ToArray(), src.Width, src.Height);
+
+            using var compareForm = new CompareForm();
+            compareForm.SetImages(src, rgb565Bmp);
+            compareForm.ShowDialog(this);
+        }
+
         private void exportarFramesToolStripMenuItem_Click(object sender, EventArgs e)
         {
             using (var dlg = new FolderBrowserDialog())
