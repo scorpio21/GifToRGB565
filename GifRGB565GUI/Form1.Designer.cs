@@ -647,7 +647,8 @@ namespace GifRGB565GUI
             Controls.Add(btnSelectFolder);
             MainMenuStrip = menuStrip1;
             Name = "Form1";
-            Text = "GIF → RGB565 Converter (AOUpdate Dark Theme)";
+            Text = "GIF → RGB565 Converter";
+            Icon = new Icon(Path.Combine(AppContext.BaseDirectory, "Img", "Icon.ico"));
             menuStrip1.ResumeLayout(false);
             menuStrip1.PerformLayout();
             grpRescale.ResumeLayout(false);
