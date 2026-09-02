@@ -30,6 +30,7 @@ namespace GifRGB565GUI
         private System.Windows.Forms.ToolStripMenuItem ayudaDragDropToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem ayudaRescaleToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem ayudaAtajosToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem ayudaCompararToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem acercaToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem verToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem temaToolStripMenuItem;
@@ -40,6 +41,7 @@ namespace GifRGB565GUI
         private System.Windows.Forms.ToolStripStatusLabel lblStatusFrames;
         private System.Windows.Forms.ToolStripStatusLabel lblStatusSize;
         private System.Windows.Forms.ToolStripStatusLabel lblStatusFormat;
+        private System.Windows.Forms.ToolStripStatusLabel lblVersion;
 
         private System.Windows.Forms.Button btnSelectFolder;
         private System.Windows.Forms.TextBox txtFolder;
@@ -112,6 +114,7 @@ namespace GifRGB565GUI
             ayudaDragDropToolStripMenuItem = new ToolStripMenuItem();
             ayudaRescaleToolStripMenuItem = new ToolStripMenuItem();
             ayudaAtajosToolStripMenuItem = new ToolStripMenuItem();
+            ayudaCompararToolStripMenuItem = new ToolStripMenuItem();
             acercaToolStripMenuItem = new ToolStripMenuItem();
             grpRescale = new GroupBox();
             cmbRescalePreset = new ComboBox();
@@ -150,6 +153,7 @@ namespace GifRGB565GUI
             lblStatusFrames = new ToolStripStatusLabel();
             lblStatusSize = new ToolStripStatusLabel();
             lblStatusFormat = new ToolStripStatusLabel();
+            lblVersion = new ToolStripStatusLabel();
             menuStrip1.SuspendLayout();
             grpRescale.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)nudRescaleW).BeginInit();
@@ -289,7 +293,7 @@ namespace GifRGB565GUI
             // ayudaToolStripMenuItem
             // 
             ayudaToolStripMenuItem.Alignment = ToolStripItemAlignment.Right;
-            ayudaToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { ayudaDitherToolStripMenuItem, ayudaNoiseToolStripMenuItem, ayudaSharpenToolStripMenuItem, ayudaGzipToolStripMenuItem, ayudaDragDropToolStripMenuItem, ayudaRescaleToolStripMenuItem, ayudaAtajosToolStripMenuItem, acercaToolStripMenuItem });
+            ayudaToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { ayudaDitherToolStripMenuItem, ayudaNoiseToolStripMenuItem, ayudaSharpenToolStripMenuItem, ayudaGzipToolStripMenuItem, ayudaDragDropToolStripMenuItem, ayudaRescaleToolStripMenuItem, ayudaAtajosToolStripMenuItem, ayudaCompararToolStripMenuItem, acercaToolStripMenuItem });
             ayudaToolStripMenuItem.Name = "ayudaToolStripMenuItem";
             ayudaToolStripMenuItem.Size = new Size(53, 20);
             ayudaToolStripMenuItem.Text = "Ayuda";
@@ -342,6 +346,13 @@ namespace GifRGB565GUI
             ayudaAtajosToolStripMenuItem.Size = new Size(174, 22);
             ayudaAtajosToolStripMenuItem.Text = "Atajos de teclado";
             ayudaAtajosToolStripMenuItem.Click += ayudaAtajosToolStripMenuItem_Click;
+            // 
+            // ayudaCompararToolStripMenuItem
+            // 
+            ayudaCompararToolStripMenuItem.Name = "ayudaCompararToolStripMenuItem";
+            ayudaCompararToolStripMenuItem.Size = new Size(174, 22);
+            ayudaCompararToolStripMenuItem.Text = "Comparar";
+            ayudaCompararToolStripMenuItem.Click += ayudaCompararToolStripMenuItem_Click;
             // 
             // acercaToolStripMenuItem
             // 
@@ -654,7 +665,7 @@ namespace GifRGB565GUI
             // 
             // statusStrip1
             // 
-            statusStrip1.Items.AddRange(new ToolStripItem[] { lblStatusDims, lblStatusFrames, lblStatusSize, lblStatusFormat });
+            statusStrip1.Items.AddRange(new ToolStripItem[] { lblStatusDims, lblStatusFrames, lblStatusSize, lblStatusFormat, new ToolStripStatusLabel { Spring = true }, lblVersion });
             statusStrip1.Location = new Point(0, 735);
             statusStrip1.Name = "statusStrip1";
             statusStrip1.Size = new Size(582, 22);
@@ -684,6 +695,13 @@ namespace GifRGB565GUI
             lblStatusFormat.Name = "lblStatusFormat";
             lblStatusFormat.Size = new Size(28, 17);
             lblStatusFormat.Text = "N64";
+            // 
+            // lblVersion
+            // 
+            lblVersion.Name = "lblVersion";
+            lblVersion.Size = new Size(50, 17);
+            lblVersion.Text = "v1.1.4";
+            lblVersion.TextAlign = ContentAlignment.MiddleRight;
             // 
             // Form1
             // 

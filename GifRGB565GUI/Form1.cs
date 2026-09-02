@@ -225,6 +225,31 @@ namespace GifRGB565GUI
                 DoRGB565Preview();
             };
             this.KeyDown += Form1_KeyDown;
+            lblVersion.Text = ReadVersionFromChangelog();
+        }
+
+        private string ReadVersionFromChangelog()
+        {
+            try
+            {
+                string changelogPath = Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "..", "CHANGELOG.md");
+                if (!File.Exists(changelogPath))
+                    changelogPath = Path.Combine(AppContext.BaseDirectory, "CHANGELOG.md");
+                if (!File.Exists(changelogPath)) return "v?.?";
+
+                foreach (var line in File.ReadLines(changelogPath))
+                {
+                    if (line.Contains("## ["))
+                    {
+                        int start = line.IndexOf('[');
+                        int end = line.IndexOf(']', start);
+                        if (start >= 0 && end > start)
+                            return "v" + line.Substring(start + 1, end - start - 1);
+                    }
+                }
+            }
+            catch { }
+            return "v?.?";
         }
 
         private void Form1_Load(object? sender, EventArgs e)
@@ -975,6 +1000,18 @@ namespace GifRGB565GUI
                 "Ctrl++ → Zoom 1:1 (píxel real)\n" +
                 "Ctrl+- → Zoom ajustado al panel",
                 "Atajos de teclado", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+
+        private void ayudaCompararToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            MessageBox.Show(
+                "Comparar Original vs RGB565:\n\n" +
+                "Abre una ventana con 3 modos de comparación:\n\n" +
+                "• Lado a lado: Panel izquierdo (original) vs panel derecho (RGB565).\n" +
+                "• Wipe (división): Slider que controla la posición de división.\n" +
+                "• Superpuesta: Muestra solo el RGB565 a pantalla completa.\n\n" +
+                "Se aplican los filtros activos (dithering, noise, sharpen) al generar la comparación.",
+                "Comparar", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
         private void acercaToolStripMenuItem_Click(object sender, EventArgs e)
