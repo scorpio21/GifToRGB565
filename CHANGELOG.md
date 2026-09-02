@@ -55,6 +55,19 @@
 - **Aspect ratio:** ComboBox con opciones: Mantener proporción, Centrar y recortar, Estirar para ajustar.
 - **`ResizeFrame`:** Usa el método de interpolación seleccionado (`HighQualityBicubic`, `HighQualityBilinear`, `NearestNeighbor`).
 
+### Added — Redimensionar imágenes (formulario dedicado)
+- **Menú Utilidades → "Redimensionar imágenes":** Abre formulario dedicado de redimensionamiento.
+- **`ResizeForm`:** Ventana independiente con diseño similar a ezgif:
+  - **Drag & Drop:** Arrastra imágenes directamente al formulario.
+  - **Preview:** Panel de vista previa con imagen cargada.
+  - **Info del archivo:** Muestra tamaño, dimensiones, tipo y frames.
+  - **Ancho/Altura:** Campos de entrada (vacío = automático).
+  - **Porcentaje:** Campo que calcula automáticamente dimensiones.
+  - **Método de redimensionamiento:** Bicúbica, Bilineal, Vecino cercano, Centrar y recortar, Estirar, Forzar aspect ratio, Relleno transparente.
+  - **Relación de aspecto:** Centro y recortar, Estirar, Forzar original, Añadir relleno transparente.
+  - **Botones:** "¡Redimensiona la imagen!", "Cortar", "Guardar".
+  - **"Recuerda los ajustes":** Checkbox de persistencia.
+
 ---
 
 ## [1.1.3] — 2026-09-02

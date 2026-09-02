@@ -1225,6 +1225,12 @@ namespace GifRGB565GUI
             }
         }
 
+        private void redimensionarToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            using var form = new ResizeForm();
+            form.ShowDialog(this);
+        }
+
         private void compararToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (picPreview.Image == null)

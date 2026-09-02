@@ -66,6 +66,7 @@ namespace GifRGB565GUI
         private System.Windows.Forms.CheckBox chkGzip;
         private System.Windows.Forms.Button btnSimulate;
         private System.Windows.Forms.ToolStripMenuItem exportarFramesToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem redimensionarToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem compararToolStripMenuItem;
         private System.Windows.Forms.GroupBox grpRescale;
         private System.Windows.Forms.ComboBox cmbRescalePreset;
@@ -113,6 +114,7 @@ namespace GifRGB565GUI
             utilidadesToolStripMenuItem = new ToolStripMenuItem();
             cargarHeaderToolStripMenuItem = new ToolStripMenuItem();
             exportarFramesToolStripMenuItem = new ToolStripMenuItem();
+            redimensionarToolStripMenuItem = new ToolStripMenuItem();
             compararToolStripMenuItem = new ToolStripMenuItem();
             ayudaToolStripMenuItem = new ToolStripMenuItem();
             ayudaDitherToolStripMenuItem = new ToolStripMenuItem();
@@ -280,7 +282,7 @@ namespace GifRGB565GUI
             // 
             // utilidadesToolStripMenuItem
             // 
-            utilidadesToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { cargarHeaderToolStripMenuItem, exportarFramesToolStripMenuItem, compararToolStripMenuItem });
+            utilidadesToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { cargarHeaderToolStripMenuItem, exportarFramesToolStripMenuItem, redimensionarToolStripMenuItem, compararToolStripMenuItem });
             utilidadesToolStripMenuItem.Name = "utilidadesToolStripMenuItem";
             utilidadesToolStripMenuItem.Size = new Size(71, 20);
             utilidadesToolStripMenuItem.Text = "Utilidades";
@@ -299,6 +301,13 @@ namespace GifRGB565GUI
             exportarFramesToolStripMenuItem.Size = new Size(229, 22);
             exportarFramesToolStripMenuItem.Text = "Exportar todos los Frames";
             exportarFramesToolStripMenuItem.Click += exportarFramesToolStripMenuItem_Click;
+            // 
+            // redimensionarToolStripMenuItem
+            // 
+            redimensionarToolStripMenuItem.Name = "redimensionarToolStripMenuItem";
+            redimensionarToolStripMenuItem.Size = new Size(209, 22);
+            redimensionarToolStripMenuItem.Text = "Redimensionar imágenes";
+            redimensionarToolStripMenuItem.Click += redimensionarToolStripMenuItem_Click;
             // 
             // compararToolStripMenuItem
             // 
