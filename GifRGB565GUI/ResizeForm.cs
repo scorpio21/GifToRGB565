@@ -24,6 +24,10 @@ namespace GifRGB565GUI
             InitializeComponent();
             cmbMethod.SelectedIndex = 0;
             cmbAspect.SelectedIndex = 0;
+
+            txtWidth.TextChanged += txtWidth_TextChanged;
+            txtHeight.TextChanged += txtHeight_TextChanged;
+            txtPercent.TextChanged += txtPercent_TextChanged;
         }
 
         private void ResizeForm_DragEnter(object? sender, DragEventArgs e)
