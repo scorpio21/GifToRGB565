@@ -32,6 +32,11 @@ namespace GifRGB565GUI
         private System.Windows.Forms.ToolStripMenuItem temaToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem claroToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem oscuroToolStripMenuItem;
+        private System.Windows.Forms.StatusStrip statusStrip1;
+        private System.Windows.Forms.ToolStripStatusLabel lblStatusDims;
+        private System.Windows.Forms.ToolStripStatusLabel lblStatusFrames;
+        private System.Windows.Forms.ToolStripStatusLabel lblStatusSize;
+        private System.Windows.Forms.ToolStripStatusLabel lblStatusFormat;
 
         private System.Windows.Forms.Button btnSelectFolder;
         private System.Windows.Forms.TextBox txtFolder;
@@ -114,10 +119,16 @@ namespace GifRGB565GUI
             recentSeparator = new ToolStripSeparator();
             lblOutName = new Label();
             txtOutName = new TextBox();
+            statusStrip1 = new StatusStrip();
+            lblStatusDims = new ToolStripStatusLabel();
+            lblStatusFrames = new ToolStripStatusLabel();
+            lblStatusSize = new ToolStripStatusLabel();
+            lblStatusFormat = new ToolStripStatusLabel();
             menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)picPreview).BeginInit();
             ((System.ComponentModel.ISupportInitialize)speedSlider).BeginInit();
             SuspendLayout();
+            statusStrip1.SuspendLayout();
             // 
             // menuStrip1
             // 
@@ -485,9 +496,43 @@ namespace GifRGB565GUI
             txtOutName.Size = new Size(308, 23);
             txtOutName.TabIndex = 18;
             // 
+            // statusStrip1
+            // 
+            statusStrip1.Items.AddRange(new ToolStripItem[] { lblStatusDims, lblStatusFrames, lblStatusSize, lblStatusFormat });
+            statusStrip1.Location = new Point(0, 758);
+            statusStrip1.Name = "statusStrip1";
+            statusStrip1.Size = new Size(582, 22);
+            statusStrip1.TabIndex = 19;
+            statusStrip1.Text = "statusStrip1";
+            // 
+            // lblStatusDims
+            // 
+            lblStatusDims.Name = "lblStatusDims";
+            lblStatusDims.Size = new Size(70, 17);
+            lblStatusDims.Text = "Sin frames";
+            // 
+            // lblStatusFrames
+            // 
+            lblStatusFrames.Name = "lblStatusFrames";
+            lblStatusFrames.Size = new Size(50, 17);
+            lblStatusFrames.Text = "0 frames";
+            // 
+            // lblStatusSize
+            // 
+            lblStatusSize.Name = "lblStatusSize";
+            lblStatusSize.Size = new Size(50, 17);
+            lblStatusSize.Text = "0 KB";
+            // 
+            // lblStatusFormat
+            // 
+            lblStatusFormat.Name = "lblStatusFormat";
+            lblStatusFormat.Size = new Size(30, 17);
+            lblStatusFormat.Text = "N64";
+            // 
             // Form1
             // 
             ClientSize = new Size(582, 780);
+            Controls.Add(statusStrip1);
             Controls.Add(menuStrip1);
             Controls.Add(btnSimulate);
             Controls.Add(chkGzip);
@@ -515,6 +560,8 @@ namespace GifRGB565GUI
             Text = "GIF → RGB565 Converter (AOUpdate Dark Theme)";
             menuStrip1.ResumeLayout(false);
             menuStrip1.PerformLayout();
+            statusStrip1.ResumeLayout(false);
+            statusStrip1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)picPreview).EndInit();
             ((System.ComponentModel.ISupportInitialize)speedSlider).EndInit();
             ResumeLayout(false);

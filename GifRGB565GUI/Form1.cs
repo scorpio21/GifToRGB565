@@ -251,6 +251,7 @@ namespace GifRGB565GUI
             compBinToolStripMenuItem.Checked = false;
             compBinGzToolStripMenuItem.Checked = false;
             UpdateGenerateButtonText();
+            UpdateStatusBar();
         }
 
         private void compBinToolStripMenuItem_Click(object sender, EventArgs e)
@@ -260,6 +261,7 @@ namespace GifRGB565GUI
             compBinToolStripMenuItem.Checked = true;
             compBinGzToolStripMenuItem.Checked = false;
             UpdateGenerateButtonText();
+            UpdateStatusBar();
         }
 
         private void compBinGzToolStripMenuItem_Click(object sender, EventArgs e)
@@ -269,6 +271,7 @@ namespace GifRGB565GUI
             compBinToolStripMenuItem.Checked = false;
             compBinGzToolStripMenuItem.Checked = true;
             UpdateGenerateButtonText();
+            UpdateStatusBar();
         }
 
         private void btnSelectFolder_Click(object sender, EventArgs e)
@@ -335,6 +338,8 @@ namespace GifRGB565GUI
                 btnPrev.Enabled = false;
                 btnNext.Enabled = gifFrames.Length > 1;
             }
+
+            UpdateStatusBar();
         }
 
         private void LoadFrames()
@@ -355,6 +360,8 @@ namespace GifRGB565GUI
                 lstFrames.SelectedIndex = 0;
                 picPreview.Image = Image.FromFile(frameFiles[0]);
             }
+
+            UpdateStatusBar();
         }
 
         private void lstFrames_SelectedIndexChanged(object sender, EventArgs e)
@@ -787,6 +794,41 @@ namespace GifRGB565GUI
             txtLog.AppendText(msg + Environment.NewLine);
         }
 
+        private void UpdateStatusBar()
+        {
+            int total = usingGif ? gifFrames.Length : (usingHeader && headerFrames != null ? headerFrames.Count : frameFiles.Length);
+
+            if (total == 0)
+            {
+                lblStatusDims.Text = "Sin frames";
+                lblStatusFrames.Text = "0 frames";
+                lblStatusSize.Text = "";
+                lblStatusFormat.Text = currentExportFormat.ToString();
+                return;
+            }
+
+            int w = 0, h = 0;
+            if (usingGif && gifFrames.Length > 0) { w = gifFrames[0].Width; h = gifFrames[0].Height; }
+            else if (usingHeader) { w = headerWidth; h = headerHeight; }
+            else if (frameFiles.Length > 0) { var bmp = Image.FromFile(frameFiles[0]); w = bmp.Width; h = bmp.Height; bmp.Dispose(); }
+
+            lblStatusDims.Text = $"{w}x{h}";
+            lblStatusFrames.Text = $"{total} frames";
+
+            long bytes = (long)w * h * 2 * total;
+            if (currentExportFormat == ExportFormat.N64)
+                bytes = w * h * 2 * total;
+            lblStatusSize.Text = bytes > 1024 * 1024 ? $"{bytes / (1024.0 * 1024.0):F1} MB" : $"{bytes / 1024.0:F1} KB";
+
+            lblStatusFormat.Text = currentExportFormat switch
+            {
+                ExportFormat.N64 => ".h (N64)",
+                ExportFormat.BIN => ".bin (ESP32)",
+                ExportFormat.BINGZ => ".bin.gz (ESP32)",
+                _ => currentExportFormat.ToString()
+            };
+        }
+
         private void ayudaDitherToolStripMenuItem_Click(object sender, EventArgs e)
         {
             MessageBox.Show("Dithering: aplica un patrón para mitigar bandas de color reduciendo el efecto de posterización. Puede mejorar apariencia en paletas reducidas, pero puede introducir ruido visual.", "Dithering", MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -855,6 +897,7 @@ namespace GifRGB565GUI
 
                     Log($"Header cargado: {path} - frames: {result.FramesData?.Count ?? 0}");
                     AddToRecentFiles(path);
+                    UpdateStatusBar();
                 }
                 catch (Exception ex)
                 {
