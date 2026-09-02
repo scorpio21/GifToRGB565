@@ -2,6 +2,17 @@
 
 ---
 
+## [1.1.4] — 2026-09-02
+
+### Added — Botón cancelar durante generación
+- **`btnCancelar`:** Botón visible solo durante la generación, oculto el resto del tiempo.
+- **`CancellationTokenSource`:** Controla la cancelación del loop de conversión de frames.
+- **Cancelación parcial:** Al cancelar, pregunta si desea conservar los frames procesados hasta el momento y los exporta.
+- **`GenerateHeaderAtPath`:** Acepta `CancellationToken`, guarda header parcial si se cancela.
+- **Loop de BIN:** Verifica `ct.IsCancellationRequested` en cada frame y permite exportar parcial.
+
+---
+
 ## [1.1.3] — 2026-09-02
 
 ### Added — Drag & Drop de GIFs y carpetas

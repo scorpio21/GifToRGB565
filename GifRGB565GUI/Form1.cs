@@ -25,6 +25,7 @@ namespace GifRGB565GUI
 
         private enum ExportFormat { N64, BIN, BINGZ }
         private ExportFormat currentExportFormat = ExportFormat.N64;
+        private CancellationTokenSource? _generateCts;
 
         private bool IsRescaleEnabled => cmbRescalePreset.SelectedIndex > 0 && cmbRescalePreset.SelectedItem?.ToString() != "Original";
 
@@ -521,6 +522,11 @@ namespace GifRGB565GUI
             }
             catch { }
 
+            _generateCts = new CancellationTokenSource();
+            btnCancelar.Visible = true;
+            btnCancelar.Enabled = true;
+            btnCancelar.Text = "Cancelar";
+
             string outName = (txtOutName?.Text ?? "").Trim();
             if (string.IsNullOrEmpty(outName))
             {
@@ -565,9 +571,12 @@ namespace GifRGB565GUI
                 // Ensure .h extension
                 string fileName = outName.EndsWith(".h", StringComparison.OrdinalIgnoreCase) ? outName : outName + ".h";
                 string path = Path.Combine("output", fileName);
-                GenerateHeaderAtPath(path, width, height, totalFrames);
+                GenerateHeaderAtPath(path, width, height, totalFrames, _generateCts.Token);
                 Log($"✔ Archivo header generado: {path}");
                 MessageBox.Show($"Header generado: {path}");
+                _generateCts?.Dispose();
+                _generateCts = null;
+                btnCancelar.Visible = false;
                 return;
             }
 
@@ -601,10 +610,28 @@ namespace GifRGB565GUI
                 }
 
                 List<ushort[]> framesData = new List<ushort[]>(totalFrames);
+                var ct = _generateCts.Token;
 
                 // convert frames and update progress
                 for (int i = 0; i < totalFrames; i++)
                 {
+                    if (ct.IsCancellationRequested)
+                    {
+                        Log($"Generación cancelada en frame {i}. Frames procesados: {i}/{totalFrames}");
+                        var result = MessageBox.Show($"Generación cancelada en frame {i}/{totalFrames}.\n¿Conservar los frames procesados?", "Cancelado", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                        if (result == DialogResult.Yes && framesData.Count > 0)
+                        {
+                            try
+                            {
+                                ExportBin(outPath, width, height, framesData, gzip);
+                                Log($"✔ Parcial exportado: {outPath} ({framesData.Count} frames)");
+                                MessageBox.Show($"Parcial exportado: {outPath} ({framesData.Count} frames)");
+                            }
+                            catch (Exception ex) { MessageBox.Show($"Error: {ex.Message}"); }
+                        }
+                        return;
+                    }
+
                     Bitmap bmp;
                     if (usingGif) bmp = gifFrames[i];
                     else if (usingHeader && headerFrames != null) bmp = ConvertRgb565ToBitmap(headerFrames[i], headerWidth, headerHeight);
@@ -633,6 +660,10 @@ namespace GifRGB565GUI
                     Log($"Error export: {ex.Message}");
                 }
             }
+
+            _generateCts?.Dispose();
+            _generateCts = null;
+            btnCancelar.Visible = false;
         }
 
         private bool ValidateFrameSizes(int width, int height, int totalFrames)
@@ -646,7 +677,7 @@ namespace GifRGB565GUI
             return true;
         }
 
-        private void GenerateHeaderAtPath(string outPath, int width, int height, int totalFrames)
+        private void GenerateHeaderAtPath(string outPath, int width, int height, int totalFrames, CancellationToken ct = default)
         {
             Directory.CreateDirectory(Path.GetDirectoryName(outPath) ?? "output");
 
@@ -660,6 +691,12 @@ namespace GifRGB565GUI
 
                 for (int i = 0; i < totalFrames; i++)
                 {
+                    if (ct.IsCancellationRequested)
+                    {
+                        Log($"Generación cancelada en frame {i}. Header parcial guardado.");
+                        break;
+                    }
+
                     Bitmap bmp = usingGif ? gifFrames[i] : new Bitmap(frameFiles[i]);
                     var rgb565 = ImageConverter.ToRGB565(bmp);
 
@@ -1183,6 +1220,13 @@ namespace GifRGB565GUI
         {
             foreach (ToolStripMenuItem item in parent.DropDownItems)
                 item.Checked = false;
+        }
+
+        private void btnCancelar_Click(object? sender, EventArgs e)
+        {
+            _generateCts?.Cancel();
+            btnCancelar.Enabled = false;
+            btnCancelar.Text = "Cancelando...";
         }
 
         private Bitmap ResizeFrame(Bitmap source, int targetW, int targetH)

@@ -68,6 +68,7 @@ namespace GifRGB565GUI
         private System.Windows.Forms.NumericUpDown nudRescaleW;
         private System.Windows.Forms.NumericUpDown nudRescaleH;
         private System.Windows.Forms.CheckBox chkKeepRatio;
+        private System.Windows.Forms.Button btnCancelar;
 
         protected override void Dispose(bool disposing)
         {
@@ -110,6 +111,7 @@ namespace GifRGB565GUI
             nudRescaleW = new NumericUpDown();
             nudRescaleH = new NumericUpDown();
             chkKeepRatio = new CheckBox();
+            btnCancelar = new Button();
             btnSelectFolder = new Button();
             txtFolder = new TextBox();
             btnGenerate = new Button();
@@ -564,6 +566,17 @@ namespace GifRGB565GUI
             btnSimulate.UseVisualStyleBackColor = false;
             btnSimulate.Click += btnSimulate_Click;
             // 
+            // btnCancelar
+            // 
+            btnCancelar.Location = new Point(443, 730);
+            btnCancelar.Name = "btnCancelar";
+            btnCancelar.Size = new Size(120, 30);
+            btnCancelar.TabIndex = 21;
+            btnCancelar.Text = "Cancelar";
+            btnCancelar.UseVisualStyleBackColor = true;
+            btnCancelar.Visible = false;
+            btnCancelar.Click += btnCancelar_Click;
+            // 
             // recentSeparator
             // 
             recentSeparator.Name = "recentSeparator";
@@ -621,6 +634,7 @@ namespace GifRGB565GUI
             // Form1
             // 
             ClientSize = new Size(582, 757);
+            Controls.Add(btnCancelar);
             Controls.Add(grpRescale);
             Controls.Add(statusStrip1);
             Controls.Add(menuStrip1);
