@@ -267,6 +267,7 @@ namespace GifRGB565GUI
             compBinGzToolStripMenuItem.Checked = false;
             UpdateGenerateButtonText();
             UpdateStatusBar();
+            cmbGzipLevel.Visible = false;
         }
 
         private void compBinToolStripMenuItem_Click(object sender, EventArgs e)
@@ -277,6 +278,7 @@ namespace GifRGB565GUI
             compBinGzToolStripMenuItem.Checked = false;
             UpdateGenerateButtonText();
             UpdateStatusBar();
+            cmbGzipLevel.Visible = false;
         }
 
         private void compBinGzToolStripMenuItem_Click(object sender, EventArgs e)
@@ -287,6 +289,8 @@ namespace GifRGB565GUI
             compBinGzToolStripMenuItem.Checked = true;
             UpdateGenerateButtonText();
             UpdateStatusBar();
+            cmbGzipLevel.Visible = true;
+            if (cmbGzipLevel.SelectedIndex < 0) cmbGzipLevel.SelectedIndex = 1;
         }
 
         private void btnSelectFolder_Click(object sender, EventArgs e)
@@ -744,6 +748,16 @@ namespace GifRGB565GUI
             }
         }
 
+        private CompressionLevel GetGzipLevel()
+        {
+            return cmbGzipLevel.SelectedIndex switch
+            {
+                0 => CompressionLevel.Fastest,
+                2 => CompressionLevel.SmallestSize,
+                _ => CompressionLevel.Optimal
+            };
+        }
+
         private void ExportBin(string outPath, int width, int height, List<ushort[]> framesData, bool gzip)
         {
             using (var ms = new MemoryStream())
@@ -768,7 +782,7 @@ namespace GifRGB565GUI
                 if (gzip)
                 {
                     using (var fs = File.Create(outPath))
-                    using (var gz = new GZipStream(fs, CompressionMode.Compress))
+                    using (var gz = new GZipStream(fs, GetGzipLevel()))
                     {
                         ms.CopyTo(gz);
                     }

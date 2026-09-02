@@ -72,6 +72,7 @@ namespace GifRGB565GUI
         private System.Windows.Forms.Button btnCancelar;
         private System.Windows.Forms.PictureBox picPreviewRGB565;
         private System.Windows.Forms.Label lblPreviewRGB565;
+        private System.Windows.Forms.ComboBox cmbGzipLevel;
 
         protected override void Dispose(bool disposing)
         {
@@ -118,6 +119,7 @@ namespace GifRGB565GUI
             btnCancelar = new Button();
             picPreviewRGB565 = new PictureBox();
             lblPreviewRGB565 = new Label();
+            cmbGzipLevel = new ComboBox();
             btnSelectFolder = new Button();
             txtFolder = new TextBox();
             btnGenerate = new Button();
@@ -587,6 +589,16 @@ namespace GifRGB565GUI
             chkGzip.TabIndex = 2;
             chkGzip.Text = "GZip (if applicable)";
             // 
+            // cmbGzipLevel
+            // 
+            cmbGzipLevel.DropDownStyle = ComboBoxStyle.DropDownList;
+            cmbGzipLevel.Items.AddRange(new object[] { "Rápido", "Normal", "Máxima" });
+            cmbGzipLevel.Location = new Point(440, 704);
+            cmbGzipLevel.Name = "cmbGzipLevel";
+            cmbGzipLevel.Size = new Size(100, 23);
+            cmbGzipLevel.TabIndex = 24;
+            cmbGzipLevel.Visible = false;
+            // 
             // btnSimulate
             // 
             btnSimulate.BackColor = Color.Blue;
@@ -667,6 +679,7 @@ namespace GifRGB565GUI
             // Form1
             // 
             ClientSize = new Size(582, 810);
+            Controls.Add(cmbGzipLevel);
             Controls.Add(picPreviewRGB565);
             Controls.Add(lblPreviewRGB565);
             Controls.Add(btnCancelar);

@@ -34,6 +34,11 @@
 - **`←`/`→`:** Frame anterior/siguiente.
 - **`Ctrl++`/`Ctrl+-`:** Zoom 1:1 / Zoom ajustado en preview.
 
+### Added — Nivel de compresión GZip ajustable
+- **`cmbGzipLevel ComboBox`:** Aparece solo al seleccionar formato `.bin.gz`. Opciones: Rápido, Normal, Máxima.
+- **`GetGzipLevel()`:** Mapea selección a `CompressionLevel.Fastest`, `Optimal` o `SmallestSize`.
+- **Visibilidad dinámica:** Se oculta para formatos N64 y BIN, solo visible para BINGZ.
+
 ---
 
 ## [1.1.3] — 2026-09-02
