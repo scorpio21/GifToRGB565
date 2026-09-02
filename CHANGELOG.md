@@ -2,14 +2,6 @@
 
 ---
 
-## [1.1.5] — 2026-09-02
-
-### Added — Zoom con scroll del ratón en preview
-- **`picPreview_MouseWheel`:** Scroll arriba → `SizeMode.Zoom` (ajustado), scroll abajo → `SizeMode.CenterImage` (1:1 píxel real).
-- Permite alternar rápidamente entre vista completa y detalle a tamaño real.
-
----
-
 ## [1.1.4] — 2026-09-02
 
 ### Added — Botón cancelar durante generación
@@ -18,6 +10,10 @@
 - **Cancelación parcial:** Al cancelar, pregunta si desea conservar los frames procesados hasta el momento y los exporta.
 - **`GenerateHeaderAtPath`:** Acepta `CancellationToken`, guarda header parcial si se cancela.
 - **Loop de BIN:** Verifica `ct.IsCancellationRequested` en cada frame y permite exportar parcial.
+
+### Added — Zoom con scroll del ratón en preview
+- **`picPreview_MouseWheel`:** Scroll arriba → `SizeMode.Zoom` (ajustado), scroll abajo → `SizeMode.CenterImage` (1:1 píxel real).
+- Permite alternar rápidamente entre vista completa y detalle a tamaño real.
 
 ---
 
