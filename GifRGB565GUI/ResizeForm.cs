@@ -1,259 +1,29 @@
 using System;
 using System.Drawing;
 using System.Drawing.Drawing2D;
+using System.Drawing.Imaging;
 using System.IO;
 using System.Windows.Forms;
 
 namespace GifRGB565GUI
 {
-    public class ResizeForm : Form
+    public partial class ResizeForm : Form
     {
-        private PictureBox picPreview;
-        private Label lblFileInfo;
-        private TextBox txtWidth;
-        private TextBox txtHeight;
-        private TextBox txtPercent;
-        private ComboBox cmbMethod;
-        private ComboBox cmbAspect;
-        private Button btnResize;
-        private Button btnSave;
-        private Button btnCrop;
-        private CheckBox chkRemember;
-        private Panel panelToolbar;
-        private Panel panelOptions;
-
-        private Label lblResultTitle;
-        private PictureBox picResult;
-        private Label lblResultInfo;
-        private Panel panelResult;
-
         private Bitmap? originalBmp;
         private Bitmap? resizedBmp;
         private string currentFilePath = "";
-        private int originalWidth;
-        private int originalHeight;
+
+        private Image? gifImage;
+        private FrameDimension? gifFrameDimension;
+        private int gifFrameCount = 0;
+        private int[]? gifFrameDelays;
+        private bool isGif = false;
 
         public ResizeForm()
         {
-            Text = "Redimensionar imágenes";
-            Size = new Size(750, 850);
-            StartPosition = FormStartPosition.CenterParent;
-            MinimumSize = new Size(650, 600);
-            AllowDrop = true;
-            DragEnter += ResizeForm_DragEnter;
-            DragDrop += ResizeForm_DragDrop;
-
-            // Toolbar
-            panelToolbar = new Panel { Dock = DockStyle.Top, Height = 50, BackColor = Color.FromArgb(50, 50, 60) };
-            var btnOpen = MakeToolButton("Abrir imagen", 10);
-            btnOpen.Click += (s, e) => OpenImage();
-            panelToolbar.Controls.Add(btnOpen);
-
-            // Preview
-            picPreview = new PictureBox
-            {
-                Dock = DockStyle.Fill,
-                SizeMode = PictureBoxSizeMode.Zoom,
-                BackColor = Color.Black,
-                BorderStyle = BorderStyle.FixedSingle
-            };
-
-            // File info
-            lblFileInfo = new Label
-            {
-                Dock = DockStyle.Bottom,
-                Height = 25,
-                TextAlign = ContentAlignment.MiddleLeft,
-                BackColor = Color.FromArgb(40, 40, 50),
-                ForeColor = Color.White,
-                Font = new Font("Segoe UI", 9),
-                Padding = new Padding(5, 0, 0, 0),
-                Text = "Arrastra una imagen aquí o haz clic en 'Abrir imagen'"
-            };
-
-            // Result panel (below options, like ezgif "Imagen redimensionada:")
-            panelResult = new Panel
-            {
-                Dock = DockStyle.Bottom,
-                Height = 160,
-                BackColor = Color.FromArgb(35, 35, 45),
-                Padding = new Padding(15),
-                Visible = false
-            };
-
-            lblResultTitle = new Label
-            {
-                Text = "Imagen redimensionada:",
-                Dock = DockStyle.Top,
-                Height = 25,
-                Font = new Font("Segoe UI", 11, FontStyle.Bold),
-                ForeColor = Color.White,
-                TextAlign = ContentAlignment.MiddleLeft
-            };
-
-            picResult = new PictureBox
-            {
-                Location = new Point(15, 30),
-                Size = new Size(64, 64),
-                SizeMode = PictureBoxSizeMode.Zoom,
-                BorderStyle = BorderStyle.FixedSingle,
-                BackColor = Color.Black
-            };
-
-            lblResultInfo = new Label
-            {
-                Location = new Point(90, 35),
-                AutoSize = false,
-                Size = new Size(580, 100),
-                ForeColor = Color.White,
-                Font = new Font("Segoe UI", 9),
-                Text = ""
-            };
-
-            panelResult.Controls.Add(lblResultTitle);
-            panelResult.Controls.Add(picResult);
-            panelResult.Controls.Add(lblResultInfo);
-
-            // Options panel
-            panelOptions = new Panel
-            {
-                Dock = DockStyle.Bottom,
-                Height = 210,
-                BackColor = Color.FromArgb(35, 35, 45),
-                Padding = new Padding(15)
-            };
-
-            // Width
-            var lblW = new Label { Text = "↔ Ancho:", AutoSize = true, Location = new Point(15, 15), ForeColor = Color.White };
-            txtWidth = new TextBox { Location = new Point(95, 12), Width = 80 };
-            var lblWHint = new Label { Text = "(Vacío = automático)", AutoSize = true, Location = new Point(185, 15), ForeColor = Color.Gray };
-
-            // Height
-            var lblH = new Label { Text = "↑ Altura:", AutoSize = true, Location = new Point(15, 45), ForeColor = Color.White };
-            txtHeight = new TextBox { Location = new Point(95, 42), Width = 80 };
-            var lblHHint = new Label { Text = "(Vacío = automático)", AutoSize = true, Location = new Point(185, 45), ForeColor = Color.Gray };
-
-            // Percentage
-            var lblPct = new Label { Text = "Porcentaje:", AutoSize = true, Location = new Point(15, 75), ForeColor = Color.White };
-            txtPercent = new TextBox { Location = new Point(95, 72), Width = 80 };
-
-            // Resize method
-            var lblM = new Label { Text = "Método de redimensionamiento:", AutoSize = true, Location = new Point(15, 105), ForeColor = Color.White };
-            cmbMethod = new ComboBox
-            {
-                DropDownStyle = ComboBoxStyle.DropDownList,
-                Location = new Point(15, 125),
-                Width = 350,
-                Items = {
-                    "Redimensionar (Bicúbica, calidad)",
-                    "Redimensionar (Bilineal)",
-                    "Redimensionar (Vecino cercano, rápido)",
-                    "Centrar y recortar para ajustarse",
-                    "Estirar para ajustarse",
-                    "Fuerza la relación de aspecto original",
-                    "Añadir relleno transparente"
-                },
-                SelectedIndex = 0
-            };
-
-            // Aspect ratio
-            var lblA = new Label { Text = "Si la relación de aspecto no coincide:", AutoSize = true, Location = new Point(400, 105), ForeColor = Color.White };
-            cmbAspect = new ComboBox
-            {
-                DropDownStyle = ComboBoxStyle.DropDownList,
-                Location = new Point(400, 125),
-                Width = 250,
-                Items = {
-                    "Centro y recorte para ajustarse",
-                    "Estirar para ajustarse",
-                    "Fuerza la relación de aspecto original",
-                    "Añadir relleno transparente"
-                },
-                SelectedIndex = 0
-            };
-
-            // Buttons
-            btnResize = new Button
-            {
-                Text = "¡Redimensiona la imagen!",
-                Location = new Point(15, 165),
-                Size = new Size(180, 35),
-                BackColor = Color.FromArgb(0, 120, 215),
-                ForeColor = Color.White,
-                FlatStyle = FlatStyle.Flat,
-                Font = new Font("Segoe UI", 9, FontStyle.Bold),
-                Cursor = Cursors.Hand
-            };
-            btnResize.Click += BtnResize_Click;
-
-            btnCrop = new Button
-            {
-                Text = "Cortar",
-                Location = new Point(210, 165),
-                Size = new Size(100, 35),
-                BackColor = Color.FromArgb(60, 60, 70),
-                ForeColor = Color.White,
-                FlatStyle = FlatStyle.Flat,
-                Cursor = Cursors.Hand,
-                Enabled = false
-            };
-
-            btnSave = new Button
-            {
-                Text = "Guardar",
-                Location = new Point(320, 165),
-                Size = new Size(100, 35),
-                BackColor = Color.FromArgb(60, 60, 70),
-                ForeColor = Color.White,
-                FlatStyle = FlatStyle.Flat,
-                Cursor = Cursors.Hand,
-                Enabled = false
-            };
-            btnSave.Click += BtnSave_Click;
-
-            chkRemember = new CheckBox
-            {
-                Text = "Recuerda los ajustes",
-                AutoSize = true,
-                Location = new Point(440, 172),
-                ForeColor = Color.White
-            };
-
-            // Wire events — Width/Height only update Percentage (no auto-linked)
-            txtWidth.TextChanged += TxtWidth_TextChanged;
-            txtHeight.TextChanged += TxtHeight_TextChanged;
-            txtPercent.TextChanged += TxtPercent_TextChanged;
-
-            // Add controls to options panel
-            panelOptions.Controls.AddRange(new Control[] {
-                lblW, txtWidth, lblWHint,
-                lblH, txtHeight, lblHHint,
-                lblPct, txtPercent,
-                lblM, cmbMethod,
-                lblA, cmbAspect,
-                btnResize, btnCrop, btnSave, chkRemember
-            });
-
-            // Add controls to form (order matters for docking)
-            Controls.Add(picPreview);
-            Controls.Add(panelToolbar);
-            Controls.Add(lblFileInfo);
-            Controls.Add(panelResult);
-            Controls.Add(panelOptions);
-        }
-
-        private Button MakeToolButton(string text, int x)
-        {
-            return new Button
-            {
-                Text = text,
-                Location = new Point(x, 8),
-                Size = new Size(120, 34),
-                FlatStyle = FlatStyle.Flat,
-                BackColor = Color.FromArgb(60, 60, 70),
-                ForeColor = Color.White,
-                Cursor = Cursors.Hand
-            };
+            InitializeComponent();
+            cmbMethod.SelectedIndex = 0;
+            cmbAspect.SelectedIndex = 0;
         }
 
         private void ResizeForm_DragEnter(object? sender, DragEventArgs e)
@@ -272,7 +42,7 @@ namespace GifRGB565GUI
             LoadImageFile(files[0]);
         }
 
-        private void OpenImage()
+        private void BtnOpen_Click(object? sender, EventArgs e)
         {
             using var dlg = new OpenFileDialog();
             dlg.Filter = "Imágenes|*.gif;*.png;*.jpg;*.jpeg;*.bmp;*.webp;*.apng;*.heic;*.heif;*.avif|Todos|*.*";
@@ -284,22 +54,51 @@ namespace GifRGB565GUI
         {
             try
             {
-                originalBmp?.Dispose();
-                originalBmp = new Bitmap(path);
-                currentFilePath = path;
-                originalWidth = originalBmp.Width;
-                originalHeight = originalBmp.Height;
-                picPreview.Image = originalBmp;
+                CleanupGif();
 
+                currentFilePath = path;
                 string ext = Path.GetExtension(path).ToLower();
                 long size = new FileInfo(path).Length;
                 string sizeStr = size > 1024 * 1024 ? $"{size / (1024.0 * 1024.0):F2}MiB" : $"{size / 1024.0:F2}KiB";
 
-                lblFileInfo.Text = $"Tamaño del archivo: {sizeStr}, ancho: {originalWidth}px, altura: {originalHeight}px, tipo: {ext.TrimStart('.')}";
+                if (ext == ".gif")
+                {
+                    isGif = true;
+                    gifImage = Image.FromFile(path);
+                    gifFrameDimension = new FrameDimension(gifImage.FrameDimensionsList[0]);
+                    gifFrameCount = gifImage.GetFrameCount(gifFrameDimension);
+
+                    gifFrameDelays = GetGifFrameDelays(gifImage, gifFrameCount);
+
+                    int totalMs = 0;
+                    foreach (int d in gifFrameDelays) totalMs += d;
+                    TimeSpan ts = TimeSpan.FromMilliseconds(totalMs * 10);
+
+                    lblFileInfo.Text = $"Tamaño del archivo: {sizeStr}, ancho: {gifImage.Width}px, altura: {gifImage.Height}px, fotogramas: {gifFrameCount}, tipo: gif, longitud: {ts.Minutes:D2}:{ts.Seconds:D2}.{ts.Milliseconds / 100}";
+
+                    originalBmp?.Dispose();
+                    originalBmp = new Bitmap(gifImage.Width, gifImage.Height);
+                    using (var g = Graphics.FromImage(originalBmp))
+                        g.DrawImage(gifImage, 0, 0, gifImage.Width, gifImage.Height);
+
+                    picPreview.Image = gifImage;
+                    txtWidth.Text = gifImage.Width.ToString();
+                    txtHeight.Text = gifImage.Height.ToString();
+                }
+                else
+                {
+                    isGif = false;
+                    originalBmp?.Dispose();
+                    originalBmp = new Bitmap(path);
+                    picPreview.Image = originalBmp;
+
+                    lblFileInfo.Text = $"Tamaño del archivo: {sizeStr}, ancho: {originalBmp.Width}px, altura: {originalBmp.Height}px, tipo: {ext.TrimStart('.')}";
+
+                    txtWidth.Text = originalBmp.Width.ToString();
+                    txtHeight.Text = originalBmp.Height.ToString();
+                }
 
                 suppressEvents = true;
-                txtWidth.Text = originalWidth.ToString();
-                txtHeight.Text = originalHeight.ToString();
                 txtPercent.Text = "100";
                 suppressEvents = false;
 
@@ -312,47 +111,82 @@ namespace GifRGB565GUI
             }
         }
 
+        private int[] GetGifFrameDelays(Image img, int frameCount)
+        {
+            var delays = new int[frameCount];
+            try
+            {
+                var prop = img.GetPropertyItem(0x5100);
+                if (prop.Value != null)
+                {
+                    for (int i = 0; i < frameCount; i++)
+                    {
+                        delays[i] = BitConverter.ToInt32(prop.Value, i * 4);
+                        if (delays[i] < 1) delays[i] = 1;
+                    }
+                }
+                else
+                {
+                    for (int i = 0; i < frameCount; i++)
+                        delays[i] = 10;
+                }
+            }
+            catch
+            {
+                for (int i = 0; i < frameCount; i++)
+                    delays[i] = 10;
+            }
+            return delays;
+        }
+
         private bool suppressEvents = false;
 
-        private void TxtWidth_TextChanged(object? sender, EventArgs e)
+        private void txtWidth_TextChanged(object? sender, EventArgs e)
         {
             if (suppressEvents || originalBmp == null) return;
+            int origW = isGif && gifImage != null ? gifImage.Width : originalBmp.Width;
             if (int.TryParse(txtWidth.Text, out int w) && w > 0)
             {
                 suppressEvents = true;
-                double pct = (double)w / originalWidth * 100;
+                double pct = (double)w / origW * 100;
                 txtPercent.Text = ((int)pct).ToString();
                 suppressEvents = false;
             }
         }
 
-        private void TxtHeight_TextChanged(object? sender, EventArgs e)
+        private void txtHeight_TextChanged(object? sender, EventArgs e)
         {
             if (suppressEvents || originalBmp == null) return;
+            int origH = isGif && gifImage != null ? gifImage.Height : originalBmp.Height;
             if (int.TryParse(txtHeight.Text, out int h) && h > 0)
             {
                 suppressEvents = true;
-                double pct = (double)h / originalHeight * 100;
+                double pct = (double)h / origH * 100;
                 txtPercent.Text = ((int)pct).ToString();
                 suppressEvents = false;
             }
         }
 
-        private void TxtPercent_TextChanged(object? sender, EventArgs e)
+        private void txtPercent_TextChanged(object? sender, EventArgs e)
         {
-            if (suppressEvents || originalBmp == null) return;
+            if (suppressEvents) return;
+            int origW = 0, origH = 0;
+            if (isGif && gifImage != null) { origW = gifImage.Width; origH = gifImage.Height; }
+            else if (originalBmp != null) { origW = originalBmp.Width; origH = originalBmp.Height; }
+            if (origW <= 0 || origH <= 0) return;
+
             if (double.TryParse(txtPercent.Text, out double pct) && pct > 0)
             {
                 suppressEvents = true;
-                txtWidth.Text = ((int)(originalWidth * pct / 100)).ToString();
-                txtHeight.Text = ((int)(originalHeight * pct / 100)).ToString();
+                txtWidth.Text = ((int)(origW * pct / 100)).ToString();
+                txtHeight.Text = ((int)(origH * pct / 100)).ToString();
                 suppressEvents = false;
             }
         }
 
         private void BtnResize_Click(object? sender, EventArgs e)
         {
-            if (originalBmp == null)
+            if (originalBmp == null && gifImage == null)
             {
                 MessageBox.Show("No hay imagen cargada.", "Redimensionar", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
@@ -364,67 +198,179 @@ namespace GifRGB565GUI
                 return;
             }
 
-            var method = cmbMethod.SelectedIndex;
-            resizedBmp?.Dispose();
+            if (isGif && gifImage != null && gifFrameCount > 1)
+            {
+                ResizeAnimatedGif(w, h);
+            }
+            else
+            {
+                ResizeStaticImage(w, h);
+            }
+        }
 
+        private void ResizeStaticImage(int w, int h)
+        {
+            if (originalBmp == null) return;
+            int method = cmbMethod.SelectedIndex;
+
+            resizedBmp?.Dispose();
+            resizedBmp = ApplyResize(originalBmp, w, h, method);
+
+            picPreview.Image = resizedBmp;
+            btnSave.Enabled = true;
+            ShowResultPanel(w, h);
+        }
+
+        private void ResizeAnimatedGif(int w, int h)
+        {
+            if (gifImage == null || gifFrameDimension == null || gifFrameDelays == null) return;
+
+            int method = cmbMethod.SelectedIndex;
+            int origW = gifImage.Width;
+            int origH = gifImage.Height;
+
+            var frames = new Bitmap[gifFrameCount];
+            int totalDelay = 0;
+
+            try
+            {
+                for (int i = 0; i < gifFrameCount; i++)
+                {
+                    gifImage.SelectActiveFrame(gifFrameDimension, i);
+                    using var frameBmp = new Bitmap(origW, origH);
+                    using (var g = Graphics.FromImage(frameBmp))
+                        g.DrawImage(gifImage, 0, 0, origW, origH);
+
+                    frames[i] = ApplyResize(frameBmp, w, h, method);
+                    totalDelay += gifFrameDelays[i];
+                }
+
+                var resultPath = Path.Combine(Path.GetTempPath(), "resize_preview.gif");
+                SaveAnimatedGif(frames, gifFrameDelays, resultPath);
+
+                gifImage.Dispose();
+                gifImage = Image.FromFile(resultPath);
+
+                CleanupGif();
+                gifImage = Image.FromFile(resultPath);
+                gifFrameDimension = new FrameDimension(gifImage.FrameDimensionsList[0]);
+                gifFrameCount = gifImage.GetFrameCount(gifFrameDimension);
+
+                picPreview.Image = gifImage;
+
+                for (int i = 0; i < frames.Length; i++)
+                    frames[i].Dispose();
+
+                btnSave.Enabled = true;
+                ShowResultPanel(w, h);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error redimensionando GIF: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                for (int i = 0; i < frames.Length; i++)
+                    frames[i]?.Dispose();
+            }
+        }
+
+        private Bitmap ApplyResize(Bitmap source, int w, int h, int method)
+        {
             if (method <= 2)
             {
-                resizedBmp = new Bitmap(w, h);
-                using var g = Graphics.FromImage(resizedBmp);
+                var bmp = new Bitmap(w, h);
+                using var g = Graphics.FromImage(bmp);
                 g.InterpolationMode = method switch
                 {
                     1 => InterpolationMode.HighQualityBilinear,
                     2 => InterpolationMode.NearestNeighbor,
                     _ => InterpolationMode.HighQualityBicubic
                 };
-                g.DrawImage(originalBmp, 0, 0, w, h);
+                g.DrawImage(source, 0, 0, w, h);
+                return bmp;
             }
             else if (method == 3) // Centrar y recortar
             {
-                double scaleX = (double)w / originalBmp.Width;
-                double scaleY = (double)h / originalBmp.Height;
+                double scaleX = (double)w / source.Width;
+                double scaleY = (double)h / source.Height;
                 double scale = Math.Max(scaleX, scaleY);
-                int sw = (int)(originalBmp.Width * scale);
-                int sh = (int)(originalBmp.Height * scale);
-                resizedBmp = new Bitmap(w, h);
-                using var g = Graphics.FromImage(resizedBmp);
+                int sw = (int)(source.Width * scale);
+                int sh = (int)(source.Height * scale);
+                var bmp = new Bitmap(w, h);
+                using var g = Graphics.FromImage(bmp);
                 g.InterpolationMode = InterpolationMode.HighQualityBicubic;
-                g.DrawImage(originalBmp, (w - sw) / 2, (h - sh) / 2, sw, sh);
+                g.DrawImage(source, (w - sw) / 2, (h - sh) / 2, sw, sh);
+                return bmp;
             }
             else if (method == 4) // Estirar
             {
-                resizedBmp = new Bitmap(w, h);
-                using var g = Graphics.FromImage(resizedBmp);
+                var bmp = new Bitmap(w, h);
+                using var g = Graphics.FromImage(bmp);
                 g.InterpolationMode = InterpolationMode.HighQualityBicubic;
-                g.DrawImage(originalBmp, 0, 0, w, h);
+                g.DrawImage(source, 0, 0, w, h);
+                return bmp;
             }
             else if (method == 5) // Forzar aspect ratio
             {
-                double ratio = (double)originalBmp.Width / originalBmp.Height;
+                double ratio = (double)source.Width / source.Height;
                 int nw = w;
                 int nh = (int)(w / ratio);
                 if (nh > h) { nh = h; nw = (int)(h * ratio); }
-                resizedBmp = new Bitmap(w, h);
-                using var g = Graphics.FromImage(resizedBmp);
+                var bmp = new Bitmap(w, h);
+                using var g = Graphics.FromImage(bmp);
                 g.InterpolationMode = InterpolationMode.HighQualityBicubic;
                 g.Clear(Color.Transparent);
-                g.DrawImage(originalBmp, (w - nw) / 2, (h - nh) / 2, nw, nh);
+                g.DrawImage(source, (w - nw) / 2, (h - nh) / 2, nw, nh);
+                return bmp;
             }
-            else if (method == 6) // Relleno transparente
+            else // Relleno transparente
             {
-                resizedBmp = new Bitmap(w, h);
-                using var g = Graphics.FromImage(resizedBmp);
+                var bmp = new Bitmap(w, h);
+                using var g = Graphics.FromImage(bmp);
                 g.InterpolationMode = InterpolationMode.HighQualityBicubic;
                 g.Clear(Color.Transparent);
-                int ox = (w - originalBmp.Width) / 2;
-                int oy = (h - originalBmp.Height) / 2;
-                g.DrawImage(originalBmp, ox, oy, originalBmp.Width, originalBmp.Height);
+                int ox = (w - source.Width) / 2;
+                int oy = (h - source.Height) / 2;
+                g.DrawImage(source, ox, oy, source.Width, source.Height);
+                return bmp;
+            }
+        }
+
+        private void SaveAnimatedGif(Bitmap[] frames, int[] delays, string path)
+        {
+            using var result = new Bitmap(frames[0].Width, frames[0].Height, PixelFormat.Format32bppArgb);
+            var frameDim = new FrameDimension(result.FrameDimensionsList[0]);
+
+            for (int i = 0; i < frames.Length; i++)
+            {
+                var frame = new Bitmap(frames[i].Width, frames[i].Height, PixelFormat.Format32bppArgb);
+                using (var g = Graphics.FromImage(frame))
+                {
+                    g.InterpolationMode = InterpolationMode.NearestNeighbor;
+                    g.DrawImage(frames[i], 0, 0, frame.Width, frame.Height);
+                }
+
+                result.SelectActiveFrame(frameDim, i);
+                using (var g = Graphics.FromImage(result))
+                    g.DrawImage(frame, 0, 0, frame.Width, frame.Height);
+
+                frame.Dispose();
             }
 
-            picPreview.Image = resizedBmp;
-            btnSave.Enabled = true;
+            var delayProp = result.GetPropertyItem(0x5100);
+            if (delayProp.Value != null)
+            {
+                byte[] delayBytes = new byte[delays.Length * 4];
+                for (int i = 0; i < delays.Length; i++)
+                    BitConverter.GetBytes(delays[i]).CopyTo(delayBytes, i * 4);
+                delayProp.Value = delayBytes;
+                delayProp.Len = delayBytes.Length;
+                result.SetPropertyItem(delayProp);
+            }
 
-            // Show result panel like ezgif
+            result.Save(path, ImageFormat.Gif);
+        }
+
+        private void ShowResultPanel(int w, int h)
+        {
             picResult.Image?.Dispose();
             picResult.Image = resizedBmp != null ? new Bitmap(resizedBmp) : null;
 
@@ -433,15 +379,13 @@ namespace GifRGB565GUI
             string origSizeStr = origSize > 1024 ? $"{origSize / 1024.0:F2}KiB" : $"{origSize}B";
 
             using var ms = new MemoryStream();
-            resizedBmp?.Save(ms, System.Drawing.Imaging.ImageFormat.Png);
+            resizedBmp?.Save(ms, ImageFormat.Png);
             long newSize = ms.Length;
             string newSizeStr = newSize > 1024 ? $"{newSize / 1024.0:F2}KiB" : $"{newSize}B";
             double reduction = origSize > 0 ? (1.0 - (double)newSize / origSize) * 100 : 0;
-
             string reductionStr = reduction > 0 ? $"( {reduction:F1}% )" : "";
 
             lblResultInfo.Text = $"Tamaño del archivo: {newSizeStr} {reductionStr}  ancho: {w}px, altura: {h}px, tipo: {ext.TrimStart('.')}";
-
             panelResult.Visible = true;
         }
 
@@ -460,17 +404,31 @@ namespace GifRGB565GUI
             {
                 var format = Path.GetExtension(dlg.FileName).ToLower() switch
                 {
-                    ".jpg" or ".jpeg" => System.Drawing.Imaging.ImageFormat.Jpeg,
-                    ".bmp" => System.Drawing.Imaging.ImageFormat.Bmp,
-                    _ => System.Drawing.Imaging.ImageFormat.Png
+                    ".jpg" or ".jpeg" => ImageFormat.Jpeg,
+                    ".bmp" => ImageFormat.Bmp,
+                    _ => ImageFormat.Png
                 };
                 resizedBmp.Save(dlg.FileName, format);
                 lblFileInfo.Text = $"Guardado: {dlg.FileName}";
             }
         }
 
+        private void CleanupGif()
+        {
+            if (gifImage != null)
+            {
+                gifImage.Dispose();
+                gifImage = null;
+            }
+            gifFrameDimension = null;
+            gifFrameCount = 0;
+            gifFrameDelays = null;
+            isGif = false;
+        }
+
         protected override void OnFormClosing(FormClosingEventArgs e)
         {
+            CleanupGif();
             originalBmp?.Dispose();
             resizedBmp?.Dispose();
             picResult.Image?.Dispose();
