@@ -76,8 +76,11 @@ namespace GifRGB565GUI
         {
             item.ForeColor = fg;
             item.BackColor = menuBg;
-            foreach (ToolStripMenuItem sub in item.DropDownItems)
-                ApplyToMenuItem(sub, dark, fg, menuBg);
+            foreach (ToolStripItem sub in item.DropDownItems)
+            {
+                if (sub is ToolStripMenuItem mi)
+                    ApplyToMenuItem(mi, dark, fg, menuBg);
+            }
         }
     }
 }

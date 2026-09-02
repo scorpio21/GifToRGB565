@@ -1,47 +1,52 @@
 # GifToRGB565
 
-Conversor de GIF / secuencia de im·genes a arrays RGB565 (formato para N64) con interfaz gr·fica en WinForms.
+Conversor de GIF / secuencia de im√°genes a arrays RGB565 (formato para N64/ESP32) con interfaz gr√°fica en WinForms.
 
-CaracterÌsticas
+## Caracter√≠sticas
 - Cargar GIF animado o carpeta de frames (`.png`, `.jpg`).
-- Previsualizar frames y reproducir animaciÛn con control de velocidad y loop.
+- Previsualizar frames y reproducir animaci√≥n con control de velocidad y loop.
 - Generar archivo `n64.h` con los frames convertidos a formato RGB565.
 - Exportar binarios para ESP32 (`.bin` y `.bin.gz`).
 - Opciones de procesamiento: dithering, noise reduction y sharpen.
-- Men˙ "Archivo" y "CompresiÛn" para seleccionar formato de exportaciÛn.
-- Barra de progreso y logs durante la conversiÛn.
+- **Rescale autom√°tico:** Redimensionar frames antes de convertir con presets (50%, 25%, 160x120, 320x240) o entrada manual, con opci√≥n de mantener proporci√≥n.
+- **Barra de estado:** Muestra dimensiones del frame, total de frames, tama√±o estimado del output y formato de exportaci√≥n.
+- **Tema oscuro/claro:** Cambio de tema desde Men√∫ ‚Üí Ver ‚Üí Tema, con persistencia.
+- **Men√∫ "Abierto reciente":** √öltimas 5 rutas abiertas (GIFs, carpetas, headers).
+- Men√∫ "Archivo" y "Compresi√≥n" para seleccionar formato de exportaci√≥n.
+- Barra de progreso y logs durante la conversi√≥n.
 
-Requisitos
+## Requisitos
 - .NET 8
 - Visual Studio 2022/2023 u otro IDE compatible con WinForms y .NET 8
 
-InstalaciÛn y uso
+## Instalaci√≥n y uso
 1. Clona el repositorio:
    `git clone https://github.com/scorpio21/GifToRGB565.git`
-2. Abre la soluciÛn `GifRGB565GUI.slnx` en Visual Studio.
-3. Restaura paquetes y compila la soluciÛn.
-4. Ejecuta la aplicaciÛn.
+2. Abre la soluci√≥n `GifRGB565GUI.slnx` en Visual Studio.
+3. Restaura paquetes y compila la soluci√≥n.
+4. Ejecuta la aplicaci√≥n.
 
-Uso r·pido
+## Uso r√°pido
 - Selecciona un GIF animado o una carpeta de frames con `Seleccionar GIF/Carpeta`.
-- El panel izquierdo lista los frames; puedes reproducir la animaciÛn con `Play` / `Stop`.
-- En el men˙ superior selecciona `CompresiÛn` y elige el formato de exportaciÛn:
-  - `n64.h (original)` ó genera el header `n64.h` en `output/` al pulsar `Generar`.
-  - `esp32.bin` ó al pulsar `Generar` se pregunta la ruta de salida para un `.bin`.
-  - `esp32.bin.gz` ó al pulsar `Generar` se pregunta la ruta de salida para un `.bin.gz`.
-- La barra `GZip (if applicable)` se puede usar para forzar compresiÛn al exportar `.bin`.
-- `Simular .h` abre una ventana que reproduce la animaciÛn convertida desde RGB565.
+- El panel izquierdo lista los frames; puedes reproducir la animaci√≥n con `Play` / `Stop`.
+- En el men√∫ superior selecciona `Compresi√≥n` y elige el formato de exportaci√≥n:
+  - `n64.h (original)` ‚Äî genera el header `n64.h` en `output/` al pulsar `Generar`.
+  - `esp32.bin` ‚Äî al pulsar `Generar` se pregunta la ruta de salida para un `.bin`.
+  - `esp32.bin.gz` ‚Äî al pulsar `Generar` se pregunta la ruta de salida para un `.bin.gz`.
+- Usa el grupo **Rescale** para cambiar la resoluci√≥n de los frames antes de convertir.
+- La barra `GZip (if applicable)` se puede usar para forzar compresi√≥n al exportar `.bin`.
+- `Simular .h` abre una ventana que reproduce la animaci√≥n convertida desde RGB565.
 
-Notas
+## Notas
 - La barra de progreso se actualiza por cada frame procesado.
-- Si el diseÒador de Visual Studio muestra errores en tiempo de diseÒo, cierra/reabre el archivo o reinicia Visual Studio para recargar la clase parcial (`Form1.Designer.cs` / `Form1.cs`).
+- La configuraci√≥n (nombre de salida, tema, recientes, rescale) se guarda autom√°ticamente en `last_output.json`.
 
-Contribuir
+## Contribuir
 - Abre un _issue_ para reportar errores o proponer mejoras.
 - Crea _pull requests_ con descripciones claras de los cambios.
 
-Licencia
-Este proyecto est· bajo la licencia MIT. Consulta el archivo `LICENSE` para m·s detalles.
+## Licencia
+Este proyecto est√° bajo la licencia MIT. Consulta el archivo `LICENSE` para m√°s detalles.
 
-Contacto
+## Contacto
 - Autor: scorpio21 (https://github.com/scorpio21)

@@ -26,6 +26,8 @@ namespace GifRGB565GUI
         private enum ExportFormat { N64, BIN, BINGZ }
         private ExportFormat currentExportFormat = ExportFormat.N64;
 
+        private bool IsRescaleEnabled => cmbRescalePreset.SelectedIndex > 0 && cmbRescalePreset.SelectedItem?.ToString() != "Original";
+
         private static readonly string ConfigPath = Path.Combine(
             AppContext.BaseDirectory, "last_output.json");
 
@@ -1151,6 +1153,67 @@ namespace GifRGB565GUI
         {
             foreach (ToolStripMenuItem item in parent.DropDownItems)
                 item.Checked = false;
+        }
+
+        private Bitmap ResizeFrame(Bitmap source, int targetW, int targetH)
+        {
+            var resized = new Bitmap(targetW, targetH);
+            using (var g = Graphics.FromImage(resized))
+            {
+                g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
+                g.DrawImage(source, 0, 0, targetW, targetH);
+            }
+            return resized;
+        }
+
+        private void cmbRescalePreset_SelectedIndexChanged(object? sender, EventArgs e)
+        {
+            if (cmbRescalePreset.SelectedIndex < 0) return;
+
+            int origW = 0, origH = 0;
+            if (usingGif && gifFrames.Length > 0) { origW = gifFrames[0].Width; origH = gifFrames[0].Height; }
+            else if (usingHeader) { origW = headerWidth; origH = headerHeight; }
+            else if (frameFiles.Length > 0) { origW = 320; origH = 240; }
+
+            var sel = cmbRescalePreset.SelectedItem?.ToString();
+            switch (sel)
+            {
+                case "Original":
+                    if (origW > 0) { nudRescaleW.Value = origW; nudRescaleH.Value = origH; }
+                    break;
+                case "50%":
+                    if (origW > 0) { nudRescaleW.Value = origW / 2; nudRescaleH.Value = origH / 2; }
+                    break;
+                case "25%":
+                    if (origW > 0) { nudRescaleW.Value = origW / 4; nudRescaleH.Value = origH / 4; }
+                    break;
+                case "160x120":
+                    nudRescaleW.Value = 160; nudRescaleH.Value = 120;
+                    break;
+                case "320x240":
+                    nudRescaleW.Value = 320; nudRescaleH.Value = 240;
+                    break;
+            }
+        }
+
+        private void nudRescaleW_ValueChanged(object? sender, EventArgs e)
+        {
+            if (!chkKeepRatio.Checked) return;
+            int origW = 0, origH = 0;
+            if (usingGif && gifFrames.Length > 0) { origW = gifFrames[0].Width; origH = gifFrames[0].Height; }
+            else if (usingHeader) { origW = headerWidth; origH = headerHeight; }
+            if (origW <= 0 || origH <= 0) return;
+            nudRescaleH.Value = (int)(nudRescaleW.Value * origH / origW);
+        }
+
+        private void nudRescaleH_ValueChanged(object? sender, EventArgs e)
+        {
+            if (!chkKeepRatio.Checked) return;
+            int origW = 0, origH = 0;
+            if (usingGif && gifFrames.Length > 0) { origW = gifFrames[0].Width; origH = gifFrames[0].Height; }
+            else if (usingHeader) { origW = headerWidth; origH = headerHeight; }
+            if (origW <= 0 || origH <= 0) return;
+            nudRescaleW.Value = (int)(nudRescaleH.Value * origW / origH);
         }
     }
 }

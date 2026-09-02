@@ -2,6 +2,21 @@
 
 ---
 
+## [1.1.2] — 2026-09-02
+
+### Added — Rescale automático de resolución
+- **GroupBox "Rescale":** Nuevo panel con controles de escalado debajo de los filtros.
+- **ComboBox de presets:** Original, 50%, 25%, 160x120, 320x240, Personalizado.
+- **NumericUpDown:** Entrada manual de ancho (8–2048) y alto (8–2048).
+- **"Mantener proporción":** Checkbox activado por defecto, ajusta automáticamente el alto al cambiar el ancho y viceversa.
+- **`ResizeFrame()`:** Método que aplica `Graphics.DrawImage` con `InterpolationMode.HighQualityBicubic`.
+- **Persistencia:** Configuración de rescale guardada en `last_output.json`.
+
+### Fixed
+- **ThemeManager crash con ToolStripSeparator:** `ApplyToMenuItem` ahora ignora items que no son `ToolStripMenuItem` (separadores del menú).
+
+---
+
 ## [1.1.1] — 2026-09-01
 
 ### Added — Tema oscuro (Dark Mode)

@@ -61,6 +61,11 @@ namespace GifRGB565GUI
         private System.Windows.Forms.CheckBox chkGzip;
         private System.Windows.Forms.Button btnSimulate;
         private System.Windows.Forms.ToolStripMenuItem exportarFramesToolStripMenuItem;
+        private System.Windows.Forms.GroupBox grpRescale;
+        private System.Windows.Forms.ComboBox cmbRescalePreset;
+        private System.Windows.Forms.NumericUpDown nudRescaleW;
+        private System.Windows.Forms.NumericUpDown nudRescaleH;
+        private System.Windows.Forms.CheckBox chkKeepRatio;
 
         protected override void Dispose(bool disposing)
         {
@@ -79,6 +84,10 @@ namespace GifRGB565GUI
             recentToolStripMenuItem = new ToolStripMenuItem();
             clearRecentToolStripMenuItem = new ToolStripMenuItem();
             salirToolStripMenuItem = new ToolStripMenuItem();
+            verToolStripMenuItem = new ToolStripMenuItem();
+            temaToolStripMenuItem = new ToolStripMenuItem();
+            claroToolStripMenuItem = new ToolStripMenuItem();
+            oscuroToolStripMenuItem = new ToolStripMenuItem();
             compresionToolStripMenuItem = new ToolStripMenuItem();
             compN64ToolStripMenuItem = new ToolStripMenuItem();
             compBinToolStripMenuItem = new ToolStripMenuItem();
@@ -92,10 +101,11 @@ namespace GifRGB565GUI
             ayudaSharpenToolStripMenuItem = new ToolStripMenuItem();
             ayudaGzipToolStripMenuItem = new ToolStripMenuItem();
             acercaToolStripMenuItem = new ToolStripMenuItem();
-            verToolStripMenuItem = new ToolStripMenuItem();
-            temaToolStripMenuItem = new ToolStripMenuItem();
-            claroToolStripMenuItem = new ToolStripMenuItem();
-            oscuroToolStripMenuItem = new ToolStripMenuItem();
+            grpRescale = new GroupBox();
+            cmbRescalePreset = new ComboBox();
+            nudRescaleW = new NumericUpDown();
+            nudRescaleH = new NumericUpDown();
+            chkKeepRatio = new CheckBox();
             btnSelectFolder = new Button();
             txtFolder = new TextBox();
             btnGenerate = new Button();
@@ -125,10 +135,13 @@ namespace GifRGB565GUI
             lblStatusSize = new ToolStripStatusLabel();
             lblStatusFormat = new ToolStripStatusLabel();
             menuStrip1.SuspendLayout();
+            grpRescale.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)nudRescaleW).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)nudRescaleH).BeginInit();
             ((System.ComponentModel.ISupportInitialize)picPreview).BeginInit();
             ((System.ComponentModel.ISupportInitialize)speedSlider).BeginInit();
-            SuspendLayout();
             statusStrip1.SuspendLayout();
+            SuspendLayout();
             // 
             // menuStrip1
             // 
@@ -165,6 +178,34 @@ namespace GifRGB565GUI
             salirToolStripMenuItem.Size = new Size(158, 22);
             salirToolStripMenuItem.Text = "Salir";
             salirToolStripMenuItem.Click += salirToolStripMenuItem_Click;
+            // 
+            // verToolStripMenuItem
+            // 
+            verToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { temaToolStripMenuItem });
+            verToolStripMenuItem.Name = "verToolStripMenuItem";
+            verToolStripMenuItem.Size = new Size(35, 20);
+            verToolStripMenuItem.Text = "Ver";
+            // 
+            // temaToolStripMenuItem
+            // 
+            temaToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { claroToolStripMenuItem, oscuroToolStripMenuItem });
+            temaToolStripMenuItem.Name = "temaToolStripMenuItem";
+            temaToolStripMenuItem.Size = new Size(103, 22);
+            temaToolStripMenuItem.Text = "Tema";
+            // 
+            // claroToolStripMenuItem
+            // 
+            claroToolStripMenuItem.Name = "claroToolStripMenuItem";
+            claroToolStripMenuItem.Size = new Size(112, 22);
+            claroToolStripMenuItem.Text = "Claro";
+            claroToolStripMenuItem.Click += claroToolStripMenuItem_Click;
+            // 
+            // oscuroToolStripMenuItem
+            // 
+            oscuroToolStripMenuItem.Name = "oscuroToolStripMenuItem";
+            oscuroToolStripMenuItem.Size = new Size(112, 22);
+            oscuroToolStripMenuItem.Text = "Oscuro";
+            oscuroToolStripMenuItem.Click += oscuroToolStripMenuItem_Click;
             // 
             // compresionToolStripMenuItem
             // 
@@ -221,34 +262,6 @@ namespace GifRGB565GUI
             exportarFramesToolStripMenuItem.Text = "Exportar todos los Frames";
             exportarFramesToolStripMenuItem.Click += exportarFramesToolStripMenuItem_Click;
             // 
-            // verToolStripMenuItem
-            // 
-            verToolStripMenuItem.Name = "verToolStripMenuItem";
-            verToolStripMenuItem.Size = new Size(35, 20);
-            verToolStripMenuItem.Text = "Ver";
-            verToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { temaToolStripMenuItem });
-            // 
-            // temaToolStripMenuItem
-            // 
-            temaToolStripMenuItem.Name = "temaToolStripMenuItem";
-            temaToolStripMenuItem.Size = new Size(160, 22);
-            temaToolStripMenuItem.Text = "Tema";
-            temaToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { claroToolStripMenuItem, oscuroToolStripMenuItem });
-            // 
-            // claroToolStripMenuItem
-            // 
-            claroToolStripMenuItem.Name = "claroToolStripMenuItem";
-            claroToolStripMenuItem.Size = new Size(160, 22);
-            claroToolStripMenuItem.Text = "Claro";
-            claroToolStripMenuItem.Click += claroToolStripMenuItem_Click;
-            // 
-            // oscuroToolStripMenuItem
-            // 
-            oscuroToolStripMenuItem.Name = "oscuroToolStripMenuItem";
-            oscuroToolStripMenuItem.Size = new Size(160, 22);
-            oscuroToolStripMenuItem.Text = "Oscuro";
-            oscuroToolStripMenuItem.Click += oscuroToolStripMenuItem_Click;
-            // 
             // ayudaToolStripMenuItem
             // 
             ayudaToolStripMenuItem.Alignment = ToolStripItemAlignment.Right;
@@ -292,9 +305,64 @@ namespace GifRGB565GUI
             acercaToolStripMenuItem.Text = "Acerca de...";
             acercaToolStripMenuItem.Click += acercaToolStripMenuItem_Click;
             // 
+            // grpRescale
+            // 
+            grpRescale.Controls.Add(cmbRescalePreset);
+            grpRescale.Controls.Add(nudRescaleW);
+            grpRescale.Controls.Add(nudRescaleH);
+            grpRescale.Controls.Add(chkKeepRatio);
+            grpRescale.Location = new Point(12, 387);
+            grpRescale.Name = "grpRescale";
+            grpRescale.Size = new Size(558, 55);
+            grpRescale.TabIndex = 20;
+            grpRescale.TabStop = false;
+            grpRescale.Text = "Rescale";
+            // 
+            // cmbRescalePreset
+            // 
+            cmbRescalePreset.DropDownStyle = ComboBoxStyle.DropDownList;
+            cmbRescalePreset.Items.AddRange(new object[] { "Original", "50%", "25%", "160x120", "320x240", "Personalizado" });
+            cmbRescalePreset.Location = new Point(18, 20);
+            cmbRescalePreset.Name = "cmbRescalePreset";
+            cmbRescalePreset.Size = new Size(120, 23);
+            cmbRescalePreset.TabIndex = 0;
+            cmbRescalePreset.SelectedIndexChanged += cmbRescalePreset_SelectedIndexChanged;
+            // 
+            // nudRescaleW
+            // 
+            nudRescaleW.Location = new Point(158, 21);
+            nudRescaleW.Maximum = new decimal(new int[] { 2048, 0, 0, 0 });
+            nudRescaleW.Minimum = new decimal(new int[] { 8, 0, 0, 0 });
+            nudRescaleW.Name = "nudRescaleW";
+            nudRescaleW.Size = new Size(70, 23);
+            nudRescaleW.TabIndex = 1;
+            nudRescaleW.Value = new decimal(new int[] { 320, 0, 0, 0 });
+            nudRescaleW.ValueChanged += nudRescaleW_ValueChanged;
+            // 
+            // nudRescaleH
+            // 
+            nudRescaleH.Location = new Point(248, 21);
+            nudRescaleH.Maximum = new decimal(new int[] { 2048, 0, 0, 0 });
+            nudRescaleH.Minimum = new decimal(new int[] { 8, 0, 0, 0 });
+            nudRescaleH.Name = "nudRescaleH";
+            nudRescaleH.Size = new Size(70, 23);
+            nudRescaleH.TabIndex = 2;
+            nudRescaleH.Value = new decimal(new int[] { 240, 0, 0, 0 });
+            nudRescaleH.ValueChanged += nudRescaleH_ValueChanged;
+            // 
+            // chkKeepRatio
+            // 
+            chkKeepRatio.Checked = true;
+            chkKeepRatio.CheckState = CheckState.Checked;
+            chkKeepRatio.Location = new Point(328, 21);
+            chkKeepRatio.Name = "chkKeepRatio";
+            chkKeepRatio.Size = new Size(160, 23);
+            chkKeepRatio.TabIndex = 3;
+            chkKeepRatio.Text = "Mantener proporción";
+            // 
             // btnSelectFolder
             // 
-            btnSelectFolder.Location = new Point(12, 36);
+            btnSelectFolder.Location = new Point(12, 31);
             btnSelectFolder.Name = "btnSelectFolder";
             btnSelectFolder.Size = new Size(150, 30);
             btnSelectFolder.TabIndex = 19;
@@ -304,14 +372,14 @@ namespace GifRGB565GUI
             // 
             // txtFolder
             // 
-            txtFolder.Location = new Point(170, 41);
+            txtFolder.Location = new Point(170, 36);
             txtFolder.Name = "txtFolder";
             txtFolder.Size = new Size(400, 23);
             txtFolder.TabIndex = 18;
             // 
             // btnGenerate
             // 
-            btnGenerate.Location = new Point(12, 79);
+            btnGenerate.Location = new Point(12, 89);
             btnGenerate.Name = "btnGenerate";
             btnGenerate.Size = new Size(150, 30);
             btnGenerate.TabIndex = 17;
@@ -321,24 +389,24 @@ namespace GifRGB565GUI
             // 
             // progressBar
             // 
-            progressBar.Location = new Point(170, 79);
+            progressBar.Location = new Point(170, 89);
             progressBar.Name = "progressBar";
             progressBar.Size = new Size(400, 30);
             progressBar.TabIndex = 16;
             // 
             // txtLog
             // 
-            txtLog.Location = new Point(12, 154);
+            txtLog.Location = new Point(12, 131);
             txtLog.Multiline = true;
             txtLog.Name = "txtLog";
             txtLog.ScrollBars = ScrollBars.Vertical;
-            txtLog.Size = new Size(558, 234);
+            txtLog.Size = new Size(558, 186);
             txtLog.TabIndex = 15;
             // 
             // lstFrames
             // 
             lstFrames.ItemHeight = 15;
-            lstFrames.Location = new Point(12, 430);
+            lstFrames.Location = new Point(12, 453);
             lstFrames.Name = "lstFrames";
             lstFrames.Size = new Size(250, 199);
             lstFrames.TabIndex = 14;
@@ -346,7 +414,7 @@ namespace GifRGB565GUI
             // 
             // picPreview
             // 
-            picPreview.Location = new Point(270, 430);
+            picPreview.Location = new Point(270, 453);
             picPreview.Name = "picPreview";
             picPreview.Size = new Size(300, 200);
             picPreview.SizeMode = PictureBoxSizeMode.Zoom;
@@ -355,7 +423,7 @@ namespace GifRGB565GUI
             // 
             // btnPlay
             // 
-            btnPlay.Location = new Point(12, 636);
+            btnPlay.Location = new Point(12, 659);
             btnPlay.Name = "btnPlay";
             btnPlay.Size = new Size(120, 30);
             btnPlay.TabIndex = 11;
@@ -365,7 +433,7 @@ namespace GifRGB565GUI
             // 
             // btnStop
             // 
-            btnStop.Location = new Point(150, 636);
+            btnStop.Location = new Point(150, 659);
             btnStop.Name = "btnStop";
             btnStop.Size = new Size(120, 30);
             btnStop.TabIndex = 12;
@@ -380,11 +448,11 @@ namespace GifRGB565GUI
             // 
             // speedSlider
             // 
-            speedSlider.Location = new Point(300, 636);
+            speedSlider.Location = new Point(276, 659);
             speedSlider.Maximum = 200;
             speedSlider.Minimum = 10;
             speedSlider.Name = "speedSlider";
-            speedSlider.Size = new Size(200, 45);
+            speedSlider.Size = new Size(224, 45);
             speedSlider.TabIndex = 10;
             speedSlider.TickFrequency = 10;
             speedSlider.Value = 50;
@@ -392,7 +460,7 @@ namespace GifRGB565GUI
             // 
             // lblSpeed
             // 
-            lblSpeed.Location = new Point(510, 636);
+            lblSpeed.Location = new Point(506, 667);
             lblSpeed.Name = "lblSpeed";
             lblSpeed.Size = new Size(60, 30);
             lblSpeed.TabIndex = 9;
@@ -400,7 +468,7 @@ namespace GifRGB565GUI
             // 
             // btnNext
             // 
-            btnNext.Location = new Point(150, 676);
+            btnNext.Location = new Point(150, 699);
             btnNext.Name = "btnNext";
             btnNext.Size = new Size(120, 30);
             btnNext.TabIndex = 7;
@@ -410,7 +478,7 @@ namespace GifRGB565GUI
             // 
             // btnPrev
             // 
-            btnPrev.Location = new Point(12, 676);
+            btnPrev.Location = new Point(12, 699);
             btnPrev.Name = "btnPrev";
             btnPrev.Size = new Size(120, 30);
             btnPrev.TabIndex = 8;
@@ -422,7 +490,7 @@ namespace GifRGB565GUI
             // 
             chkLoop.Checked = true;
             chkLoop.CheckState = CheckState.Checked;
-            chkLoop.Location = new Point(300, 677);
+            chkLoop.Location = new Point(289, 699);
             chkLoop.Name = "chkLoop";
             chkLoop.Size = new Size(163, 30);
             chkLoop.TabIndex = 6;
@@ -433,47 +501,49 @@ namespace GifRGB565GUI
             // 
             chkDither.Checked = true;
             chkDither.CheckState = CheckState.Checked;
-            chkDither.Location = new Point(12, 394);
+            chkDither.Location = new Point(12, 323);
             chkDither.Name = "chkDither";
-            chkDither.Size = new Size(200, 30);
+            chkDither.Size = new Size(217, 30);
             chkDither.TabIndex = 5;
             chkDither.Text = "Dithering activado";
             chkDither.CheckedChanged += chkDither_CheckedChanged;
             // 
             // chkNoise
             // 
-            chkNoise.Location = new Point(220, 394);
+            chkNoise.Location = new Point(12, 351);
             chkNoise.Name = "chkNoise";
-            chkNoise.Size = new Size(200, 30);
+            chkNoise.Size = new Size(217, 30);
             chkNoise.TabIndex = 4;
-            chkNoise.Text = "Reducción de ruido";
+            chkNoise.Text = "Reducción de ruido desactivada";
             chkNoise.CheckedChanged += chkNoise_CheckedChanged;
             // 
             // chkSharpen
             // 
-            chkSharpen.Location = new Point(430, 394);
+            chkSharpen.Location = new Point(260, 323);
             chkSharpen.Name = "chkSharpen";
-            chkSharpen.Size = new Size(152, 30);
+            chkSharpen.Size = new Size(146, 30);
             chkSharpen.TabIndex = 3;
-            chkSharpen.Text = " Enfoque";
+            chkSharpen.Text = " Enfoque desactivado";
             chkSharpen.CheckedChanged += chkSharpen_CheckedChanged;
             // 
             // chkGzip
             // 
-            chkGzip.Location = new Point(300, 704);
+            chkGzip.Location = new Point(260, 355);
             chkGzip.Name = "chkGzip";
-            chkGzip.Size = new Size(137, 23);
+            chkGzip.Size = new Size(146, 23);
             chkGzip.TabIndex = 2;
             chkGzip.Text = "GZip (if applicable)";
             // 
             // btnSimulate
             // 
-            btnSimulate.Location = new Point(443, 699);
+            btnSimulate.BackColor = Color.Blue;
+            btnSimulate.ForeColor = Color.Yellow;
+            btnSimulate.Location = new Point(450, 698);
             btnSimulate.Name = "btnSimulate";
             btnSimulate.Size = new Size(120, 30);
             btnSimulate.TabIndex = 1;
             btnSimulate.Text = "Simular .h";
-            btnSimulate.UseVisualStyleBackColor = true;
+            btnSimulate.UseVisualStyleBackColor = false;
             btnSimulate.Click += btnSimulate_Click;
             // 
             // recentSeparator
@@ -483,15 +553,16 @@ namespace GifRGB565GUI
             // 
             // lblOutName
             // 
-            lblOutName.Location = new Point(170, 115);
+            lblOutName.Location = new Point(65, 64);
             lblOutName.Name = "lblOutName";
-            lblOutName.Size = new Size(80, 23);
+            lblOutName.Size = new Size(97, 23);
             lblOutName.TabIndex = 18;
             lblOutName.Text = "Nombre salida:";
+            lblOutName.TextAlign = ContentAlignment.MiddleCenter;
             // 
             // txtOutName
             // 
-            txtOutName.Location = new Point(260, 115);
+            txtOutName.Location = new Point(172, 62);
             txtOutName.Name = "txtOutName";
             txtOutName.Size = new Size(308, 23);
             txtOutName.TabIndex = 18;
@@ -499,7 +570,7 @@ namespace GifRGB565GUI
             // statusStrip1
             // 
             statusStrip1.Items.AddRange(new ToolStripItem[] { lblStatusDims, lblStatusFrames, lblStatusSize, lblStatusFormat });
-            statusStrip1.Location = new Point(0, 758);
+            statusStrip1.Location = new Point(0, 735);
             statusStrip1.Name = "statusStrip1";
             statusStrip1.Size = new Size(582, 22);
             statusStrip1.TabIndex = 19;
@@ -508,30 +579,31 @@ namespace GifRGB565GUI
             // lblStatusDims
             // 
             lblStatusDims.Name = "lblStatusDims";
-            lblStatusDims.Size = new Size(70, 17);
+            lblStatusDims.Size = new Size(62, 17);
             lblStatusDims.Text = "Sin frames";
             // 
             // lblStatusFrames
             // 
             lblStatusFrames.Name = "lblStatusFrames";
-            lblStatusFrames.Size = new Size(50, 17);
+            lblStatusFrames.Size = new Size(52, 17);
             lblStatusFrames.Text = "0 frames";
             // 
             // lblStatusSize
             // 
             lblStatusSize.Name = "lblStatusSize";
-            lblStatusSize.Size = new Size(50, 17);
+            lblStatusSize.Size = new Size(30, 17);
             lblStatusSize.Text = "0 KB";
             // 
             // lblStatusFormat
             // 
             lblStatusFormat.Name = "lblStatusFormat";
-            lblStatusFormat.Size = new Size(30, 17);
+            lblStatusFormat.Size = new Size(28, 17);
             lblStatusFormat.Text = "N64";
             // 
             // Form1
             // 
-            ClientSize = new Size(582, 780);
+            ClientSize = new Size(582, 757);
+            Controls.Add(grpRescale);
             Controls.Add(statusStrip1);
             Controls.Add(menuStrip1);
             Controls.Add(btnSimulate);
@@ -560,10 +632,13 @@ namespace GifRGB565GUI
             Text = "GIF → RGB565 Converter (AOUpdate Dark Theme)";
             menuStrip1.ResumeLayout(false);
             menuStrip1.PerformLayout();
-            statusStrip1.ResumeLayout(false);
-            statusStrip1.PerformLayout();
+            grpRescale.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)nudRescaleW).EndInit();
+            ((System.ComponentModel.ISupportInitialize)nudRescaleH).EndInit();
             ((System.ComponentModel.ISupportInitialize)picPreview).EndInit();
             ((System.ComponentModel.ISupportInitialize)speedSlider).EndInit();
+            statusStrip1.ResumeLayout(false);
+            statusStrip1.PerformLayout();
             ResumeLayout(false);
             PerformLayout();
         }
