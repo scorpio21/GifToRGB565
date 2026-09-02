@@ -15,6 +15,10 @@
 - **`picPreview_MouseWheel`:** Scroll arriba → `SizeMode.Zoom` (ajustado), scroll abajo → `SizeMode.CenterImage` (1:1 píxel real).
 - Permite alternar rápidamente entre vista completa y detalle a tamaño real.
 
+### Added — Carga de archivos PNG/JPG individuales
+- **Filtro ampliado:** El diálogo de apertura ahora acepta `.gif`, `.png`, `.jpg`, `.jpeg`.
+- **Selección automática:** Al abrir una imagen individual, carga la carpeta padre como secuencia de frames y selecciona el archivo clicado.
+
 ---
 
 ## [1.1.3] — 2026-09-02

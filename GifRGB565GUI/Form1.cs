@@ -285,8 +285,8 @@ namespace GifRGB565GUI
         {
             using (var dialog = new OpenFileDialog())
             {
-                dialog.Filter = "GIF Animado|*.gif|Carpeta de frames|*.*";
-                dialog.Title = "Selecciona un GIF o una carpeta";
+                dialog.Filter = "Imágenes|*.gif;*.png;*.jpg;*.jpeg|GIF Animado|*.gif|Carpeta de frames|*.*";
+                dialog.Title = "Selecciona un GIF, imagen o carpeta";
 
                 if (dialog.ShowDialog() == DialogResult.OK)
                 {
@@ -302,6 +302,25 @@ namespace GifRGB565GUI
                         usingGif = true;
                         txtFolder.Text = path;
                         Log($"GIF cargado: {path}");
+                        AddToRecentFiles(path);
+                    }
+                    else if (path.EndsWith(".png") || path.EndsWith(".jpg") || path.EndsWith(".jpeg"))
+                    {
+                        usingGif = false;
+                        framesFolder = Path.GetDirectoryName(path) ?? "";
+                        txtFolder.Text = framesFolder;
+                        Log($"Carpeta del frame: {framesFolder}");
+                        LoadFrames();
+
+                        // Seleccionar el archivo clicado
+                        string fileName = Path.GetFileName(path);
+                        int idx = lstFrames.Items.IndexOf(fileName);
+                        if (idx >= 0)
+                        {
+                            lstFrames.SelectedIndex = idx;
+                            currentFrameIndex = idx;
+                            picPreview.Image = Image.FromFile(path);
+                        }
                         AddToRecentFiles(path);
                     }
                     else
