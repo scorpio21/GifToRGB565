@@ -44,9 +44,10 @@ namespace GifRGB565GUI
             try
             {
                 var lastName = txtOutName?.Text?.Trim() ?? "";
+                var theme = ThemeManager.IsDark ? "dark" : "light";
                 var recent = LoadRecentFiles();
                 var recentJson = string.Join(",", recent.Select(r => $"\"{r.Replace("\\", "\\\\")}\""));
-                var json = $"{{\"lastName\":\"{lastName}\",\"recentFiles\":[{recentJson}]}}";
+                var json = $"{{\"lastName\":\"{lastName}\",\"theme\":\"{theme}\",\"recentFiles\":[{recentJson}]}}";
                 File.WriteAllText(ConfigPath, json);
             }
             catch { }
@@ -62,6 +63,15 @@ namespace GifRGB565GUI
                     var match = Regex.Match(json, "\"lastName\"\\s*:\\s*\"([^\"]*)\"");
                     if (match.Success && txtOutName != null)
                         txtOutName.Text = match.Groups[1].Value;
+
+                    var themeMatch = Regex.Match(json, "\"theme\"\\s*:\\s*\"(dark|light)\"");
+                    if (themeMatch.Success)
+                    {
+                        bool dark = themeMatch.Groups[1].Value == "dark";
+                        ThemeManager.ApplyTheme(this, dark);
+                        if (dark) oscuroToolStripMenuItem.Checked = true;
+                        else claroToolStripMenuItem.Checked = true;
+                    }
                 }
             }
             catch { }
@@ -97,8 +107,9 @@ namespace GifRGB565GUI
             try
             {
                 var lastName = txtOutName?.Text?.Trim() ?? "";
+                var theme = ThemeManager.IsDark ? "dark" : "light";
                 var recentJson = string.Join(",", recent.Select(r => $"\"{r.Replace("\\", "\\\\")}\""));
-                var json = $"{{\"lastName\":\"{lastName}\",\"recentFiles\":[{recentJson}]}}";
+                var json = $"{{\"lastName\":\"{lastName}\",\"theme\":\"{theme}\",\"recentFiles\":[{recentJson}]}}";
                 File.WriteAllText(ConfigPath, json);
             }
             catch { }
@@ -1075,6 +1086,28 @@ namespace GifRGB565GUI
                 chkSharpen.Text = "Enfoque activado";
             else
                 chkSharpen.Text = "Enfoque desactivado";
+        }
+
+        private void claroToolStripMenuItem_Click(object? sender, EventArgs e)
+        {
+            ThemeManager.ApplyTheme(this, false);
+            ClearCheckmarks(temaToolStripMenuItem);
+            claroToolStripMenuItem.Checked = true;
+            SaveConfig();
+        }
+
+        private void oscuroToolStripMenuItem_Click(object? sender, EventArgs e)
+        {
+            ThemeManager.ApplyTheme(this, true);
+            ClearCheckmarks(temaToolStripMenuItem);
+            oscuroToolStripMenuItem.Checked = true;
+            SaveConfig();
+        }
+
+        private void ClearCheckmarks(ToolStripMenuItem parent)
+        {
+            foreach (ToolStripMenuItem item in parent.DropDownItems)
+                item.Checked = false;
         }
     }
 }

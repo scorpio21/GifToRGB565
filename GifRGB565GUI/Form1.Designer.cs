@@ -28,6 +28,10 @@ namespace GifRGB565GUI
         private System.Windows.Forms.ToolStripMenuItem ayudaSharpenToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem ayudaGzipToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem acercaToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem verToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem temaToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem claroToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem oscuroToolStripMenuItem;
 
         private System.Windows.Forms.Button btnSelectFolder;
         private System.Windows.Forms.TextBox txtFolder;
@@ -83,6 +87,10 @@ namespace GifRGB565GUI
             ayudaSharpenToolStripMenuItem = new ToolStripMenuItem();
             ayudaGzipToolStripMenuItem = new ToolStripMenuItem();
             acercaToolStripMenuItem = new ToolStripMenuItem();
+            verToolStripMenuItem = new ToolStripMenuItem();
+            temaToolStripMenuItem = new ToolStripMenuItem();
+            claroToolStripMenuItem = new ToolStripMenuItem();
+            oscuroToolStripMenuItem = new ToolStripMenuItem();
             btnSelectFolder = new Button();
             txtFolder = new TextBox();
             btnGenerate = new Button();
@@ -113,7 +121,7 @@ namespace GifRGB565GUI
             // 
             // menuStrip1
             // 
-            menuStrip1.Items.AddRange(new ToolStripItem[] { archivoToolStripMenuItem, compresionToolStripMenuItem, utilidadesToolStripMenuItem, ayudaToolStripMenuItem });
+            menuStrip1.Items.AddRange(new ToolStripItem[] { archivoToolStripMenuItem, verToolStripMenuItem, compresionToolStripMenuItem, utilidadesToolStripMenuItem, ayudaToolStripMenuItem });
             menuStrip1.Location = new Point(0, 0);
             menuStrip1.Name = "menuStrip1";
             menuStrip1.Size = new Size(582, 24);
@@ -201,6 +209,34 @@ namespace GifRGB565GUI
             exportarFramesToolStripMenuItem.Size = new Size(209, 22);
             exportarFramesToolStripMenuItem.Text = "Exportar todos los Frames";
             exportarFramesToolStripMenuItem.Click += exportarFramesToolStripMenuItem_Click;
+            // 
+            // verToolStripMenuItem
+            // 
+            verToolStripMenuItem.Name = "verToolStripMenuItem";
+            verToolStripMenuItem.Size = new Size(35, 20);
+            verToolStripMenuItem.Text = "Ver";
+            verToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { temaToolStripMenuItem });
+            // 
+            // temaToolStripMenuItem
+            // 
+            temaToolStripMenuItem.Name = "temaToolStripMenuItem";
+            temaToolStripMenuItem.Size = new Size(160, 22);
+            temaToolStripMenuItem.Text = "Tema";
+            temaToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { claroToolStripMenuItem, oscuroToolStripMenuItem });
+            // 
+            // claroToolStripMenuItem
+            // 
+            claroToolStripMenuItem.Name = "claroToolStripMenuItem";
+            claroToolStripMenuItem.Size = new Size(160, 22);
+            claroToolStripMenuItem.Text = "Claro";
+            claroToolStripMenuItem.Click += claroToolStripMenuItem_Click;
+            // 
+            // oscuroToolStripMenuItem
+            // 
+            oscuroToolStripMenuItem.Name = "oscuroToolStripMenuItem";
+            oscuroToolStripMenuItem.Size = new Size(160, 22);
+            oscuroToolStripMenuItem.Text = "Oscuro";
+            oscuroToolStripMenuItem.Click += oscuroToolStripMenuItem_Click;
             // 
             // ayudaToolStripMenuItem
             // 
