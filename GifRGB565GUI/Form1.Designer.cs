@@ -153,7 +153,7 @@ namespace GifRGB565GUI
             menuStrip1.Items.AddRange(new ToolStripItem[] { archivoToolStripMenuItem, verToolStripMenuItem, compresionToolStripMenuItem, utilidadesToolStripMenuItem, ayudaToolStripMenuItem });
             menuStrip1.Location = new Point(0, 0);
             menuStrip1.Name = "menuStrip1";
-            menuStrip1.Size = new Size(1181, 24);
+            menuStrip1.Size = new Size(579, 24);
             menuStrip1.TabIndex = 0;
             // 
             // archivoToolStripMenuItem
@@ -361,7 +361,7 @@ namespace GifRGB565GUI
             // 
             cmbGzipLevel.DropDownStyle = ComboBoxStyle.DropDownList;
             cmbGzipLevel.Items.AddRange(new object[] { "Rápido", "Normal", "Máxima" });
-            cmbGzipLevel.Location = new Point(791, 221);
+            cmbGzipLevel.Location = new Point(393, 355);
             cmbGzipLevel.Name = "cmbGzipLevel";
             cmbGzipLevel.Size = new Size(100, 23);
             cmbGzipLevel.TabIndex = 24;
@@ -579,7 +579,7 @@ namespace GifRGB565GUI
             statusStrip1.Items.AddRange(new ToolStripItem[] { lblStatusDims, lblStatusFrames, lblStatusSize, lblStatusFormat, lblVersion });
             statusStrip1.Location = new Point(0, 732);
             statusStrip1.Name = "statusStrip1";
-            statusStrip1.Size = new Size(1181, 22);
+            statusStrip1.Size = new Size(579, 22);
             statusStrip1.TabIndex = 19;
             statusStrip1.Text = "statusStrip1";
             // 
@@ -616,7 +616,7 @@ namespace GifRGB565GUI
             // 
             // Form1
             // 
-            ClientSize = new Size(1181, 754);
+            ClientSize = new Size(579, 754);
             Controls.Add(cmbGzipLevel);
             Controls.Add(btnCancelar);
             Controls.Add(statusStrip1);

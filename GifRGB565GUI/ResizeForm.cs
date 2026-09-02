@@ -21,22 +21,24 @@ namespace GifRGB565GUI
         private CheckBox chkRemember;
         private Panel panelToolbar;
         private Panel panelOptions;
-        private Label lblWidth;
-        private Label lblHeight;
-        private Label lblPercent;
-        private Label lblMethodTitle;
-        private Label lblAspectTitle;
+
+        private Label lblResultTitle;
+        private PictureBox picResult;
+        private Label lblResultInfo;
+        private Panel panelResult;
 
         private Bitmap? originalBmp;
         private Bitmap? resizedBmp;
         private string currentFilePath = "";
+        private int originalWidth;
+        private int originalHeight;
 
         public ResizeForm()
         {
             Text = "Redimensionar imágenes";
-            Size = new Size(700, 750);
+            Size = new Size(750, 850);
             StartPosition = FormStartPosition.CenterParent;
-            MinimumSize = new Size(600, 500);
+            MinimumSize = new Size(650, 600);
             AllowDrop = true;
             DragEnter += ResizeForm_DragEnter;
             DragDrop += ResizeForm_DragDrop;
@@ -69,35 +71,78 @@ namespace GifRGB565GUI
                 Text = "Arrastra una imagen aquí o haz clic en 'Abrir imagen'"
             };
 
+            // Result panel (below options, like ezgif "Imagen redimensionada:")
+            panelResult = new Panel
+            {
+                Dock = DockStyle.Bottom,
+                Height = 160,
+                BackColor = Color.FromArgb(35, 35, 45),
+                Padding = new Padding(15),
+                Visible = false
+            };
+
+            lblResultTitle = new Label
+            {
+                Text = "Imagen redimensionada:",
+                Dock = DockStyle.Top,
+                Height = 25,
+                Font = new Font("Segoe UI", 11, FontStyle.Bold),
+                ForeColor = Color.White,
+                TextAlign = ContentAlignment.MiddleLeft
+            };
+
+            picResult = new PictureBox
+            {
+                Location = new Point(15, 30),
+                Size = new Size(64, 64),
+                SizeMode = PictureBoxSizeMode.Zoom,
+                BorderStyle = BorderStyle.FixedSingle,
+                BackColor = Color.Black
+            };
+
+            lblResultInfo = new Label
+            {
+                Location = new Point(90, 35),
+                AutoSize = false,
+                Size = new Size(580, 100),
+                ForeColor = Color.White,
+                Font = new Font("Segoe UI", 9),
+                Text = ""
+            };
+
+            panelResult.Controls.Add(lblResultTitle);
+            panelResult.Controls.Add(picResult);
+            panelResult.Controls.Add(lblResultInfo);
+
             // Options panel
             panelOptions = new Panel
             {
                 Dock = DockStyle.Bottom,
-                Height = 220,
+                Height = 210,
                 BackColor = Color.FromArgb(35, 35, 45),
                 Padding = new Padding(15)
             };
 
             // Width
-            lblWidth = new Label { Text = "↔ Ancho:", AutoSize = true, Location = new Point(15, 15), ForeColor = Color.White };
+            var lblW = new Label { Text = "↔ Ancho:", AutoSize = true, Location = new Point(15, 15), ForeColor = Color.White };
             txtWidth = new TextBox { Location = new Point(95, 12), Width = 80 };
-            var lblWidthHint = new Label { Text = "(Vacío = automático)", AutoSize = true, Location = new Point(185, 15), ForeColor = Color.Gray };
+            var lblWHint = new Label { Text = "(Vacío = automático)", AutoSize = true, Location = new Point(185, 15), ForeColor = Color.Gray };
 
             // Height
-            lblHeight = new Label { Text = "↑ Altura:", AutoSize = true, Location = new Point(15, 45), ForeColor = Color.White };
+            var lblH = new Label { Text = "↑ Altura:", AutoSize = true, Location = new Point(15, 45), ForeColor = Color.White };
             txtHeight = new TextBox { Location = new Point(95, 42), Width = 80 };
-            var lblHeightHint = new Label { Text = "(Vacío = automático)", AutoSize = true, Location = new Point(185, 45), ForeColor = Color.Gray };
+            var lblHHint = new Label { Text = "(Vacío = automático)", AutoSize = true, Location = new Point(185, 45), ForeColor = Color.Gray };
 
             // Percentage
-            lblPercent = new Label { Text = "Porcentaje:", AutoSize = true, Location = new Point(15, 75), ForeColor = Color.White };
+            var lblPct = new Label { Text = "Porcentaje:", AutoSize = true, Location = new Point(15, 75), ForeColor = Color.White };
             txtPercent = new TextBox { Location = new Point(95, 72), Width = 80 };
 
             // Resize method
-            lblMethodTitle = new Label { Text = "Método de redimensionamiento:", AutoSize = true, Location = new Point(15, 110), ForeColor = Color.White };
+            var lblM = new Label { Text = "Método de redimensionamiento:", AutoSize = true, Location = new Point(15, 105), ForeColor = Color.White };
             cmbMethod = new ComboBox
             {
                 DropDownStyle = ComboBoxStyle.DropDownList,
-                Location = new Point(15, 130),
+                Location = new Point(15, 125),
                 Width = 350,
                 Items = {
                     "Redimensionar (Bicúbica, calidad)",
@@ -112,11 +157,11 @@ namespace GifRGB565GUI
             };
 
             // Aspect ratio
-            lblAspectTitle = new Label { Text = "Si la relación de aspecto no coincide:", AutoSize = true, Location = new Point(400, 110), ForeColor = Color.White };
+            var lblA = new Label { Text = "Si la relación de aspecto no coincide:", AutoSize = true, Location = new Point(400, 105), ForeColor = Color.White };
             cmbAspect = new ComboBox
             {
                 DropDownStyle = ComboBoxStyle.DropDownList,
-                Location = new Point(400, 130),
+                Location = new Point(400, 125),
                 Width = 250,
                 Items = {
                     "Centro y recorte para ajustarse",
@@ -131,7 +176,7 @@ namespace GifRGB565GUI
             btnResize = new Button
             {
                 Text = "¡Redimensiona la imagen!",
-                Location = new Point(15, 170),
+                Location = new Point(15, 165),
                 Size = new Size(180, 35),
                 BackColor = Color.FromArgb(0, 120, 215),
                 ForeColor = Color.White,
@@ -144,19 +189,19 @@ namespace GifRGB565GUI
             btnCrop = new Button
             {
                 Text = "Cortar",
-                Location = new Point(210, 170),
+                Location = new Point(210, 165),
                 Size = new Size(100, 35),
                 BackColor = Color.FromArgb(60, 60, 70),
                 ForeColor = Color.White,
                 FlatStyle = FlatStyle.Flat,
-                Cursor = Cursors.Hand
+                Cursor = Cursors.Hand,
+                Enabled = false
             };
-            btnCrop.Enabled = false;
 
             btnSave = new Button
             {
                 Text = "Guardar",
-                Location = new Point(320, 170),
+                Location = new Point(320, 165),
                 Size = new Size(100, 35),
                 BackColor = Color.FromArgb(60, 60, 70),
                 ForeColor = Color.White,
@@ -170,29 +215,30 @@ namespace GifRGB565GUI
             {
                 Text = "Recuerda los ajustes",
                 AutoSize = true,
-                Location = new Point(440, 177),
+                Location = new Point(440, 172),
                 ForeColor = Color.White
             };
 
-            // Wire events
+            // Wire events — Width/Height only update Percentage (no auto-linked)
             txtWidth.TextChanged += TxtWidth_TextChanged;
             txtHeight.TextChanged += TxtHeight_TextChanged;
             txtPercent.TextChanged += TxtPercent_TextChanged;
 
             // Add controls to options panel
             panelOptions.Controls.AddRange(new Control[] {
-                lblWidth, txtWidth, lblWidthHint,
-                lblHeight, txtHeight, lblHeightHint,
-                lblPercent, txtPercent,
-                lblMethodTitle, cmbMethod,
-                lblAspectTitle, cmbAspect,
+                lblW, txtWidth, lblWHint,
+                lblH, txtHeight, lblHHint,
+                lblPct, txtPercent,
+                lblM, cmbMethod,
+                lblA, cmbAspect,
                 btnResize, btnCrop, btnSave, chkRemember
             });
 
-            // Add controls to form
+            // Add controls to form (order matters for docking)
             Controls.Add(picPreview);
             Controls.Add(panelToolbar);
             Controls.Add(lblFileInfo);
+            Controls.Add(panelResult);
             Controls.Add(panelOptions);
         }
 
@@ -241,19 +287,24 @@ namespace GifRGB565GUI
                 originalBmp?.Dispose();
                 originalBmp = new Bitmap(path);
                 currentFilePath = path;
+                originalWidth = originalBmp.Width;
+                originalHeight = originalBmp.Height;
                 picPreview.Image = originalBmp;
 
                 string ext = Path.GetExtension(path).ToLower();
                 long size = new FileInfo(path).Length;
                 string sizeStr = size > 1024 * 1024 ? $"{size / (1024.0 * 1024.0):F2}MiB" : $"{size / 1024.0:F2}KiB";
 
-                lblFileInfo.Text = $"Tamaño del archivo: {sizeStr}, ancho: {originalBmp.Width}px, altura: {originalBmp.Height}px, tipo: {ext.TrimStart('.')}";
+                lblFileInfo.Text = $"Tamaño del archivo: {sizeStr}, ancho: {originalWidth}px, altura: {originalHeight}px, tipo: {ext.TrimStart('.')}";
 
-                txtWidth.Text = originalBmp.Width.ToString();
-                txtHeight.Text = originalBmp.Height.ToString();
+                suppressEvents = true;
+                txtWidth.Text = originalWidth.ToString();
+                txtHeight.Text = originalHeight.ToString();
                 txtPercent.Text = "100";
+                suppressEvents = false;
 
                 btnSave.Enabled = false;
+                panelResult.Visible = false;
             }
             catch (Exception ex)
             {
@@ -269,9 +320,7 @@ namespace GifRGB565GUI
             if (int.TryParse(txtWidth.Text, out int w) && w > 0)
             {
                 suppressEvents = true;
-                double ratio = (double)originalBmp.Height / originalBmp.Width;
-                txtHeight.Text = ((int)(w * ratio)).ToString();
-                double pct = (double)w / originalBmp.Width * 100;
+                double pct = (double)w / originalWidth * 100;
                 txtPercent.Text = ((int)pct).ToString();
                 suppressEvents = false;
             }
@@ -283,9 +332,7 @@ namespace GifRGB565GUI
             if (int.TryParse(txtHeight.Text, out int h) && h > 0)
             {
                 suppressEvents = true;
-                double ratio = (double)originalBmp.Width / originalBmp.Height;
-                txtWidth.Text = ((int)(h * ratio)).ToString();
-                double pct = (double)h / originalBmp.Height * 100;
+                double pct = (double)h / originalHeight * 100;
                 txtPercent.Text = ((int)pct).ToString();
                 suppressEvents = false;
             }
@@ -297,8 +344,8 @@ namespace GifRGB565GUI
             if (double.TryParse(txtPercent.Text, out double pct) && pct > 0)
             {
                 suppressEvents = true;
-                txtWidth.Text = ((int)(originalBmp.Width * pct / 100)).ToString();
-                txtHeight.Text = ((int)(originalBmp.Height * pct / 100)).ToString();
+                txtWidth.Text = ((int)(originalWidth * pct / 100)).ToString();
+                txtHeight.Text = ((int)(originalHeight * pct / 100)).ToString();
                 suppressEvents = false;
             }
         }
@@ -320,7 +367,7 @@ namespace GifRGB565GUI
             var method = cmbMethod.SelectedIndex;
             resizedBmp?.Dispose();
 
-            if (method <= 2) // Redimensionar con distintos métodos
+            if (method <= 2)
             {
                 resizedBmp = new Bitmap(w, h);
                 using var g = Graphics.FromImage(resizedBmp);
@@ -377,10 +424,25 @@ namespace GifRGB565GUI
             picPreview.Image = resizedBmp;
             btnSave.Enabled = true;
 
-            string ext = Path.GetExtension(currentFilePath).ToLower();
-            lblFileInfo.Text = $"Redimensionado: {w}x{h} | Método: {cmbMethod.SelectedItem} | Tipo: {ext.TrimStart('.')}";
+            // Show result panel like ezgif
+            picResult.Image?.Dispose();
+            picResult.Image = resizedBmp != null ? new Bitmap(resizedBmp) : null;
 
-            Log($"Imagen redimensionada: {w}x{h} ({cmbMethod.SelectedItem})");
+            string ext = Path.GetExtension(currentFilePath).ToLower();
+            long origSize = currentFilePath.Length > 0 ? new FileInfo(currentFilePath).Length : 0;
+            string origSizeStr = origSize > 1024 ? $"{origSize / 1024.0:F2}KiB" : $"{origSize}B";
+
+            using var ms = new MemoryStream();
+            resizedBmp?.Save(ms, System.Drawing.Imaging.ImageFormat.Png);
+            long newSize = ms.Length;
+            string newSizeStr = newSize > 1024 ? $"{newSize / 1024.0:F2}KiB" : $"{newSize}B";
+            double reduction = origSize > 0 ? (1.0 - (double)newSize / origSize) * 100 : 0;
+
+            string reductionStr = reduction > 0 ? $"( {reduction:F1}% )" : "";
+
+            lblResultInfo.Text = $"Tamaño del archivo: {newSizeStr} {reductionStr}  ancho: {w}px, altura: {h}px, tipo: {ext.TrimStart('.')}";
+
+            panelResult.Visible = true;
         }
 
         private void BtnSave_Click(object? sender, EventArgs e)
@@ -404,19 +466,14 @@ namespace GifRGB565GUI
                 };
                 resizedBmp.Save(dlg.FileName, format);
                 lblFileInfo.Text = $"Guardado: {dlg.FileName}";
-                Log($"Imagen guardada: {dlg.FileName}");
             }
-        }
-
-        private void Log(string msg)
-        {
-            lblFileInfo.Text = msg;
         }
 
         protected override void OnFormClosing(FormClosingEventArgs e)
         {
             originalBmp?.Dispose();
             resizedBmp?.Dispose();
+            picResult.Image?.Dispose();
             base.OnFormClosing(e);
         }
     }
