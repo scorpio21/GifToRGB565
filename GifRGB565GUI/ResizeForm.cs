@@ -1,9 +1,9 @@
 using System;
 using System.Drawing;
-using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Windows.Forms;
+using ImageMagick;
 
 namespace GifRGB565GUI
 {
@@ -13,11 +13,11 @@ namespace GifRGB565GUI
         private Bitmap? resizedBmp;
         private string currentFilePath = "";
 
-        private Image? gifImage;
-        private FrameDimension? gifFrameDimension;
-        private int gifFrameCount = 0;
-        private int[]? gifFrameDelays;
+        private MagickImage? magickImage;
+        private MagickImageCollection? magickCollection;
         private bool isGif = false;
+        private int[]? gifFrameDelays;
+        private int gifFrameCount = 0;
 
         public ResizeForm()
         {
@@ -58,48 +58,31 @@ namespace GifRGB565GUI
         {
             try
             {
-                CleanupGif();
-
+                Cleanup();
                 currentFilePath = path;
                 string ext = Path.GetExtension(path).ToLower();
                 long size = new FileInfo(path).Length;
-                string sizeStr = size > 1024 * 1024 ? $"{size / (1024.0 * 1024.0):F2}MiB" : $"{size / 1024.0:F2}KiB";
+                string sizeStr = size > 1024 * 1024
+                    ? $"{size / (1024.0 * 1024.0):F2}MiB"
+                    : $"{size / 1024.0:F2}KiB";
 
                 if (ext == ".gif")
                 {
                     isGif = true;
-                    gifImage = Image.FromFile(path);
-                    gifFrameDimension = new FrameDimension(gifImage.FrameDimensionsList[0]);
-                    gifFrameCount = gifImage.GetFrameCount(gifFrameDimension);
-
-                    gifFrameDelays = GetGifFrameDelays(gifImage, gifFrameCount);
-
-                    int totalMs = 0;
-                    foreach (int d in gifFrameDelays) totalMs += d;
-                    TimeSpan ts = TimeSpan.FromMilliseconds(totalMs * 10);
-
-                    lblFileInfo.Text = $"Tamaño del archivo: {sizeStr}, ancho: {gifImage.Width}px, altura: {gifImage.Height}px, fotogramas: {gifFrameCount}, tipo: gif, longitud: {ts.Minutes:D2}:{ts.Seconds:D2}.{ts.Milliseconds / 100}";
-
-                    originalBmp?.Dispose();
-                    originalBmp = new Bitmap(gifImage.Width, gifImage.Height);
-                    using (var g = Graphics.FromImage(originalBmp))
-                        g.DrawImage(gifImage, 0, 0, gifImage.Width, gifImage.Height);
-
-                    picPreview.Image = gifImage;
-                    txtWidth.Text = gifImage.Width.ToString();
-                    txtHeight.Text = gifImage.Height.ToString();
+                    LoadGif(path, sizeStr);
                 }
                 else
                 {
                     isGif = false;
+                    magickImage = new MagickImage(path);
                     originalBmp?.Dispose();
-                    originalBmp = new Bitmap(path);
+                    originalBmp = magickImage.ToBitmap();
                     picPreview.Image = originalBmp;
 
-                    lblFileInfo.Text = $"Tamaño del archivo: {sizeStr}, ancho: {originalBmp.Width}px, altura: {originalBmp.Height}px, tipo: {ext.TrimStart('.')}";
+                    lblFileInfo.Text = $"Tamaño del archivo: {sizeStr}, ancho: {magickImage.Width}px, altura: {magickImage.Height}px, tipo: {ext.TrimStart('.')}";
 
-                    txtWidth.Text = originalBmp.Width.ToString();
-                    txtHeight.Text = originalBmp.Height.ToString();
+                    txtWidth.Text = magickImage.Width.ToString();
+                    txtHeight.Text = magickImage.Height.ToString();
                 }
 
                 suppressEvents = true;
@@ -115,40 +98,43 @@ namespace GifRGB565GUI
             }
         }
 
-        private int[] GetGifFrameDelays(Image img, int frameCount)
+        private void LoadGif(string path, string sizeStr)
         {
-            var delays = new int[frameCount];
-            try
+            magickCollection = new MagickImageCollection();
+            magickCollection.Read(path);
+
+            gifFrameCount = magickCollection.Count;
+            gifFrameDelays = new int[gifFrameCount];
+
+            for (int i = 0; i < gifFrameCount; i++)
             {
-                var prop = img.GetPropertyItem(0x5100);
-                if (prop.Value != null)
-                {
-                    for (int i = 0; i < frameCount; i++)
-                    {
-                        delays[i] = BitConverter.ToInt32(prop.Value, i * 4);
-                        if (delays[i] < 1) delays[i] = 1;
-                    }
-                }
-                else
-                {
-                    for (int i = 0; i < frameCount; i++)
-                        delays[i] = 10;
-                }
+                int delay = (int)magickCollection[i].AnimationDelay;
+                gifFrameDelays[i] = Math.Max(1, delay);
             }
-            catch
-            {
-                for (int i = 0; i < frameCount; i++)
-                    delays[i] = 10;
-            }
-            return delays;
+
+            int totalCs = 0;
+            foreach (int d in gifFrameDelays) totalCs += d;
+            TimeSpan ts = TimeSpan.FromSeconds(totalCs / 100.0);
+
+            var first = (MagickImage)magickCollection[0];
+            lblFileInfo.Text = $"Tamaño del archivo: {sizeStr}, ancho: {first.Page.Width}px, altura: {first.Page.Height}px, fotogramas: {gifFrameCount}, tipo: gif, longitud: {ts.Minutes:D2}:{ts.Seconds:D2}.{ts.Milliseconds / 100}";
+
+            magickImage = new MagickImage(path);
+            originalBmp?.Dispose();
+            originalBmp = magickImage.ToBitmap();
+            picPreview.Image = originalBmp;
+
+            txtWidth.Text = magickImage.Width.ToString();
+            txtHeight.Text = magickImage.Height.ToString();
         }
 
         private bool suppressEvents = false;
 
         private void txtWidth_TextChanged(object? sender, EventArgs e)
         {
-            if (suppressEvents || originalBmp == null) return;
-            int origW = isGif && gifImage != null ? gifImage.Width : originalBmp.Width;
+            if (suppressEvents) return;
+            int origW = GetOriginalWidth();
+            if (origW <= 0) return;
             if (int.TryParse(txtWidth.Text, out int w) && w > 0)
             {
                 suppressEvents = true;
@@ -160,8 +146,9 @@ namespace GifRGB565GUI
 
         private void txtHeight_TextChanged(object? sender, EventArgs e)
         {
-            if (suppressEvents || originalBmp == null) return;
-            int origH = isGif && gifImage != null ? gifImage.Height : originalBmp.Height;
+            if (suppressEvents) return;
+            int origH = GetOriginalHeight();
+            if (origH <= 0) return;
             if (int.TryParse(txtHeight.Text, out int h) && h > 0)
             {
                 suppressEvents = true;
@@ -174,9 +161,8 @@ namespace GifRGB565GUI
         private void txtPercent_TextChanged(object? sender, EventArgs e)
         {
             if (suppressEvents) return;
-            int origW = 0, origH = 0;
-            if (isGif && gifImage != null) { origW = gifImage.Width; origH = gifImage.Height; }
-            else if (originalBmp != null) { origW = originalBmp.Width; origH = originalBmp.Height; }
+            int origW = GetOriginalWidth();
+            int origH = GetOriginalHeight();
             if (origW <= 0 || origH <= 0) return;
 
             if (double.TryParse(txtPercent.Text, out double pct) && pct > 0)
@@ -188,9 +174,27 @@ namespace GifRGB565GUI
             }
         }
 
+        private int GetOriginalWidth()
+        {
+            if (magickCollection != null && gifFrameCount > 0)
+                return (int)((MagickImage)magickCollection[0]).Page.Width;
+            if (magickImage != null) return (int)magickImage.Width;
+            if (originalBmp != null) return originalBmp.Width;
+            return 0;
+        }
+
+        private int GetOriginalHeight()
+        {
+            if (magickCollection != null && gifFrameCount > 0)
+                return (int)((MagickImage)magickCollection[0]).Page.Height;
+            if (magickImage != null) return (int)magickImage.Height;
+            if (originalBmp != null) return originalBmp.Height;
+            return 0;
+        }
+
         private void BtnResize_Click(object? sender, EventArgs e)
         {
-            if (originalBmp == null && gifImage == null)
+            if (magickImage == null && originalBmp == null)
             {
                 MessageBox.Show("No hay imagen cargada.", "Redimensionar", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
@@ -202,23 +206,20 @@ namespace GifRGB565GUI
                 return;
             }
 
-            if (isGif && gifImage != null && gifFrameCount > 1)
-            {
+            if (isGif && magickCollection != null && gifFrameCount > 1)
                 ResizeAnimatedGif(w, h);
-            }
             else
-            {
                 ResizeStaticImage(w, h);
-            }
         }
 
         private void ResizeStaticImage(int w, int h)
         {
-            if (originalBmp == null) return;
-            int method = cmbMethod.SelectedIndex;
+            if (magickImage == null) return;
 
             resizedBmp?.Dispose();
-            resizedBmp = ApplyResize(originalBmp, w, h, method);
+            using var clone = (MagickImage)magickImage.Clone();
+            ApplyResizeMagickInPlace(clone, w, h);
+            resizedBmp = clone.ToBitmap();
 
             picPreview.Image = resizedBmp;
             btnSave.Enabled = true;
@@ -227,45 +228,37 @@ namespace GifRGB565GUI
 
         private void ResizeAnimatedGif(int w, int h)
         {
-            if (gifImage == null || gifFrameDimension == null || gifFrameDelays == null) return;
-
-            int method = cmbMethod.SelectedIndex;
-            int origW = gifImage.Width;
-            int origH = gifImage.Height;
-
-            var frames = new Bitmap[gifFrameCount];
+            if (magickCollection == null) return;
 
             try
             {
-                for (int i = 0; i < gifFrameCount; i++)
-                {
-                    gifImage.SelectActiveFrame(gifFrameDimension, i);
-                    using var frameBmp = new Bitmap(origW, origH);
-                    using (var g = Graphics.FromImage(frameBmp))
-                        g.DrawImage(gifImage, 0, 0, origW, origH);
+                using var collection = (MagickImageCollection)magickCollection.Clone();
+                collection.Coalesce();
 
-                    frames[i] = ApplyResize(frameBmp, w, h, method);
+                foreach (IMagickImage<byte> frame in collection)
+                {
+                    ApplyResizeMagickInPlace((MagickImage)frame, w, h);
                 }
 
                 var resultPath = Path.Combine(Path.GetTempPath(), $"resize_preview_{Guid.NewGuid():N}.gif");
-                SaveAnimatedGif(frames, gifFrameDelays, resultPath);
+                collection.Write(resultPath);
 
-                byte[] gifBytes = File.ReadAllBytes(resultPath);
-                CleanupGif();
-                var ms = new MemoryStream(gifBytes);
-                gifImage = Image.FromStream(ms);
-                gifFrameDimension = new FrameDimension(gifImage.FrameDimensionsList[0]);
-                gifFrameCount = gifImage.GetFrameCount(gifFrameDimension);
+                Cleanup();
+                isGif = true;
+                currentFilePath = resultPath;
+
+                magickCollection = new MagickImageCollection();
+                magickCollection.Read(resultPath);
+                gifFrameCount = magickCollection.Count;
+                gifFrameDelays = new int[gifFrameCount];
+                for (int i = 0; i < gifFrameCount; i++)
+                    gifFrameDelays[i] = Math.Max(1, (int)magickCollection[i].AnimationDelay);
+
+                magickImage = new MagickImage(resultPath);
 
                 resizedBmp?.Dispose();
-                resizedBmp = new Bitmap(w, h);
-                using (var g = Graphics.FromImage(resizedBmp))
-                    g.DrawImage(frames[0], 0, 0, w, h);
-
-                picPreview.Image = gifImage;
-
-                for (int i = 0; i < frames.Length; i++)
-                    frames[i].Dispose();
+                resizedBmp = magickImage.ToBitmap();
+                picPreview.Image = resizedBmp;
 
                 btnSave.Enabled = true;
                 ShowResultPanel(w, h);
@@ -273,92 +266,43 @@ namespace GifRGB565GUI
             catch (Exception ex)
             {
                 MessageBox.Show($"Error redimensionando GIF: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                for (int i = 0; i < frames.Length; i++)
-                    frames[i]?.Dispose();
             }
         }
 
-        private Bitmap ApplyResize(Bitmap source, int w, int h, int method)
+        private void ApplyResizeMagickInPlace(MagickImage img, int targetW, int targetH)
         {
-            if (method <= 2)
-            {
-                var bmp = new Bitmap(w, h);
-                using var g = Graphics.FromImage(bmp);
-                g.InterpolationMode = method switch
-                {
-                    1 => InterpolationMode.HighQualityBilinear,
-                    2 => InterpolationMode.NearestNeighbor,
-                    _ => InterpolationMode.HighQualityBicubic
-                };
-                g.DrawImage(source, 0, 0, w, h);
-                return bmp;
-            }
-            else if (method == 3) // Centrar y recortar
-            {
-                double scaleX = (double)w / source.Width;
-                double scaleY = (double)h / source.Height;
-                double scale = Math.Max(scaleX, scaleY);
-                int sw = (int)(source.Width * scale);
-                int sh = (int)(source.Height * scale);
-                var bmp = new Bitmap(w, h);
-                using var g = Graphics.FromImage(bmp);
-                g.InterpolationMode = InterpolationMode.HighQualityBicubic;
-                g.DrawImage(source, (w - sw) / 2, (h - sh) / 2, sw, sh);
-                return bmp;
-            }
-            else if (method == 4) // Estirar
-            {
-                var bmp = new Bitmap(w, h);
-                using var g = Graphics.FromImage(bmp);
-                g.InterpolationMode = InterpolationMode.HighQualityBicubic;
-                g.DrawImage(source, 0, 0, w, h);
-                return bmp;
-            }
-            else if (method == 5) // Forzar aspect ratio
-            {
-                double ratio = (double)source.Width / source.Height;
-                int nw = w;
-                int nh = (int)(w / ratio);
-                if (nh > h) { nh = h; nw = (int)(h * ratio); }
-                var bmp = new Bitmap(w, h);
-                using var g = Graphics.FromImage(bmp);
-                g.InterpolationMode = InterpolationMode.HighQualityBicubic;
-                g.Clear(Color.Transparent);
-                g.DrawImage(source, (w - nw) / 2, (h - nh) / 2, nw, nh);
-                return bmp;
-            }
-            else // Relleno transparente
-            {
-                var bmp = new Bitmap(w, h);
-                using var g = Graphics.FromImage(bmp);
-                g.InterpolationMode = InterpolationMode.HighQualityBicubic;
-                g.Clear(Color.Transparent);
-                int ox = (w - source.Width) / 2;
-                int oy = (h - source.Height) / 2;
-                g.DrawImage(source, ox, oy, source.Width, source.Height);
-                return bmp;
-            }
-        }
+            int method = cmbMethod.SelectedIndex;
+            int aspect = cmbAspect.SelectedIndex;
 
-        private void SaveAnimatedGif(Bitmap[] frames, int[] delays, string path)
-        {
-            if (frames.Length == 0) return;
-
-            var palette = GifEncoder.BuildPalette(frames, 256);
-
-            using var fs = new FileStream(path, FileMode.Create);
-            var encoder = new GifEncoder(fs);
-
-            encoder.WriteHeader(frames[0].Width, frames[0].Height, palette);
-            encoder.WriteNetscapeExtension(0);
-
-            for (int i = 0; i < frames.Length; i++)
+            var filterType = method switch
             {
-                int delay = delays[i / (delays.Length / frames.Length)];
-                encoder.WriteFrame(frames[i], delay, palette);
-            }
+                1 => FilterType.Triangle,
+                2 => FilterType.Point,
+                _ => FilterType.Lanczos
+            };
 
-            encoder.WriteTrailer();
+            if (aspect == 1)
+            {
+                var geo = new MagickGeometry((uint)targetW, (uint)targetH) { IgnoreAspectRatio = true };
+                img.Resize(geo, filterType);
+            }
+            else if (aspect == 2)
+            {
+                var geo = new MagickGeometry((uint)targetW, (uint)targetH) { IgnoreAspectRatio = false };
+                img.Resize(geo, filterType);
+            }
+            else if (aspect == 3)
+            {
+                var geo = new MagickGeometry($"{targetW}x{targetH}^");
+                img.Resize(geo, filterType);
+                img.Crop((uint)targetW, (uint)targetH, Gravity.Center);
+                img.Page = new MagickGeometry(0, 0, (uint)targetW, (uint)targetH);
+            }
+            else
+            {
+                var geo = new MagickGeometry((uint)targetW, (uint)targetH) { IgnoreAspectRatio = false };
+                img.Resize(geo, filterType);
+            }
         }
 
         private void ShowResultPanel(int w, int h)
@@ -367,12 +311,17 @@ namespace GifRGB565GUI
             picResult.Image = resizedBmp != null ? new Bitmap(resizedBmp) : null;
 
             string ext = Path.GetExtension(currentFilePath).ToLower();
-            long origSize = currentFilePath.Length > 0 ? new FileInfo(currentFilePath).Length : 0;
+            long origSize = currentFilePath.Length > 0 && File.Exists(currentFilePath)
+                ? new FileInfo(currentFilePath).Length : 0;
             string origSizeStr = origSize > 1024 ? $"{origSize / 1024.0:F2}KiB" : $"{origSize}B";
 
-            using var ms = new MemoryStream();
-            resizedBmp?.Save(ms, ImageFormat.Png);
-            long newSize = ms.Length;
+            long newSize = 0;
+            if (resizedBmp != null)
+            {
+                using var ms = new MemoryStream();
+                resizedBmp.Save(ms, ImageFormat.Png);
+                newSize = ms.Length;
+            }
             string newSizeStr = newSize > 1024 ? $"{newSize / 1024.0:F2}KiB" : $"{newSize}B";
             double reduction = origSize > 0 ? (1.0 - (double)newSize / origSize) * 100 : 0;
             string reductionStr = reduction > 0 ? $"( {reduction:F1}% )" : "";
@@ -405,22 +354,20 @@ namespace GifRGB565GUI
             }
         }
 
-        private void CleanupGif()
+        private void Cleanup()
         {
-            if (gifImage != null)
-            {
-                gifImage.Dispose();
-                gifImage = null;
-            }
-            gifFrameDimension = null;
-            gifFrameCount = 0;
+            magickImage?.Dispose();
+            magickImage = null;
+            magickCollection?.Dispose();
+            magickCollection = null;
             gifFrameDelays = null;
+            gifFrameCount = 0;
             isGif = false;
         }
 
         protected override void OnFormClosing(FormClosingEventArgs e)
         {
-            CleanupGif();
+            Cleanup();
             originalBmp?.Dispose();
             resizedBmp?.Dispose();
             picResult.Image?.Dispose();
