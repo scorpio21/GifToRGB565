@@ -29,6 +29,7 @@ namespace GifRGB565GUI
         private System.Windows.Forms.ToolStripMenuItem ayudaGzipToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem ayudaDragDropToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem ayudaRescaleToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem ayudaAtajosToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem acercaToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem verToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem temaToolStripMenuItem;
@@ -107,6 +108,7 @@ namespace GifRGB565GUI
             ayudaGzipToolStripMenuItem = new ToolStripMenuItem();
             ayudaDragDropToolStripMenuItem = new ToolStripMenuItem();
             ayudaRescaleToolStripMenuItem = new ToolStripMenuItem();
+            ayudaAtajosToolStripMenuItem = new ToolStripMenuItem();
             acercaToolStripMenuItem = new ToolStripMenuItem();
             grpRescale = new GroupBox();
             cmbRescalePreset = new ComboBox();
@@ -276,7 +278,7 @@ namespace GifRGB565GUI
             // ayudaToolStripMenuItem
             // 
             ayudaToolStripMenuItem.Alignment = ToolStripItemAlignment.Right;
-            ayudaToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { ayudaDitherToolStripMenuItem, ayudaNoiseToolStripMenuItem, ayudaSharpenToolStripMenuItem, ayudaGzipToolStripMenuItem, ayudaDragDropToolStripMenuItem, ayudaRescaleToolStripMenuItem, acercaToolStripMenuItem });
+            ayudaToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { ayudaDitherToolStripMenuItem, ayudaNoiseToolStripMenuItem, ayudaSharpenToolStripMenuItem, ayudaGzipToolStripMenuItem, ayudaDragDropToolStripMenuItem, ayudaRescaleToolStripMenuItem, ayudaAtajosToolStripMenuItem, acercaToolStripMenuItem });
             ayudaToolStripMenuItem.Name = "ayudaToolStripMenuItem";
             ayudaToolStripMenuItem.Size = new Size(53, 20);
             ayudaToolStripMenuItem.Text = "Ayuda";
@@ -322,6 +324,13 @@ namespace GifRGB565GUI
             ayudaRescaleToolStripMenuItem.Size = new Size(174, 22);
             ayudaRescaleToolStripMenuItem.Text = "Rescale";
             ayudaRescaleToolStripMenuItem.Click += ayudaRescaleToolStripMenuItem_Click;
+            // 
+            // ayudaAtajosToolStripMenuItem
+            // 
+            ayudaAtajosToolStripMenuItem.Name = "ayudaAtajosToolStripMenuItem";
+            ayudaAtajosToolStripMenuItem.Size = new Size(174, 22);
+            ayudaAtajosToolStripMenuItem.Text = "Atajos de teclado";
+            ayudaAtajosToolStripMenuItem.Click += ayudaAtajosToolStripMenuItem_Click;
             // 
             // acercaToolStripMenuItem
             // 

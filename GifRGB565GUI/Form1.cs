@@ -948,6 +948,21 @@ namespace GifRGB565GUI
                 "Rescale", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
+        private void ayudaAtajosToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            MessageBox.Show(
+                "Atajos de teclado disponibles:\n\n" +
+                "Ctrl+G → Generar archivo de salida\n" +
+                "Ctrl+O → Abrir archivo/carpeta\n" +
+                "Ctrl+L → Cargar header (.h)\n" +
+                "Space → Play / Stop animación\n" +
+                "← → Frame anterior\n" +
+                "→ → Frame siguiente\n" +
+                "Ctrl++ → Zoom 1:1 (píxel real)\n" +
+                "Ctrl+- → Zoom ajustado al panel",
+                "Atajos de teclado", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+
         private void acercaToolStripMenuItem_Click(object sender, EventArgs e)
         {
             string version = "v1.0"; // actualizar si hay versión real
