@@ -212,6 +212,9 @@ namespace GifRGB565GUI
 
             // Wire Load handler instead of doing UI work in constructor (designer safe)
             this.Load += Form1_Load;
+            this.AllowDrop = true;
+            this.DragEnter += Form1_DragEnter;
+            this.DragDrop += Form1_DragDrop;
         }
 
         private void Form1_Load(object? sender, EventArgs e)
@@ -1214,6 +1217,81 @@ namespace GifRGB565GUI
             else if (usingHeader) { origW = headerWidth; origH = headerHeight; }
             if (origW <= 0 || origH <= 0) return;
             nudRescaleW.Value = (int)(nudRescaleH.Value * origW / origH);
+        }
+
+        private void Form1_DragEnter(object? sender, DragEventArgs e)
+        {
+            if (e.Data == null) return;
+            if (e.Data.GetDataPresent(DataFormats.FileDrop))
+                e.Effect = DragDropEffects.Copy;
+            else
+                e.Effect = DragDropEffects.None;
+        }
+
+        private void Form1_DragDrop(object? sender, DragEventArgs e)
+        {
+            if (e.Data == null) return;
+            var files = e.Data.GetData(DataFormats.FileDrop) as string[];
+            if (files == null || files.Length == 0) return;
+
+            string path = files[0];
+
+            if (Directory.Exists(path))
+            {
+                framesFolder = path;
+                LoadFrames();
+                AddToRecentFiles(path);
+            }
+            else if (path.EndsWith(".gif", StringComparison.OrdinalIgnoreCase))
+            {
+                LoadGif(path);
+                AddToRecentFiles(path);
+            }
+            else if (path.EndsWith(".png", StringComparison.OrdinalIgnoreCase) || path.EndsWith(".jpg", StringComparison.OrdinalIgnoreCase))
+            {
+                framesFolder = Path.GetDirectoryName(path) ?? "";
+                LoadFrames();
+                AddToRecentFiles(path);
+            }
+            else if (path.EndsWith(".h", StringComparison.OrdinalIgnoreCase) || path.EndsWith(".txt", StringComparison.OrdinalIgnoreCase))
+            {
+                try
+                {
+                    var result = ParseHeaderFile(path);
+                    if (!result.Success)
+                    {
+                        Log($"Error parseando header: {result.Error}");
+                        return;
+                    }
+
+                    headerFrames = result.FramesData ?? new List<ushort[]>();
+                    headerWidth = result.Width;
+                    headerHeight = result.Height;
+                    usingHeader = true;
+                    usingGif = false;
+                    frameFiles = Array.Empty<string>();
+                    gifFrames = Array.Empty<Bitmap>();
+
+                    lstFrames.Items.Clear();
+                    for (int i = 0; i < headerFrames.Count; i++)
+                        lstFrames.Items.Add($"Frame {i}");
+
+                    if (headerFrames.Count > 0)
+                    {
+                        currentFrameIndex = 0;
+                        lstFrames.SelectedIndex = 0;
+                        picPreview.Image = ConvertRgb565ToBitmap(headerFrames[0], headerWidth, headerHeight);
+                    }
+
+                    Log($"Header cargado: {path} - frames: {result.FramesData?.Count ?? 0}");
+                    AddToRecentFiles(path);
+                    UpdateStatusBar();
+                }
+                catch (Exception ex)
+                {
+                    Log($"Error leyendo header: {ex.Message}");
+                }
+            }
         }
     }
 }

@@ -2,6 +2,20 @@
 
 ---
 
+## [1.1.3] — 2026-09-02
+
+### Added — Drag & Drop de GIFs y carpetas
+- **`AllowDrop`:** El formulario acepta arrastrar archivos.
+- **`DragEnter`:** Muestra efecto `Copy` al arrastrar archivos válidos.
+- **`DragDrop`:** Detecta tipo de archivo y carga automáticamente:
+  - `.gif` → carga como animación
+  - `.png`/`.jpg` → carga la carpeta padre como secuencia de frames
+  - `.h`/`.txt` → parsea como header RGB565
+  - Carpeta → carga todos los frames (png/jpg)
+- **`AddToRecentFiles`:** Registra la ruta arrastrada en el historial reciente.
+
+---
+
 ## [1.1.2] — 2026-09-02
 
 ### Added — Rescale automático de resolución
