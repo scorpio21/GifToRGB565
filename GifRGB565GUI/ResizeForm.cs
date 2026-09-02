@@ -336,37 +336,65 @@ namespace GifRGB565GUI
 
         private void SaveAnimatedGif(Bitmap[] frames, int[] delays, string path)
         {
-            using var result = new Bitmap(frames[0].Width, frames[0].Height, PixelFormat.Format32bppArgb);
-            var frameDim = new FrameDimension(result.FrameDimensionsList[0]);
+            if (frames.Length == 0) return;
 
-            for (int i = 0; i < frames.Length; i++)
+            string tempPath = path + ".tmp.gif";
+
+            try
             {
-                var frame = new Bitmap(frames[i].Width, frames[i].Height, PixelFormat.Format32bppArgb);
-                using (var g = Graphics.FromImage(frame))
+                using (var first = new Bitmap(frames[0]))
+                    first.Save(tempPath, ImageFormat.Gif);
+
+                if (frames.Length == 1)
                 {
-                    g.InterpolationMode = InterpolationMode.NearestNeighbor;
-                    g.DrawImage(frames[i], 0, 0, frame.Width, frame.Height);
+                    File.Move(tempPath, path, true);
+                    return;
                 }
 
-                result.SelectActiveFrame(frameDim, i);
-                using (var g = Graphics.FromImage(result))
-                    g.DrawImage(frame, 0, 0, frame.Width, frame.Height);
+                using (var fs = new FileStream(tempPath, FileMode.Open, FileAccess.ReadWrite))
+                {
+                    var encoder = ImageCodecInfo.GetImageEncoders().First(c => c.FormatID == ImageFormat.Gif.Guid);
+                    for (int i = 1; i < frames.Length; i++)
+                    {
+                        var frame = new Bitmap(frames[i].Width, frames[i].Height, PixelFormat.Format32bppArgb);
+                        using (var g = Graphics.FromImage(frame))
+                            g.DrawImage(frames[i], 0, 0, frame.Width, frame.Height);
 
-                frame.Dispose();
+                        var eps = new EncoderParameters(1);
+                        eps.Param[0] = new EncoderParameter(Encoder.Compression, (long)EncoderValue.CompressionLZW);
+                        frame.Save(fs, encoder, eps);
+                        frame.Dispose();
+                    }
+                }
+
+                using (var img = Image.FromFile(tempPath))
+                {
+                    var dim = new FrameDimension(img.FrameDimensionsList[0]);
+                    try
+                    {
+                        var prop = img.GetPropertyItem(0x5100);
+                        byte[] bytes = new byte[delays.Length * 4];
+                        for (int i = 0; i < delays.Length; i++)
+                            BitConverter.GetBytes(delays[i]).CopyTo(bytes, i * 4);
+                        prop.Value = bytes;
+                        prop.Len = bytes.Length;
+                        img.SetPropertyItem(prop);
+
+                        string finalTemp = path + ".final.gif";
+                        img.Save(finalTemp, ImageFormat.Gif);
+                        File.Move(finalTemp, path, true);
+                    }
+                    catch
+                    {
+                        File.Move(tempPath, path, true);
+                    }
+                }
             }
-
-            var delayProp = result.GetPropertyItem(0x5100);
-            if (delayProp.Value != null)
+            finally
             {
-                byte[] delayBytes = new byte[delays.Length * 4];
-                for (int i = 0; i < delays.Length; i++)
-                    BitConverter.GetBytes(delays[i]).CopyTo(delayBytes, i * 4);
-                delayProp.Value = delayBytes;
-                delayProp.Len = delayBytes.Length;
-                result.SetPropertyItem(delayProp);
+                try { File.Delete(tempPath); } catch { }
+                try { File.Delete(path + ".final.gif"); } catch { }
             }
-
-            result.Save(path, ImageFormat.Gif);
         }
 
         private void ShowResultPanel(int w, int h)
