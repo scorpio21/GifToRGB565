@@ -26,6 +26,7 @@ namespace GifRGB565GUI
         private enum ExportFormat { N64, BIN, BINGZ }
         private ExportFormat currentExportFormat = ExportFormat.N64;
         private CancellationTokenSource? _generateCts;
+        private System.Windows.Forms.Timer _rgb565PreviewTimer;
 
         private bool IsRescaleEnabled => cmbRescalePreset.SelectedIndex > 0 && cmbRescalePreset.SelectedItem?.ToString() != "Original";
 
@@ -217,6 +218,12 @@ namespace GifRGB565GUI
             this.DragEnter += Form1_DragEnter;
             this.DragDrop += Form1_DragDrop;
             picPreview.MouseWheel += picPreview_MouseWheel;
+            _rgb565PreviewTimer = new System.Windows.Forms.Timer { Interval = 300 };
+            _rgb565PreviewTimer.Tick += (s, e) =>
+            {
+                _rgb565PreviewTimer.Stop();
+                DoRGB565Preview();
+            };
         }
 
         private void Form1_Load(object? sender, EventArgs e)
@@ -402,6 +409,8 @@ namespace GifRGB565GUI
                 picPreview.Image = ConvertRgb565ToBitmap(headerFrames[currentFrameIndex], headerWidth, headerHeight);
             else
                 picPreview.Image = Image.FromFile(frameFiles[currentFrameIndex]);
+
+            ScheduleRGB565Preview();
         }
 
         private void btnPlay_Click(object sender, EventArgs e)
@@ -1202,6 +1211,7 @@ namespace GifRGB565GUI
                 chkDither.Text = "Dithering activado";
             else
                 chkDither.Text = "Dithering desactivado";
+            ScheduleRGB565Preview();
         }
 
         private void chkNoise_CheckedChanged(object sender, EventArgs e)
@@ -1210,6 +1220,7 @@ namespace GifRGB565GUI
                 chkNoise.Text = "Reducción de ruido activada";
             else
                 chkNoise.Text = "Reducción de ruido desactivada";
+            ScheduleRGB565Preview();
         }
 
         private void chkSharpen_CheckedChanged(object sender, EventArgs e)
@@ -1218,6 +1229,7 @@ namespace GifRGB565GUI
                 chkSharpen.Text = "Enfoque activado";
             else
                 chkSharpen.Text = "Enfoque desactivado";
+            ScheduleRGB565Preview();
         }
 
         private void claroToolStripMenuItem_Click(object? sender, EventArgs e)
@@ -1247,6 +1259,35 @@ namespace GifRGB565GUI
             _generateCts?.Cancel();
             btnCancelar.Enabled = false;
             btnCancelar.Text = "Cancelando...";
+        }
+
+        private void ScheduleRGB565Preview()
+        {
+            _rgb565PreviewTimer.Stop();
+            _rgb565PreviewTimer.Start();
+        }
+
+        private void DoRGB565Preview()
+        {
+            if (picPreview.Image == null)
+            {
+                picPreviewRGB565.Image = null;
+                return;
+            }
+
+            ImageConverter.EnableDithering = chkDither.Checked;
+            ImageConverter.EnableNoiseReduction = chkNoise.Checked;
+            ImageConverter.EnableSharpen = chkSharpen.Checked;
+
+            try
+            {
+                using var src = new Bitmap(picPreview.Image);
+                var rgb565 = ImageConverter.ToRGB565(src);
+                var bmp = ConvertRgb565ToBitmap(rgb565.ToArray(), src.Width, src.Height);
+                picPreviewRGB565.Image?.Dispose();
+                picPreviewRGB565.Image = bmp;
+            }
+            catch { }
         }
 
         private Bitmap ResizeFrame(Bitmap source, int targetW, int targetH)

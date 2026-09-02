@@ -19,6 +19,12 @@
 - **Filtro ampliado:** El diálogo de apertura ahora acepta `.gif`, `.png`, `.jpg`, `.jpeg`.
 - **Selección automática:** Al abrir una imagen individual, carga la carpeta padre como secuencia de frames y selecciona el archivo clicado.
 
+### Added — Preview de conversión RGB565 en tiempo real
+- **`picPreviewRGB565 PictureBox`:** Segundo panel que muestra cómo se verá el frame actual con los filtros RGB565 aplicados.
+- **`UpdateRGB565Preview()`:** Convierte el frame actual a RGB565 con los filtros activos y muestra el resultado.
+- **Debounce 300ms:** Timer que evita regenerar el preview en cada cambio rápido de filtros.
+- **Actualización automática:** Se actualiza al cambiar de frame, activar/desactivar dithering, reducción de ruido o enfoque.
+
 ---
 
 ## [1.1.3] — 2026-09-02

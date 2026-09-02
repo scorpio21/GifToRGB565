@@ -69,6 +69,8 @@ namespace GifRGB565GUI
         private System.Windows.Forms.NumericUpDown nudRescaleH;
         private System.Windows.Forms.CheckBox chkKeepRatio;
         private System.Windows.Forms.Button btnCancelar;
+        private System.Windows.Forms.PictureBox picPreviewRGB565;
+        private System.Windows.Forms.Label lblPreviewRGB565;
 
         protected override void Dispose(bool disposing)
         {
@@ -112,6 +114,8 @@ namespace GifRGB565GUI
             nudRescaleH = new NumericUpDown();
             chkKeepRatio = new CheckBox();
             btnCancelar = new Button();
+            picPreviewRGB565 = new PictureBox();
+            lblPreviewRGB565 = new Label();
             btnSelectFolder = new Button();
             txtFolder = new TextBox();
             btnGenerate = new Button();
@@ -145,6 +149,7 @@ namespace GifRGB565GUI
             ((System.ComponentModel.ISupportInitialize)nudRescaleW).BeginInit();
             ((System.ComponentModel.ISupportInitialize)nudRescaleH).BeginInit();
             ((System.ComponentModel.ISupportInitialize)picPreview).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)picPreviewRGB565).BeginInit();
             ((System.ComponentModel.ISupportInitialize)speedSlider).BeginInit();
             statusStrip1.SuspendLayout();
             SuspendLayout();
@@ -438,6 +443,25 @@ namespace GifRGB565GUI
             picPreview.Name = "picPreview";
             picPreview.Size = new Size(300, 200);
             picPreview.SizeMode = PictureBoxSizeMode.Zoom;
+            // 
+            // lblPreviewRGB565
+            // 
+            lblPreviewRGB565.Location = new Point(270, 655);
+            lblPreviewRGB565.Name = "lblPreviewRGB565";
+            lblPreviewRGB565.Size = new Size(300, 18);
+            lblPreviewRGB565.TabIndex = 22;
+            lblPreviewRGB565.Text = "RGB565 Preview";
+            lblPreviewRGB565.TextAlign = ContentAlignment.MiddleCenter;
+            // 
+            // picPreviewRGB565
+            // 
+            picPreviewRGB565.BorderStyle = BorderStyle.FixedSingle;
+            picPreviewRGB565.Location = new Point(270, 673);
+            picPreviewRGB565.Name = "picPreviewRGB565";
+            picPreviewRGB565.Size = new Size(300, 80);
+            picPreviewRGB565.TabIndex = 23;
+            picPreviewRGB565.TabStop = false;
+            picPreviewRGB565.SizeMode = PictureBoxSizeMode.Zoom;
             picPreview.TabIndex = 13;
             picPreview.TabStop = false;
             // 
@@ -633,7 +657,9 @@ namespace GifRGB565GUI
             // 
             // Form1
             // 
-            ClientSize = new Size(582, 757);
+            ClientSize = new Size(582, 810);
+            Controls.Add(picPreviewRGB565);
+            Controls.Add(lblPreviewRGB565);
             Controls.Add(btnCancelar);
             Controls.Add(grpRescale);
             Controls.Add(statusStrip1);
@@ -669,6 +695,7 @@ namespace GifRGB565GUI
             ((System.ComponentModel.ISupportInitialize)nudRescaleW).EndInit();
             ((System.ComponentModel.ISupportInitialize)nudRescaleH).EndInit();
             ((System.ComponentModel.ISupportInitialize)picPreview).EndInit();
+            ((System.ComponentModel.ISupportInitialize)picPreviewRGB565).EndInit();
             ((System.ComponentModel.ISupportInitialize)speedSlider).EndInit();
             statusStrip1.ResumeLayout(false);
             statusStrip1.PerformLayout();
