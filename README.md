@@ -12,6 +12,7 @@ Conversor de GIF / secuencia de imágenes a arrays RGB565 (formato para N64/ESP3
 - **Barra de estado:** Muestra dimensiones del frame, total de frames, tamaño estimado del output y formato de exportación.
 - **Tema oscuro/claro:** Cambio de tema desde Menú → Ver → Tema, con persistencia.
 - **Menú "Abierto reciente":** Últimas 5 rutas abiertas (GIFs, carpetas, headers).
+- **Drag & Drop:** Arrastra archivos `.gif`, `.png`/`.jpg`, carpetas o headers `.h`/`.txt` directamente a la ventana.
 - Menú "Archivo" y "Compresión" para seleccionar formato de exportación.
 - Barra de progreso y logs durante la conversión.
 
