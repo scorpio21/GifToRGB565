@@ -2,6 +2,23 @@
 
 ---
 
+## [1.1.1] — 2026-09-01
+
+### Added — Tema oscuro (Dark Mode)
+- **`ThemeManager.cs`:** Clase estática con `ApplyTheme(Form, bool dark)` que aplica colores a todos los controles de forma recursiva.
+- **Menú "Ver" → "Tema":** Submenú con opciones "Claro" y "Oscuro" con checkmarks.
+- **Persistencia:** El tema seleccionado se guarda en `last_output.json` y se restaura al abrir la app.
+- Controles themeados: Forms, TextBox, Button, CheckBox, ListBox, PictureBox, TrackBar, ProgressBar, MenuStrip, StatusStrip, Labels.
+
+### Added — Barra de estado (StatusStrip)
+- **Dimensiones:** Muestra el tamaño del frame actual (ej: `320x240`).
+- **Frames:** Muestra el total de frames cargados.
+- **Tamaño estimado:** Calcula el tamaño del output basado en formato y cantidad de frames (KB/MB).
+- **Formato:** Indica el formato de exportación actual (N64 / ESP32 / ESP32 GZ).
+- Se actualiza automáticamente al cargar frames o cambiar de formato.
+
+---
+
 ## [1.1.0] — 2026-09-01
 
 ### Added — Nombre de salida
