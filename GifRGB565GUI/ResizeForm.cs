@@ -250,8 +250,10 @@ namespace GifRGB565GUI
                 var resultPath = Path.Combine(Path.GetTempPath(), $"resize_preview_{Guid.NewGuid():N}.gif");
                 SaveAnimatedGif(frames, gifFrameDelays, resultPath);
 
+                byte[] gifBytes = File.ReadAllBytes(resultPath);
                 CleanupGif();
-                gifImage = Image.FromFile(resultPath);
+                var ms = new MemoryStream(gifBytes);
+                gifImage = Image.FromStream(ms);
                 gifFrameDimension = new FrameDimension(gifImage.FrameDimensionsList[0]);
                 gifFrameCount = gifImage.GetFrameCount(gifFrameDimension);
 
@@ -353,7 +355,9 @@ namespace GifRGB565GUI
                     tempFiles.Add(tempFrame);
                 }
 
-                using var mainImage = Image.FromFile(tempFiles[0]);
+                byte[] firstBytes = File.ReadAllBytes(tempFiles[0]);
+                using var ms0 = new MemoryStream(firstBytes);
+                var mainImage = Image.FromStream(ms0);
 
                 if (frames.Length > 1)
                 {
@@ -362,8 +366,11 @@ namespace GifRGB565GUI
 
                     for (int i = 1; i < tempFiles.Count; i++)
                     {
-                        using var frameImage = Image.FromFile(tempFiles[i]);
+                        byte[] frameBytes = File.ReadAllBytes(tempFiles[i]);
+                        using var ms = new MemoryStream(frameBytes);
+                        var frameImage = Image.FromStream(ms);
                         mainImage.SaveAdd(frameImage, eps);
+                        frameImage.Dispose();
                     }
                 }
 
