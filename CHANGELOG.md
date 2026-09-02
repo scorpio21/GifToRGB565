@@ -25,6 +25,15 @@
 - **Debounce 300ms:** Timer que evita regenerar el preview en cada cambio rápido de filtros.
 - **Actualización automática:** Se actualiza al cambiar de frame, activar/desactivar dithering, reducción de ruido o enfoque.
 
+### Added — Atajos de teclado
+- **`KeyPreview = true`:** El formulario captura teclas antes que los controles.
+- **`Ctrl+G`:** Generar archivo de salida.
+- **`Ctrl+O`:** Abrir archivo/carpeta.
+- **`Ctrl+L`:** Cargar header `.h`.
+- **`Space`:** Play/Stop animación.
+- **`←`/`→`:** Frame anterior/siguiente.
+- **`Ctrl++`/`Ctrl+-`:** Zoom 1:1 / Zoom ajustado en preview.
+
 ---
 
 ## [1.1.3] — 2026-09-02

@@ -689,6 +689,7 @@ namespace GifRGB565GUI
             Name = "Form1";
             Text = "GIF → RGB565 Converter";
             Icon = new Icon(Path.Combine(AppContext.BaseDirectory, "Img", "Icon.ico"));
+            KeyPreview = true;
             menuStrip1.ResumeLayout(false);
             menuStrip1.PerformLayout();
             grpRescale.ResumeLayout(false);

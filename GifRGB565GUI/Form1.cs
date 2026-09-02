@@ -224,6 +224,7 @@ namespace GifRGB565GUI
                 _rgb565PreviewTimer.Stop();
                 DoRGB565Preview();
             };
+            this.KeyDown += Form1_KeyDown;
         }
 
         private void Form1_Load(object? sender, EventArgs e)
@@ -1265,6 +1266,58 @@ namespace GifRGB565GUI
         {
             _rgb565PreviewTimer.Stop();
             _rgb565PreviewTimer.Start();
+        }
+
+        private void Form1_KeyDown(object? sender, KeyEventArgs e)
+        {
+            if (e.Control)
+            {
+                switch (e.KeyCode)
+                {
+                    case Keys.G:
+                        btnGenerate.PerformClick();
+                        e.Handled = true;
+                        break;
+                    case Keys.O:
+                        btnSelectFolder.PerformClick();
+                        e.Handled = true;
+                        break;
+                    case Keys.L:
+                        cargarHeaderToolStripMenuItem.PerformClick();
+                        e.Handled = true;
+                        break;
+                    case Keys.Oemplus:
+                    case Keys.Add:
+                        if (picPreview.SizeMode == PictureBoxSizeMode.Zoom)
+                            picPreview.SizeMode = PictureBoxSizeMode.CenterImage;
+                        e.Handled = true;
+                        break;
+                    case Keys.OemMinus:
+                    case Keys.Subtract:
+                        if (picPreview.SizeMode == PictureBoxSizeMode.CenterImage)
+                            picPreview.SizeMode = PictureBoxSizeMode.Zoom;
+                        e.Handled = true;
+                        break;
+                }
+                return;
+            }
+
+            switch (e.KeyCode)
+            {
+                case Keys.Space:
+                    if (btnPlay.Enabled) btnPlay.PerformClick();
+                    else if (btnStop.Enabled) btnStop.PerformClick();
+                    e.Handled = true;
+                    break;
+                case Keys.Left:
+                    if (btnPrev.Enabled) btnPrev.PerformClick();
+                    e.Handled = true;
+                    break;
+                case Keys.Right:
+                    if (btnNext.Enabled) btnNext.PerformClick();
+                    e.Handled = true;
+                    break;
+            }
         }
 
         private void DoRGB565Preview()
