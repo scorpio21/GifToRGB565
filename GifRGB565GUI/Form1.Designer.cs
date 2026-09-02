@@ -27,6 +27,8 @@ namespace GifRGB565GUI
         private System.Windows.Forms.ToolStripMenuItem ayudaNoiseToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem ayudaSharpenToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem ayudaGzipToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem ayudaDragDropToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem ayudaRescaleToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem acercaToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem verToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem temaToolStripMenuItem;
@@ -100,6 +102,8 @@ namespace GifRGB565GUI
             ayudaNoiseToolStripMenuItem = new ToolStripMenuItem();
             ayudaSharpenToolStripMenuItem = new ToolStripMenuItem();
             ayudaGzipToolStripMenuItem = new ToolStripMenuItem();
+            ayudaDragDropToolStripMenuItem = new ToolStripMenuItem();
+            ayudaRescaleToolStripMenuItem = new ToolStripMenuItem();
             acercaToolStripMenuItem = new ToolStripMenuItem();
             grpRescale = new GroupBox();
             cmbRescalePreset = new ComboBox();
@@ -265,7 +269,7 @@ namespace GifRGB565GUI
             // ayudaToolStripMenuItem
             // 
             ayudaToolStripMenuItem.Alignment = ToolStripItemAlignment.Right;
-            ayudaToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { ayudaDitherToolStripMenuItem, ayudaNoiseToolStripMenuItem, ayudaSharpenToolStripMenuItem, ayudaGzipToolStripMenuItem, acercaToolStripMenuItem });
+            ayudaToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { ayudaDitherToolStripMenuItem, ayudaNoiseToolStripMenuItem, ayudaSharpenToolStripMenuItem, ayudaGzipToolStripMenuItem, ayudaDragDropToolStripMenuItem, ayudaRescaleToolStripMenuItem, acercaToolStripMenuItem });
             ayudaToolStripMenuItem.Name = "ayudaToolStripMenuItem";
             ayudaToolStripMenuItem.Size = new Size(53, 20);
             ayudaToolStripMenuItem.Text = "Ayuda";
@@ -297,6 +301,20 @@ namespace GifRGB565GUI
             ayudaGzipToolStripMenuItem.Size = new Size(174, 22);
             ayudaGzipToolStripMenuItem.Text = "GZip (if applicable)";
             ayudaGzipToolStripMenuItem.Click += ayudaGzipToolStripMenuItem_Click;
+            // 
+            // ayudaDragDropToolStripMenuItem
+            // 
+            ayudaDragDropToolStripMenuItem.Name = "ayudaDragDropToolStripMenuItem";
+            ayudaDragDropToolStripMenuItem.Size = new Size(174, 22);
+            ayudaDragDropToolStripMenuItem.Text = "Drag & Drop";
+            ayudaDragDropToolStripMenuItem.Click += ayudaDragDropToolStripMenuItem_Click;
+            // 
+            // ayudaRescaleToolStripMenuItem
+            // 
+            ayudaRescaleToolStripMenuItem.Name = "ayudaRescaleToolStripMenuItem";
+            ayudaRescaleToolStripMenuItem.Size = new Size(174, 22);
+            ayudaRescaleToolStripMenuItem.Text = "Rescale";
+            ayudaRescaleToolStripMenuItem.Click += ayudaRescaleToolStripMenuItem_Click;
             // 
             // acercaToolStripMenuItem
             // 

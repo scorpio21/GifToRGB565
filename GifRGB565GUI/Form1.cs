@@ -854,6 +854,33 @@ namespace GifRGB565GUI
             MessageBox.Show("GZip: comprime el archivo binario de salida usando GZip (.gz). Reduce tamaño a costa de tiempo de compresión y uso de CPU en dispositivo que lo descomprima.", "GZip (if applicable)", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
+        private void ayudaDragDropToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            MessageBox.Show(
+                "Drag & Drop: arrastra archivos directamente a la ventana de la aplicación.\n\n" +
+                "• Archivo .gif → carga como animación GIF.\n" +
+                "• Archivo .png o .jpg → carga la carpeta padre como secuencia de frames.\n" +
+                "• Carpeta → carga todos los frames PNG/JPG que contenga.\n" +
+                "• Archivo .h o .txt → parsea como header RGB565.\n\n" +
+                "La ruta arrastrada se registra automáticamente en el menú Abierto Reciente.",
+                "Drag & Drop", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+
+        private void ayudaRescaleToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            MessageBox.Show(
+                "Rescale: redimensiona los frames antes de convertirlos a RGB565.\n\n" +
+                "Controles:\n" +
+                "• ComboBox de presets: Original, 50%, 25%, 160x120, 320x240, Personalizado.\n" +
+                "• NumericBoxes de ancho y alto (8–2048 píxeles).\n" +
+                "• Checkbox 'Mantener proporción': al cambiar el ancho se ajusta el alto automáticamente y viceversa.\n\n" +
+                "Efecto:\n" +
+                "• Los frames se escalan con interpolación bicúbica de alta calidad (HighQualityBicubic) antes de la conversión.\n" +
+                "• Útil para reducir el tamaño del output (ej: 50% o 25%) o adaptar a una resolución específica (ej: 160x120 para pantallas pequeñas).\n" +
+                "• La barra de estado muestra las dimensiones post-rescale.",
+                "Rescale", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+
         private void acercaToolStripMenuItem_Click(object sender, EventArgs e)
         {
             string version = "v1.0"; // actualizar si hay versión real
