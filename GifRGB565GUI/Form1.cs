@@ -216,6 +216,7 @@ namespace GifRGB565GUI
             this.AllowDrop = true;
             this.DragEnter += Form1_DragEnter;
             this.DragDrop += Form1_DragDrop;
+            picPreview.MouseWheel += picPreview_MouseWheel;
         }
 
         private void Form1_Load(object? sender, EventArgs e)
@@ -1288,6 +1289,16 @@ namespace GifRGB565GUI
             else if (usingHeader) { origW = headerWidth; origH = headerHeight; }
             if (origW <= 0 || origH <= 0) return;
             nudRescaleW.Value = (int)(nudRescaleH.Value * origW / origH);
+        }
+
+        private void picPreview_MouseWheel(object? sender, MouseEventArgs e)
+        {
+            if (picPreview.Image == null) return;
+
+            if (e.Delta > 0)
+                picPreview.SizeMode = PictureBoxSizeMode.Zoom;
+            else
+                picPreview.SizeMode = PictureBoxSizeMode.CenterImage;
         }
 
         private void Form1_DragEnter(object? sender, DragEventArgs e)
