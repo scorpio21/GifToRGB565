@@ -26,9 +26,6 @@ namespace GifRGB565GUI
         private enum ExportFormat { N64, BIN, BINGZ }
         private ExportFormat currentExportFormat = ExportFormat.N64;
         private CancellationTokenSource? _generateCts;
-        private System.Windows.Forms.Timer _rgb565PreviewTimer;
-
-        private bool IsRescaleEnabled => cmbRescalePreset.SelectedIndex > 0 && cmbRescalePreset.SelectedItem?.ToString() != "Original";
 
         private static readonly string ConfigPath = Path.Combine(
             AppContext.BaseDirectory, "last_output.json");
@@ -218,12 +215,6 @@ namespace GifRGB565GUI
             this.DragEnter += Form1_DragEnter;
             this.DragDrop += Form1_DragDrop;
             picPreview.MouseWheel += picPreview_MouseWheel;
-            _rgb565PreviewTimer = new System.Windows.Forms.Timer { Interval = 300 };
-            _rgb565PreviewTimer.Tick += (s, e) =>
-            {
-                _rgb565PreviewTimer.Stop();
-                DoRGB565Preview();
-            };
             this.KeyDown += Form1_KeyDown;
             lblVersion.Text = ReadVersionFromChangelog();
         }
@@ -260,9 +251,6 @@ namespace GifRGB565GUI
             // Estado inicial de botones de reproducción
             btnPlay.Enabled = true;
             btnStop.Enabled = false;
-            // Valores por defecto para resize
-            cmbResizeMethod.SelectedIndex = 0;
-            cmbAspectRatio.SelectedIndex = 0;
         }
 
         private void UpdateGenerateButtonText()
@@ -442,7 +430,7 @@ namespace GifRGB565GUI
             else
                 picPreview.Image = Image.FromFile(frameFiles[currentFrameIndex]);
 
-            ScheduleRGB565Preview();
+
         }
 
         private void btnPlay_Click(object sender, EventArgs e)
@@ -1307,7 +1295,7 @@ namespace GifRGB565GUI
                 chkDither.Text = "Dithering activado";
             else
                 chkDither.Text = "Dithering desactivado";
-            ScheduleRGB565Preview();
+
         }
 
         private void chkNoise_CheckedChanged(object sender, EventArgs e)
@@ -1316,7 +1304,7 @@ namespace GifRGB565GUI
                 chkNoise.Text = "Reducción de ruido activada";
             else
                 chkNoise.Text = "Reducción de ruido desactivada";
-            ScheduleRGB565Preview();
+
         }
 
         private void chkSharpen_CheckedChanged(object sender, EventArgs e)
@@ -1325,7 +1313,7 @@ namespace GifRGB565GUI
                 chkSharpen.Text = "Enfoque activado";
             else
                 chkSharpen.Text = "Enfoque desactivado";
-            ScheduleRGB565Preview();
+
         }
 
         private void claroToolStripMenuItem_Click(object? sender, EventArgs e)
@@ -1355,12 +1343,6 @@ namespace GifRGB565GUI
             _generateCts?.Cancel();
             btnCancelar.Enabled = false;
             btnCancelar.Text = "Cancelando...";
-        }
-
-        private void ScheduleRGB565Preview()
-        {
-            _rgb565PreviewTimer.Stop();
-            _rgb565PreviewTimer.Start();
         }
 
         private void Form1_KeyDown(object? sender, KeyEventArgs e)
@@ -1413,111 +1395,6 @@ namespace GifRGB565GUI
                     e.Handled = true;
                     break;
             }
-        }
-
-        private void DoRGB565Preview()
-        {
-            if (picPreview.Image == null)
-            {
-                picPreviewRGB565.Image = null;
-                return;
-            }
-
-            ImageConverter.EnableDithering = chkDither.Checked;
-            ImageConverter.EnableNoiseReduction = chkNoise.Checked;
-            ImageConverter.EnableSharpen = chkSharpen.Checked;
-
-            try
-            {
-                using var src = new Bitmap(picPreview.Image);
-                var rgb565 = ImageConverter.ToRGB565(src);
-                var bmp = ConvertRgb565ToBitmap(rgb565.ToArray(), src.Width, src.Height);
-                picPreviewRGB565.Image?.Dispose();
-                picPreviewRGB565.Image = bmp;
-            }
-            catch { }
-        }
-
-        private Bitmap ResizeFrame(Bitmap source, int targetW, int targetH)
-        {
-            var resized = new Bitmap(targetW, targetH);
-            using (var g = Graphics.FromImage(resized))
-            {
-                g.InterpolationMode = cmbResizeMethod.SelectedIndex switch
-                {
-                    1 => System.Drawing.Drawing2D.InterpolationMode.HighQualityBilinear,
-                    2 => System.Drawing.Drawing2D.InterpolationMode.NearestNeighbor,
-                    _ => System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic
-                };
-                g.DrawImage(source, 0, 0, targetW, targetH);
-            }
-            return resized;
-        }
-
-        private void cmbRescalePreset_SelectedIndexChanged(object? sender, EventArgs e)
-        {
-            if (cmbRescalePreset.SelectedIndex < 0) return;
-
-            int origW = 0, origH = 0;
-            if (usingGif && gifFrames.Length > 0) { origW = gifFrames[0].Width; origH = gifFrames[0].Height; }
-            else if (usingHeader) { origW = headerWidth; origH = headerHeight; }
-            else if (frameFiles.Length > 0) { origW = 320; origH = 240; }
-
-            var sel = cmbRescalePreset.SelectedItem?.ToString();
-            switch (sel)
-            {
-                case "Original":
-                    if (origW > 0) { nudRescaleW.Value = origW; nudRescaleH.Value = origH; }
-                    break;
-                case "50%":
-                    if (origW > 0) { nudRescaleW.Value = origW / 2; nudRescaleH.Value = origH / 2; }
-                    break;
-                case "25%":
-                    if (origW > 0) { nudRescaleW.Value = origW / 4; nudRescaleH.Value = origH / 4; }
-                    break;
-                case "160x120":
-                    nudRescaleW.Value = 160; nudRescaleH.Value = 120;
-                    break;
-                case "320x240":
-                    nudRescaleW.Value = 320; nudRescaleH.Value = 240;
-                    break;
-            }
-        }
-
-        private void nudRescaleW_ValueChanged(object? sender, EventArgs e)
-        {
-            if (!chkKeepRatio.Checked) return;
-            int origW = 0, origH = 0;
-            if (usingGif && gifFrames.Length > 0) { origW = gifFrames[0].Width; origH = gifFrames[0].Height; }
-            else if (usingHeader) { origW = headerWidth; origH = headerHeight; }
-            if (origW <= 0 || origH <= 0) return;
-            nudRescaleH.Value = (int)(nudRescaleW.Value * origH / origW);
-        }
-
-        private void nudRescaleH_ValueChanged(object? sender, EventArgs e)
-        {
-            if (!chkKeepRatio.Checked) return;
-            int origW = 0, origH = 0;
-            if (usingGif && gifFrames.Length > 0) { origW = gifFrames[0].Width; origH = gifFrames[0].Height; }
-            else if (usingHeader) { origW = headerWidth; origH = headerHeight; }
-            if (origW <= 0 || origH <= 0) return;
-            nudRescaleW.Value = (int)(nudRescaleH.Value * origW / origH);
-        }
-
-        private void nudRescalePercent_ValueChanged(object? sender, EventArgs e)
-        {
-            int origW = 0, origH = 0;
-            if (usingGif && gifFrames.Length > 0) { origW = gifFrames[0].Width; origH = gifFrames[0].Height; }
-            else if (usingHeader) { origW = headerWidth; origH = headerHeight; }
-            else if (frameFiles.Length > 0)
-            {
-                try { var bmp = Image.FromFile(frameFiles[0]); origW = bmp.Width; origH = bmp.Height; bmp.Dispose(); } catch { }
-            }
-            if (origW <= 0 || origH <= 0) return;
-
-            decimal pct = nudRescalePercent.Value / 100m;
-            nudRescaleW.Value = Math.Max(8, (int)(origW * pct));
-            nudRescaleH.Value = Math.Max(8, (int)(origH * pct));
         }
 
         private void picPreview_MouseWheel(object? sender, MouseEventArgs e)

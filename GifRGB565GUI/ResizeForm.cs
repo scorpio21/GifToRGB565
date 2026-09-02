@@ -24,8 +24,6 @@ namespace GifRGB565GUI
         private Label lblWidth;
         private Label lblHeight;
         private Label lblPercent;
-        private Label lblMethod;
-        private Label lblAspect;
         private Label lblMethodTitle;
         private Label lblAspectTitle;
 
