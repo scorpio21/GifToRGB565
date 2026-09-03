@@ -1708,6 +1708,9 @@ namespace GifRGB565GUI
 
                 try
                 {
+                    picPreview.Image?.Dispose();
+                    picPreview.Image = null;
+
                     string dir = Path.GetDirectoryName(tmp) ?? "";
                     string tempPath = Path.Combine(dir, $"__reorder_temp_{Guid.NewGuid():N}__" + Path.GetExtension(tmp));
                     File.Move(frameFiles[idx], tempPath);
@@ -1759,6 +1762,9 @@ namespace GifRGB565GUI
 
                 try
                 {
+                    picPreview.Image?.Dispose();
+                    picPreview.Image = null;
+
                     string dir = Path.GetDirectoryName(tmp) ?? "";
                     string tempPath = Path.Combine(dir, $"__reorder_temp_{Guid.NewGuid():N}__" + Path.GetExtension(tmp));
                     File.Move(frameFiles[idx], tempPath);
