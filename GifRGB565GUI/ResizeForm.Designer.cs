@@ -15,8 +15,12 @@ namespace GifRGB565GUI
 
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ResizeForm));
             panelToolbar = new Panel();
             btnOpen = new Button();
+            btnResize = new Button();
+            btnCrop = new Button();
+            btnSave = new Button();
             picPreview = new PictureBox();
             lblFileInfo = new Label();
             panelResult = new Panel();
@@ -36,9 +40,6 @@ namespace GifRGB565GUI
             cmbMethod = new ComboBox();
             lblAspectTitle = new Label();
             cmbAspect = new ComboBox();
-            btnResize = new Button();
-            btnCrop = new Button();
-            btnSave = new Button();
             chkRemember = new CheckBox();
             panelToolbar.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)picPreview).BeginInit();
@@ -64,14 +65,68 @@ namespace GifRGB565GUI
             // 
             btnOpen.BackColor = Color.FromArgb(60, 60, 70);
             btnOpen.FlatStyle = FlatStyle.Flat;
+            btnOpen.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
             btnOpen.ForeColor = Color.White;
+            btnOpen.Image = Properties.Resources.icon_Abrir;
+            btnOpen.ImageAlign = ContentAlignment.MiddleLeft;
             btnOpen.Location = new Point(10, 8);
             btnOpen.Name = "btnOpen";
-            btnOpen.Size = new Size(120, 34);
+            btnOpen.Size = new Size(135, 34);
             btnOpen.TabIndex = 0;
             btnOpen.Text = "Abrir imagen";
+            btnOpen.TextImageRelation = TextImageRelation.ImageBeforeText;
             btnOpen.UseVisualStyleBackColor = false;
             btnOpen.Click += BtnOpen_Click;
+            // 
+            // btnResize
+            // 
+            btnResize.BackColor = Color.FromArgb(0, 120, 215);
+            btnResize.FlatStyle = FlatStyle.Flat;
+            btnResize.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
+            btnResize.ForeColor = Color.White;
+            btnResize.Image = Properties.Resources.icon_resize;
+            btnResize.ImageAlign = ContentAlignment.MiddleLeft;
+            btnResize.Location = new Point(151, 7);
+            btnResize.Name = "btnResize";
+            btnResize.Size = new Size(214, 35);
+            btnResize.TabIndex = 12;
+            btnResize.Text = "¡Redimensiona la imagen!";
+            btnResize.TextImageRelation = TextImageRelation.ImageBeforeText;
+            btnResize.UseVisualStyleBackColor = false;
+            btnResize.Click += BtnResize_Click;
+            // 
+            // btnCrop
+            // 
+            btnCrop.BackColor = Color.FromArgb(60, 60, 70);
+            btnCrop.FlatStyle = FlatStyle.Flat;
+            btnCrop.ForeColor = Color.LightCoral;
+            btnCrop.Image = Properties.Resources.icon_crop;
+            btnCrop.ImageAlign = ContentAlignment.MiddleLeft;
+            btnCrop.Location = new Point(371, 8);
+            btnCrop.Name = "btnCrop";
+            btnCrop.Size = new Size(100, 35);
+            btnCrop.TabIndex = 13;
+            btnCrop.Text = "Recortar";
+            btnCrop.TextImageRelation = TextImageRelation.ImageBeforeText;
+            btnCrop.UseVisualStyleBackColor = false;
+            btnCrop.Click += BtnCrop_Click;
+            // 
+            // btnSave
+            // 
+            btnSave.BackColor = Color.FromArgb(60, 60, 70);
+            btnSave.Enabled = false;
+            btnSave.FlatStyle = FlatStyle.Flat;
+            btnSave.ForeColor = Color.IndianRed;
+            btnSave.Image = Properties.Resources.icon_save;
+            btnSave.ImageAlign = ContentAlignment.MiddleLeft;
+            btnSave.Location = new Point(477, 9);
+            btnSave.Name = "btnSave";
+            btnSave.Size = new Size(100, 35);
+            btnSave.TabIndex = 14;
+            btnSave.Text = "Guardar";
+            btnSave.TextImageRelation = TextImageRelation.ImageBeforeText;
+            btnSave.UseVisualStyleBackColor = false;
+            btnSave.Click += BtnSave_Click;
             // 
             // picPreview
             // 
@@ -275,56 +330,6 @@ namespace GifRGB565GUI
             cmbAspect.Size = new Size(250, 23);
             cmbAspect.TabIndex = 11;
             // 
-            // btnResize
-            // 
-            btnResize.BackColor = Color.FromArgb(0, 120, 215);
-            btnResize.FlatStyle = FlatStyle.Flat;
-            btnResize.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
-            btnResize.ForeColor = Color.White;
-            btnResize.Image = Properties.Resources.icon_resize;
-            btnResize.ImageAlign = ContentAlignment.MiddleLeft;
-            btnResize.Location = new Point(151, 7);
-            btnResize.Name = "btnResize";
-            btnResize.Size = new Size(214, 35);
-            btnResize.TabIndex = 12;
-            btnResize.Text = "¡Redimensiona la imagen!";
-            btnResize.TextImageRelation = TextImageRelation.ImageBeforeText;
-            btnResize.UseVisualStyleBackColor = false;
-            btnResize.Click += BtnResize_Click;
-            // 
-            // btnCrop
-            // 
-            btnCrop.BackColor = Color.FromArgb(60, 60, 70);
-            btnCrop.FlatStyle = FlatStyle.Flat;
-            btnCrop.ForeColor = Color.White;
-            btnCrop.Image = Properties.Resources.icon_crop;
-            btnCrop.ImageAlign = ContentAlignment.MiddleLeft;
-            btnCrop.Location = new Point(371, 8);
-            btnCrop.Name = "btnCrop";
-            btnCrop.Size = new Size(100, 35);
-            btnCrop.TabIndex = 13;
-            btnCrop.Text = "Recortar";
-            btnCrop.TextImageRelation = TextImageRelation.ImageBeforeText;
-            btnCrop.UseVisualStyleBackColor = false;
-            btnCrop.Click += BtnCrop_Click;
-            // 
-            // btnSave
-            // 
-            btnSave.BackColor = Color.FromArgb(60, 60, 70);
-            btnSave.Enabled = false;
-            btnSave.FlatStyle = FlatStyle.Flat;
-            btnSave.ForeColor = Color.White;
-            btnSave.Image = Properties.Resources.icon_save;
-            btnSave.ImageAlign = ContentAlignment.MiddleLeft;
-            btnSave.Location = new Point(477, 9);
-            btnSave.Name = "btnSave";
-            btnSave.Size = new Size(100, 35);
-            btnSave.TabIndex = 14;
-            btnSave.Text = "Guardar";
-            btnSave.TextImageRelation = TextImageRelation.ImageBeforeText;
-            btnSave.UseVisualStyleBackColor = false;
-            btnSave.Click += BtnSave_Click;
-            // 
             // chkRemember
             // 
             chkRemember.AutoSize = true;
@@ -347,6 +352,7 @@ namespace GifRGB565GUI
             Controls.Add(lblFileInfo);
             Controls.Add(panelResult);
             Controls.Add(panelOptions);
+            Icon = (Icon)resources.GetObject("$this.Icon");
             Name = "ResizeForm";
             StartPosition = FormStartPosition.CenterScreen;
             Text = "Redimensionar imágenes";

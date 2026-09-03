@@ -85,6 +85,7 @@ namespace GifRGB565GUI
         private void InitializeComponent()
         {
             components = new System.ComponentModel.Container();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             menuStrip1 = new MenuStrip();
             archivoToolStripMenuItem = new ToolStripMenuItem();
             recentToolStripMenuItem = new ToolStripMenuItem();
@@ -110,10 +111,10 @@ namespace GifRGB565GUI
             ayudaGzipToolStripMenuItem = new ToolStripMenuItem();
             ayudaDragDropToolStripMenuItem = new ToolStripMenuItem();
             ayudaRescaleToolStripMenuItem = new ToolStripMenuItem();
-            ayudaAtajosToolStripMenuItem = new ToolStripMenuItem();
-            ayudaCompararToolStripMenuItem = new ToolStripMenuItem();
             ayudaRedimensionarToolStripMenuItem = new ToolStripMenuItem();
             ayudaRecortarToolStripMenuItem = new ToolStripMenuItem();
+            ayudaAtajosToolStripMenuItem = new ToolStripMenuItem();
+            ayudaCompararToolStripMenuItem = new ToolStripMenuItem();
             acercaToolStripMenuItem = new ToolStripMenuItem();
             btnCancelar = new Button();
             cmbGzipLevel = new ComboBox();
@@ -296,73 +297,73 @@ namespace GifRGB565GUI
             // ayudaDitherToolStripMenuItem
             // 
             ayudaDitherToolStripMenuItem.Name = "ayudaDitherToolStripMenuItem";
-            ayudaDitherToolStripMenuItem.Size = new Size(174, 22);
+            ayudaDitherToolStripMenuItem.Size = new Size(207, 22);
             ayudaDitherToolStripMenuItem.Text = "Dithering ON";
             ayudaDitherToolStripMenuItem.Click += ayudaDitherToolStripMenuItem_Click;
             // 
             // ayudaNoiseToolStripMenuItem
             // 
             ayudaNoiseToolStripMenuItem.Name = "ayudaNoiseToolStripMenuItem";
-            ayudaNoiseToolStripMenuItem.Size = new Size(174, 22);
+            ayudaNoiseToolStripMenuItem.Size = new Size(207, 22);
             ayudaNoiseToolStripMenuItem.Text = "Noise Reduction";
             ayudaNoiseToolStripMenuItem.Click += ayudaNoiseToolStripMenuItem_Click;
             // 
             // ayudaSharpenToolStripMenuItem
             // 
             ayudaSharpenToolStripMenuItem.Name = "ayudaSharpenToolStripMenuItem";
-            ayudaSharpenToolStripMenuItem.Size = new Size(174, 22);
+            ayudaSharpenToolStripMenuItem.Size = new Size(207, 22);
             ayudaSharpenToolStripMenuItem.Text = "Sharpen";
             ayudaSharpenToolStripMenuItem.Click += ayudaSharpenToolStripMenuItem_Click;
             // 
             // ayudaGzipToolStripMenuItem
             // 
             ayudaGzipToolStripMenuItem.Name = "ayudaGzipToolStripMenuItem";
-            ayudaGzipToolStripMenuItem.Size = new Size(174, 22);
+            ayudaGzipToolStripMenuItem.Size = new Size(207, 22);
             ayudaGzipToolStripMenuItem.Text = "GZip (if applicable)";
             ayudaGzipToolStripMenuItem.Click += ayudaGzipToolStripMenuItem_Click;
             // 
             // ayudaDragDropToolStripMenuItem
             // 
             ayudaDragDropToolStripMenuItem.Name = "ayudaDragDropToolStripMenuItem";
-            ayudaDragDropToolStripMenuItem.Size = new Size(174, 22);
+            ayudaDragDropToolStripMenuItem.Size = new Size(207, 22);
             ayudaDragDropToolStripMenuItem.Text = "Drag & Drop";
             ayudaDragDropToolStripMenuItem.Click += ayudaDragDropToolStripMenuItem_Click;
             // 
             // ayudaRescaleToolStripMenuItem
             // 
             ayudaRescaleToolStripMenuItem.Name = "ayudaRescaleToolStripMenuItem";
-            ayudaRescaleToolStripMenuItem.Size = new Size(174, 22);
+            ayudaRescaleToolStripMenuItem.Size = new Size(207, 22);
             ayudaRescaleToolStripMenuItem.Text = "Rescale";
             ayudaRescaleToolStripMenuItem.Click += ayudaRescaleToolStripMenuItem_Click;
-            // 
-            // ayudaAtajosToolStripMenuItem
-            // 
-            ayudaAtajosToolStripMenuItem.Name = "ayudaAtajosToolStripMenuItem";
-            ayudaAtajosToolStripMenuItem.Size = new Size(174, 22);
-            // 
-            // ayudaCompararToolStripMenuItem
-            // 
-            ayudaCompararToolStripMenuItem.Name = "ayudaCompararToolStripMenuItem";
-            ayudaCompararToolStripMenuItem.Size = new Size(174, 22);
             // 
             // ayudaRedimensionarToolStripMenuItem
             // 
             ayudaRedimensionarToolStripMenuItem.Name = "ayudaRedimensionarToolStripMenuItem";
-            ayudaRedimensionarToolStripMenuItem.Size = new Size(200, 22);
+            ayudaRedimensionarToolStripMenuItem.Size = new Size(207, 22);
             ayudaRedimensionarToolStripMenuItem.Text = "Redimensionar imágenes";
             ayudaRedimensionarToolStripMenuItem.Click += ayudaRedimensionarToolStripMenuItem_Click;
             // 
             // ayudaRecortarToolStripMenuItem
             // 
             ayudaRecortarToolStripMenuItem.Name = "ayudaRecortarToolStripMenuItem";
-            ayudaRecortarToolStripMenuItem.Size = new Size(200, 22);
+            ayudaRecortarToolStripMenuItem.Size = new Size(207, 22);
             ayudaRecortarToolStripMenuItem.Text = "Recortar imágenes";
             ayudaRecortarToolStripMenuItem.Click += ayudaRecortarToolStripMenuItem_Click;
+            // 
+            // ayudaAtajosToolStripMenuItem
+            // 
+            ayudaAtajosToolStripMenuItem.Name = "ayudaAtajosToolStripMenuItem";
+            ayudaAtajosToolStripMenuItem.Size = new Size(207, 22);
+            // 
+            // ayudaCompararToolStripMenuItem
+            // 
+            ayudaCompararToolStripMenuItem.Name = "ayudaCompararToolStripMenuItem";
+            ayudaCompararToolStripMenuItem.Size = new Size(207, 22);
             // 
             // acercaToolStripMenuItem
             // 
             acercaToolStripMenuItem.Name = "acercaToolStripMenuItem";
-            acercaToolStripMenuItem.Size = new Size(174, 22);
+            acercaToolStripMenuItem.Size = new Size(207, 22);
             // 
             // btnCancelar
             // 
@@ -387,6 +388,9 @@ namespace GifRGB565GUI
             // 
             // btnSelectFolder
             // 
+            btnSelectFolder.Image = global::GifRGB565GUI.Properties.Resources.icon_Abrir;
+            btnSelectFolder.ImageAlign = ContentAlignment.MiddleLeft;
+            btnSelectFolder.TextImageRelation = TextImageRelation.ImageBeforeText;
             btnSelectFolder.Location = new Point(12, 31);
             btnSelectFolder.Name = "btnSelectFolder";
             btnSelectFolder.Size = new Size(150, 30);
@@ -563,6 +567,7 @@ namespace GifRGB565GUI
             // 
             btnSimulate.BackColor = Color.Blue;
             btnSimulate.ForeColor = Color.Yellow;
+            btnSimulate.Tag = "accent";
             btnSimulate.Location = new Point(447, 659);
             btnSimulate.Name = "btnSimulate";
             btnSimulate.Size = new Size(120, 30);
@@ -660,6 +665,7 @@ namespace GifRGB565GUI
             Controls.Add(txtOutName);
             Controls.Add(txtFolder);
             Controls.Add(btnSelectFolder);
+            Icon = (Icon)resources.GetObject("$this.Icon");
             KeyPreview = true;
             MainMenuStrip = menuStrip1;
             Name = "Form1";

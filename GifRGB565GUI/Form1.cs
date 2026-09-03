@@ -70,6 +70,7 @@ namespace GifRGB565GUI
                     {
                         bool dark = themeMatch.Groups[1].Value == "dark";
                         ThemeManager.ApplyTheme(this, dark);
+                        btnSimulate.BackColor = Color.Blue;  // tu color del designer
                         if (dark) oscuroToolStripMenuItem.Checked = true;
                         else claroToolStripMenuItem.Checked = true;
                     }

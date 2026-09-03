@@ -35,6 +35,8 @@ namespace GifRGB565GUI
 
         private static void ApplyToControl(Control c, bool dark, Color bg, Color fg, Color ctrl, Color menuBg)
         {
+            if (c.Tag?.ToString() == "accent") return;
+
             if (c is MenuStrip ms)
             {
                 ms.BackColor = menuBg;
