@@ -1244,6 +1244,7 @@ namespace GifRGB565GUI
         private void redimensionarToolStripMenuItem_Click(object sender, EventArgs e)
         {
             using var form = new ResizeForm();
+            ThemeManager.ApplyTheme(form, ThemeManager.IsDark);
             form.ShowDialog(this);
         }
 

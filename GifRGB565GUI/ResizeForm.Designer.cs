@@ -51,6 +51,9 @@ namespace GifRGB565GUI
             // 
             panelToolbar.BackColor = Color.FromArgb(50, 50, 60);
             panelToolbar.Controls.Add(btnOpen);
+            panelToolbar.Controls.Add(btnResize);
+            panelToolbar.Controls.Add(btnCrop);
+            panelToolbar.Controls.Add(btnSave);
             panelToolbar.Dock = DockStyle.Top;
             panelToolbar.Location = new Point(0, 0);
             panelToolbar.Name = "panelToolbar";
@@ -136,7 +139,7 @@ namespace GifRGB565GUI
             // 
             lblResultInfo.Font = new Font("Segoe UI", 9F);
             lblResultInfo.ForeColor = Color.White;
-            lblResultInfo.Location = new Point(105, 45);
+            lblResultInfo.Location = new Point(101, 40);
             lblResultInfo.Name = "lblResultInfo";
             lblResultInfo.Size = new Size(590, 100);
             lblResultInfo.TabIndex = 2;
@@ -156,9 +159,6 @@ namespace GifRGB565GUI
             panelOptions.Controls.Add(cmbMethod);
             panelOptions.Controls.Add(lblAspectTitle);
             panelOptions.Controls.Add(cmbAspect);
-            panelOptions.Controls.Add(btnResize);
-            panelOptions.Controls.Add(btnCrop);
-            panelOptions.Controls.Add(btnSave);
             panelOptions.Controls.Add(chkRemember);
             panelOptions.Dock = DockStyle.Bottom;
             panelOptions.Location = new Point(0, 345);
@@ -281,14 +281,14 @@ namespace GifRGB565GUI
             btnResize.FlatStyle = FlatStyle.Flat;
             btnResize.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
             btnResize.ForeColor = Color.White;
-            btnResize.Image = global::GifRGB565GUI.Properties.Resources.icon_resize;
+            btnResize.Image = Properties.Resources.icon_resize;
             btnResize.ImageAlign = ContentAlignment.MiddleLeft;
-            btnResize.TextImageRelation = TextImageRelation.ImageBeforeText;
-            btnResize.Location = new Point(15, 165);
+            btnResize.Location = new Point(151, 7);
             btnResize.Name = "btnResize";
-            btnResize.Size = new Size(180, 35);
+            btnResize.Size = new Size(214, 35);
             btnResize.TabIndex = 12;
             btnResize.Text = "¡Redimensiona la imagen!";
+            btnResize.TextImageRelation = TextImageRelation.ImageBeforeText;
             btnResize.UseVisualStyleBackColor = false;
             btnResize.Click += BtnResize_Click;
             // 
@@ -297,14 +297,14 @@ namespace GifRGB565GUI
             btnCrop.BackColor = Color.FromArgb(60, 60, 70);
             btnCrop.FlatStyle = FlatStyle.Flat;
             btnCrop.ForeColor = Color.White;
-            btnCrop.Image = global::GifRGB565GUI.Properties.Resources.icon_crop;
+            btnCrop.Image = Properties.Resources.icon_crop;
             btnCrop.ImageAlign = ContentAlignment.MiddleLeft;
-            btnCrop.TextImageRelation = TextImageRelation.ImageBeforeText;
-            btnCrop.Location = new Point(210, 165);
+            btnCrop.Location = new Point(371, 8);
             btnCrop.Name = "btnCrop";
             btnCrop.Size = new Size(100, 35);
             btnCrop.TabIndex = 13;
             btnCrop.Text = "Recortar";
+            btnCrop.TextImageRelation = TextImageRelation.ImageBeforeText;
             btnCrop.UseVisualStyleBackColor = false;
             btnCrop.Click += BtnCrop_Click;
             // 
@@ -314,14 +314,14 @@ namespace GifRGB565GUI
             btnSave.Enabled = false;
             btnSave.FlatStyle = FlatStyle.Flat;
             btnSave.ForeColor = Color.White;
-            btnSave.Image = global::GifRGB565GUI.Properties.Resources.icon_save;
+            btnSave.Image = Properties.Resources.icon_save;
             btnSave.ImageAlign = ContentAlignment.MiddleLeft;
-            btnSave.TextImageRelation = TextImageRelation.ImageBeforeText;
-            btnSave.Location = new Point(320, 165);
+            btnSave.Location = new Point(477, 9);
             btnSave.Name = "btnSave";
             btnSave.Size = new Size(100, 35);
             btnSave.TabIndex = 14;
             btnSave.Text = "Guardar";
+            btnSave.TextImageRelation = TextImageRelation.ImageBeforeText;
             btnSave.UseVisualStyleBackColor = false;
             btnSave.Click += BtnSave_Click;
             // 
@@ -329,7 +329,7 @@ namespace GifRGB565GUI
             // 
             chkRemember.AutoSize = true;
             chkRemember.ForeColor = Color.White;
-            chkRemember.Location = new Point(440, 172);
+            chkRemember.Location = new Point(390, 16);
             chkRemember.Name = "chkRemember";
             chkRemember.Size = new Size(132, 19);
             chkRemember.TabIndex = 15;
