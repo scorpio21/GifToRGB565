@@ -159,8 +159,8 @@ namespace GifRGB565GUI
             lblStatusFrames = new ToolStripStatusLabel();
             lblStatusSize = new ToolStripStatusLabel();
             lblStatusFormat = new ToolStripStatusLabel();
-            lblVersion = new ToolStripStatusLabel();
             lblSpring = new ToolStripStatusLabel();
+            lblVersion = new ToolStripStatusLabel();
             menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)picPreview).BeginInit();
             ((System.ComponentModel.ISupportInitialize)speedSlider).BeginInit();
@@ -289,21 +289,21 @@ namespace GifRGB565GUI
             // exportPngToolStripMenuItem
             // 
             exportPngToolStripMenuItem.Name = "exportPngToolStripMenuItem";
-            exportPngToolStripMenuItem.Size = new Size(180, 22);
+            exportPngToolStripMenuItem.Size = new Size(163, 22);
             exportPngToolStripMenuItem.Text = "PNG";
             exportPngToolStripMenuItem.Click += exportPngToolStripMenuItem_Click;
             // 
             // exportJpgToolStripMenuItem
             // 
             exportJpgToolStripMenuItem.Name = "exportJpgToolStripMenuItem";
-            exportJpgToolStripMenuItem.Size = new Size(180, 22);
+            exportJpgToolStripMenuItem.Size = new Size(163, 22);
             exportJpgToolStripMenuItem.Text = "JPEG (calidad 85)";
             exportJpgToolStripMenuItem.Click += exportJpgToolStripMenuItem_Click;
             // 
             // exportBmpToolStripMenuItem
             // 
             exportBmpToolStripMenuItem.Name = "exportBmpToolStripMenuItem";
-            exportBmpToolStripMenuItem.Size = new Size(180, 22);
+            exportBmpToolStripMenuItem.Size = new Size(163, 22);
             exportBmpToolStripMenuItem.Text = "BMP";
             exportBmpToolStripMenuItem.Click += exportBmpToolStripMenuItem_Click;
             // 
@@ -408,12 +408,14 @@ namespace GifRGB565GUI
             // 
             // btnCancelar
             // 
-            btnCancelar.Location = new Point(447, 695);
+            btnCancelar.BackColor = Color.Blue;
+            btnCancelar.ForeColor = Color.Yellow;
+            btnCancelar.Location = new Point(447, 701);
             btnCancelar.Name = "btnCancelar";
-            btnCancelar.Size = new Size(120, 30);
+            btnCancelar.Size = new Size(115, 25);
             btnCancelar.TabIndex = 21;
             btnCancelar.Text = "Cancelar";
-            btnCancelar.UseVisualStyleBackColor = true;
+            btnCancelar.UseVisualStyleBackColor = false;
             btnCancelar.Visible = false;
             btnCancelar.Click += btnCancelar_Click;
             // 
@@ -608,9 +610,9 @@ namespace GifRGB565GUI
             // 
             btnSimulate.BackColor = Color.Blue;
             btnSimulate.ForeColor = Color.Yellow;
-            btnSimulate.Location = new Point(447, 681);
+            btnSimulate.Location = new Point(447, 672);
             btnSimulate.Name = "btnSimulate";
-            btnSimulate.Size = new Size(120, 30);
+            btnSimulate.Size = new Size(115, 25);
             btnSimulate.TabIndex = 1;
             btnSimulate.Tag = "accent";
             btnSimulate.Text = "Simular .h";
@@ -621,7 +623,7 @@ namespace GifRGB565GUI
             // 
             btnMoveUp.Location = new Point(5, 586);
             btnMoveUp.Name = "btnMoveUp";
-            btnMoveUp.Size = new Size(80, 18);
+            btnMoveUp.Size = new Size(80, 30);
             btnMoveUp.TabIndex = 25;
             btnMoveUp.Text = "▲ Subir";
             btnMoveUp.UseVisualStyleBackColor = true;
@@ -631,7 +633,7 @@ namespace GifRGB565GUI
             // 
             btnMoveDown.Location = new Point(87, 586);
             btnMoveDown.Name = "btnMoveDown";
-            btnMoveDown.Size = new Size(80, 18);
+            btnMoveDown.Size = new Size(80, 30);
             btnMoveDown.TabIndex = 26;
             btnMoveDown.Text = "▼ Bajar";
             btnMoveDown.UseVisualStyleBackColor = true;
@@ -641,7 +643,7 @@ namespace GifRGB565GUI
             // 
             btnDelete.Location = new Point(169, 586);
             btnDelete.Name = "btnDelete";
-            btnDelete.Size = new Size(80, 18);
+            btnDelete.Size = new Size(80, 30);
             btnDelete.TabIndex = 27;
             btnDelete.Text = "✕ Eliminar";
             btnDelete.UseVisualStyleBackColor = true;
@@ -701,18 +703,18 @@ namespace GifRGB565GUI
             lblStatusFormat.Size = new Size(28, 17);
             lblStatusFormat.Text = "N64";
             // 
+            // lblSpring
+            // 
+            lblSpring.Name = "lblSpring";
+            lblSpring.Size = new Size(355, 17);
+            lblSpring.Spring = true;
+            // 
             // lblVersion
             // 
             lblVersion.Name = "lblVersion";
             lblVersion.Size = new Size(37, 17);
             lblVersion.Text = "v1.1.4";
             lblVersion.TextAlign = ContentAlignment.MiddleRight;
-            // 
-            // lblSpring
-            // 
-            lblSpring.Name = "lblSpring";
-            lblSpring.Size = new Size(0, 17);
-            lblSpring.Spring = true;
             // 
             // Form1
             // 

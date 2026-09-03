@@ -26,6 +26,7 @@ namespace GifRGB565GUI
         private enum ExportFormat { N64, BIN, BINGZ }
         private ExportFormat currentExportFormat = ExportFormat.N64;
         private CancellationTokenSource? _generateCts;
+        private CancellationTokenSource? _exportCts;
 
         private static readonly string ConfigPath = Path.Combine(
             Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
@@ -556,7 +557,7 @@ namespace GifRGB565GUI
             btnNext.Enabled = currentFrameIndex < total - 1;
         }
 
-        private void btnGenerate_Click(object sender, EventArgs e)
+        private async void btnGenerate_Click(object sender, EventArgs e)
         {
             // Update converter options
             ImageConverter.EnableDithering = chkDither.Checked;
@@ -630,7 +631,7 @@ namespace GifRGB565GUI
                 // Ensure .h extension
                 string fileName = outName.EndsWith(".h", StringComparison.OrdinalIgnoreCase) ? outName : outName + ".h";
                 string path = Path.Combine("output", fileName);
-                GenerateHeaderAtPath(path, width, height, totalFrames, _generateCts.Token);
+                await GenerateHeaderAtPathAsync(path, width, height, totalFrames, _generateCts.Token);
                 Log($"✔ Archivo header generado: {path}");
                 MessageBox.Show($"Header generado: {path}");
                 _generateCts?.Dispose();
@@ -671,52 +672,50 @@ namespace GifRGB565GUI
                 List<ushort[]> framesData = new List<ushort[]>(totalFrames);
                 var ct = _generateCts.Token;
 
-                // convert frames and update progress
-                for (int i = 0; i < totalFrames; i++)
-                {
-                    if (ct.IsCancellationRequested)
-                    {
-                        Log($"Generación cancelada en frame {i}. Frames procesados: {i}/{totalFrames}");
-                        var result = MessageBox.Show($"Generación cancelada en frame {i}/{totalFrames}.\n¿Conservar los frames procesados?", "Cancelado", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
-                        if (result == DialogResult.Yes && framesData.Count > 0)
-                        {
-                            try
-                            {
-                                ExportBin(outPath, width, height, framesData, gzip);
-                                Log($"✔ Parcial exportado: {outPath} ({framesData.Count} frames)");
-                                MessageBox.Show($"Parcial exportado: {outPath} ({framesData.Count} frames)");
-                            }
-                            catch (Exception ex) { MessageBox.Show($"Error: {ex.Message}"); }
-                        }
-                        return;
-                    }
-
-                    Bitmap bmp;
-                    if (usingGif) bmp = gifFrames[i];
-                    else if (usingHeader && headerFrames != null) bmp = ConvertRgb565ToBitmap(headerFrames[i], headerWidth, headerHeight);
-                    else bmp = new Bitmap(frameFiles[i]);
-
-                    framesData.Add(ImageConverter.ToRGB565(bmp).ToArray());
-
-                    // dispose temporary bmp if created
-                    if (!usingGif && !(usingHeader && headerFrames != null)) bmp.Dispose();
-
-                    // update progress
-                    try { progressBar.Value = Math.Min(progressBar.Maximum, progressBar.Value + 1); } catch { }
-                    Log($"Convertido frame {i}");
-                    Application.DoEvents();
-                }
-
                 try
                 {
+                    await Task.Run(() =>
+                    {
+                        for (int i = 0; i < totalFrames; i++)
+                        {
+                            ct.ThrowIfCancellationRequested();
+
+                            Bitmap bmp;
+                            if (usingGif) bmp = gifFrames[i];
+                            else if (usingHeader && headerFrames != null) bmp = ConvertRgb565ToBitmap(headerFrames[i], headerWidth, headerHeight);
+                            else bmp = new Bitmap(frameFiles[i]);
+
+                            framesData.Add(ImageConverter.ToRGB565(bmp).ToArray());
+
+                            if (!usingGif && !(usingHeader && headerFrames != null)) bmp.Dispose();
+
+                            int progress = i + 1;
+                            Invoke(() =>
+                            {
+                                try { progressBar.Value = Math.Min(progressBar.Maximum, progress); } catch { }
+                                Log($"Convertido frame {i}");
+                            });
+                        }
+                    }, ct);
+
                     ExportBin(outPath, width, height, framesData, gzip);
                     Log($"✔ Archivo exportado: {outPath}");
                     MessageBox.Show($"Exportación completada: {outPath}");
                 }
-                catch (Exception ex)
+                catch (OperationCanceledException)
                 {
-                    MessageBox.Show($"Error: {ex.Message}");
-                    Log($"Error export: {ex.Message}");
+                    Log($"Generación cancelada en frame {framesData.Count}. Frames procesados: {framesData.Count}/{totalFrames}");
+                    var result = MessageBox.Show($"Generación cancelada en frame {framesData.Count}/{totalFrames}.\n¿Conservar los frames procesados?", "Cancelado", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                    if (result == DialogResult.Yes && framesData.Count > 0)
+                    {
+                        try
+                        {
+                            ExportBin(outPath, width, height, framesData, gzip);
+                            Log($"✔ Parcial exportado: {outPath} ({framesData.Count} frames)");
+                            MessageBox.Show($"Parcial exportado: {outPath} ({framesData.Count} frames)");
+                        }
+                        catch (Exception ex) { MessageBox.Show($"Error: {ex.Message}"); }
+                    }
                 }
             }
 
@@ -736,7 +735,7 @@ namespace GifRGB565GUI
             return true;
         }
 
-        private void GenerateHeaderAtPath(string outPath, int width, int height, int totalFrames, CancellationToken ct = default)
+        private async Task GenerateHeaderAtPathAsync(string outPath, int width, int height, int totalFrames, CancellationToken ct = default)
         {
             Directory.CreateDirectory(Path.GetDirectoryName(outPath) ?? "output");
 
@@ -748,26 +747,27 @@ namespace GifRGB565GUI
                 writer.WriteLine();
                 writer.WriteLine($"const unsigned short PROGMEM n64[{totalFrames}][{width * height}] = {{");
 
-                for (int i = 0; i < totalFrames; i++)
+                await Task.Run(() =>
                 {
-                    if (ct.IsCancellationRequested)
+                    for (int i = 0; i < totalFrames; i++)
                     {
-                        Log($"Generación cancelada en frame {i}. Header parcial guardado.");
-                        break;
+                        ct.ThrowIfCancellationRequested();
+
+                        Bitmap bmp = usingGif ? gifFrames[i] : new Bitmap(frameFiles[i]);
+                        var rgb565 = ImageConverter.ToRGB565(bmp);
+
+                        writer.Write("{");
+                        writer.Write(string.Join(",", rgb565.Select(v => "0x" + v.ToString("X"))));
+                        writer.WriteLine("},");
+
+                        int progress = i + 1;
+                        Invoke(() =>
+                        {
+                            try { progressBar.Value = Math.Min(progressBar.Maximum, progress); } catch { }
+                            Log($"Convertido frame {i}");
+                        });
                     }
-
-                    Bitmap bmp = usingGif ? gifFrames[i] : new Bitmap(frameFiles[i]);
-                    var rgb565 = ImageConverter.ToRGB565(bmp);
-
-                    writer.Write("{");
-                    writer.Write(string.Join(",", rgb565.Select(v => "0x" + v.ToString("X"))));
-                    writer.WriteLine("},");
-
-                    // update progress and log
-                    try { progressBar.Value = Math.Min(progressBar.Maximum, progressBar.Value + 1); } catch { }
-                    Log($"Convertido frame {i}");
-                    Application.DoEvents();
-                }
+                }, ct);
 
                 writer.WriteLine("};");
             }
@@ -1335,7 +1335,7 @@ namespace GifRGB565GUI
             ExportFrames(ImageFormat.Bmp, ".bmp", -1);
         }
 
-        private void ExportFrames(ImageFormat format, string ext, int jpegQuality)
+        private async void ExportFrames(ImageFormat format, string ext, int jpegQuality)
         {
             using (var dlg = new FolderBrowserDialog())
             {
@@ -1343,6 +1343,9 @@ namespace GifRGB565GUI
                 if (dlg.ShowDialog() != DialogResult.OK) return;
 
                 string outDir = dlg.SelectedPath;
+                _exportCts = new CancellationTokenSource();
+                var ct = _exportCts.Token;
+
                 try
                 {
                     int total = usingGif ? gifFrames.Length : (usingHeader && headerFrames != null ? headerFrames.Count : frameFiles.Length);
@@ -1358,33 +1361,47 @@ namespace GifRGB565GUI
 
                     var codec = ImageCodecInfo.GetImageEncoders().FirstOrDefault(c => c.FormatID == format.Guid);
 
-                    for (int i = 0; i < total; i++)
+                    await Task.Run(() =>
                     {
-                        Bitmap bmp;
-                        if (usingGif)
-                            bmp = gifFrames[i];
-                        else if (usingHeader && headerFrames != null)
-                            bmp = ConvertRgb565ToBitmap(headerFrames[i], headerWidth, headerHeight);
-                        else
-                            bmp = new Bitmap(frameFiles[i]);
+                        for (int i = 0; i < total; i++)
+                        {
+                            ct.ThrowIfCancellationRequested();
 
-                        string filename = Path.Combine(outDir, $"frame_{i:000}{ext}");
-                        if (encoderParams != null && codec != null)
-                            bmp.Save(filename, codec, encoderParams);
-                        else
-                            bmp.Save(filename, format);
+                            Bitmap bmp;
+                            if (usingGif)
+                                bmp = gifFrames[i];
+                            else if (usingHeader && headerFrames != null)
+                                bmp = ConvertRgb565ToBitmap(headerFrames[i], headerWidth, headerHeight);
+                            else
+                                bmp = new Bitmap(frameFiles[i]);
 
-                        if (!usingGif && !(usingHeader && headerFrames != null)) bmp.Dispose();
+                            string filename = Path.Combine(outDir, $"frame_{i:000}{ext}");
+                            if (encoderParams != null && codec != null)
+                                bmp.Save(filename, codec, encoderParams);
+                            else
+                                bmp.Save(filename, format);
 
-                        Log($"Exportado: {filename}");
-                        Application.DoEvents();
-                    }
+                            if (!usingGif && !(usingHeader && headerFrames != null)) bmp.Dispose();
+
+                            int progress = i + 1;
+                            Invoke(() => Log($"Exportado: {filename}"));
+                        }
+                    }, ct);
 
                     MessageBox.Show($"Exportacion completada: {outDir}", "Exportar Frames", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+                catch (OperationCanceledException)
+                {
+                    MessageBox.Show("Exportación cancelada.", "Cancelado", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
                 catch (Exception ex)
                 {
                     MessageBox.Show($"Error exportando frames: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+                finally
+                {
+                    _exportCts?.Dispose();
+                    _exportCts = null;
                 }
             }
         }
@@ -1449,6 +1466,7 @@ namespace GifRGB565GUI
         private void btnCancelar_Click(object? sender, EventArgs e)
         {
             _generateCts?.Cancel();
+            _exportCts?.Cancel();
             btnCancelar.Enabled = false;
             btnCancelar.Text = "Cancelando...";
         }

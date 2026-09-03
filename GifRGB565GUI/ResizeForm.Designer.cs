@@ -74,7 +74,7 @@ namespace GifRGB565GUI
             btnOpen.ImageAlign = ContentAlignment.MiddleLeft;
             btnOpen.Location = new Point(10, 8);
             btnOpen.Name = "btnOpen";
-            btnOpen.Size = new Size(135, 34);
+            btnOpen.Size = new Size(135, 35);
             btnOpen.TabIndex = 0;
             btnOpen.Text = "Abrir imagen";
             btnOpen.TextImageRelation = TextImageRelation.ImageBeforeText;
@@ -347,16 +347,6 @@ namespace GifRGB565GUI
             chkRemember.Text = "Recuerda los ajustes";
             chkRemember.UseVisualStyleBackColor = true;
             // 
-            // lblPreset
-            // 
-            lblPreset.AutoSize = true;
-            lblPreset.ForeColor = Color.White;
-            lblPreset.Location = new Point(15, 155);
-            lblPreset.Name = "lblPreset";
-            lblPreset.Size = new Size(46, 15);
-            lblPreset.TabIndex = 16;
-            lblPreset.Text = "Tamaño:";
-            // 
             // cmbPreset
             // 
             cmbPreset.DropDownStyle = ComboBoxStyle.DropDownList;
@@ -367,6 +357,16 @@ namespace GifRGB565GUI
             cmbPreset.TabIndex = 17;
             cmbPreset.SelectedIndexChanged += cmbPreset_SelectedIndexChanged;
             // 
+            // lblPreset
+            // 
+            lblPreset.AutoSize = true;
+            lblPreset.ForeColor = Color.White;
+            lblPreset.Location = new Point(15, 155);
+            lblPreset.Name = "lblPreset";
+            lblPreset.Size = new Size(53, 15);
+            lblPreset.TabIndex = 16;
+            lblPreset.Text = "Tamaño:";
+            // 
             // chkKeepAspect
             // 
             chkKeepAspect.AutoSize = true;
@@ -375,7 +375,7 @@ namespace GifRGB565GUI
             chkKeepAspect.ForeColor = Color.White;
             chkKeepAspect.Location = new Point(270, 155);
             chkKeepAspect.Name = "chkKeepAspect";
-            chkKeepAspect.Size = new Size(120, 19);
+            chkKeepAspect.Size = new Size(139, 19);
             chkKeepAspect.TabIndex = 18;
             chkKeepAspect.Text = "Mantener proporción";
             chkKeepAspect.UseVisualStyleBackColor = true;
