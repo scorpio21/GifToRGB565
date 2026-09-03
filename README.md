@@ -1,5 +1,11 @@
 # GifToRGB565
 
+<p>
+  <img src="GifRGB565GUI/Img/Menu.png" width="30%" />
+  <img src="GifRGB565GUI/Img/menu_redimencionar.png" width="30%" />
+  <img src="GifRGB565GUI/Img/menu_recortar.png" width="30%" />
+</p>
+
 Conversor de GIF / secuencia de imágenes a arrays RGB565 (formato para N64/ESP32) con interfaz gráfica en WinForms.
 
 ## Características
