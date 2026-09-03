@@ -197,7 +197,7 @@ namespace GifRGB565GUI
             // cmbAspectLock
             // 
             cmbAspectLock.DropDownStyle = ComboBoxStyle.DropDownList;
-            cmbAspectLock.Items.AddRange(new object[] { "No", "1:1", "4:3", "16:9", "3:2", "自由" });
+            cmbAspectLock.Items.AddRange(new object[] { "No", "1:1", "4:3", "16:9", "3:2", "Libre" });
             cmbAspectLock.Location = new Point(210, 32);
             cmbAspectLock.Name = "cmbAspectLock";
             cmbAspectLock.Size = new Size(100, 23);

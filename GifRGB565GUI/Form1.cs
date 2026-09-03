@@ -1035,7 +1035,7 @@ namespace GifRGB565GUI
 
         private void acercaToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            string version = "v1.0"; // actualizar si hay versión real
+            string version = ReadVersionFromChangelog();
             string repo = "https://github.com/scorpio21/GifToRGB565";
             string author = "scorpio21";
 
