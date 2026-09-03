@@ -645,6 +645,7 @@ namespace GifRGB565GUI
             KeyPreview = true;
             MainMenuStrip = menuStrip1;
             Name = "Form1";
+            StartPosition = FormStartPosition.CenterScreen;
             Text = "GIF → RGB565 Converter";
             menuStrip1.ResumeLayout(false);
             menuStrip1.PerformLayout();

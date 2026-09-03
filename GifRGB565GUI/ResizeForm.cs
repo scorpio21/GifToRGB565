@@ -9,15 +9,16 @@ namespace GifRGB565GUI
 {
     public partial class ResizeForm : Form
     {
-        private Bitmap? originalBmp;
         private Bitmap? resizedBmp;
         private string currentFilePath = "";
+        private string? originalGifPath;
 
         private MagickImage? magickImage;
         private MagickImageCollection? magickCollection;
         private bool isGif = false;
         private int[]? gifFrameDelays;
         private int gifFrameCount = 0;
+        private Image? previewImage;
 
         public ResizeForm()
         {
@@ -74,10 +75,12 @@ namespace GifRGB565GUI
                 else
                 {
                     isGif = false;
+                    originalGifPath = null;
                     magickImage = new MagickImage(path);
-                    originalBmp?.Dispose();
-                    originalBmp = magickImage.ToBitmap();
-                    picPreview.Image = originalBmp;
+
+                    previewImage?.Dispose();
+                    previewImage = Image.FromFile(path);
+                    picPreview.Image = previewImage;
 
                     lblFileInfo.Text = $"Tamaño del archivo: {sizeStr}, ancho: {magickImage.Width}px, altura: {magickImage.Height}px, tipo: {ext.TrimStart('.')}";
 
@@ -120,9 +123,11 @@ namespace GifRGB565GUI
             lblFileInfo.Text = $"Tamaño del archivo: {sizeStr}, ancho: {first.Page.Width}px, altura: {first.Page.Height}px, fotogramas: {gifFrameCount}, tipo: gif, longitud: {ts.Minutes:D2}:{ts.Seconds:D2}.{ts.Milliseconds / 100}";
 
             magickImage = new MagickImage(path);
-            originalBmp?.Dispose();
-            originalBmp = magickImage.ToBitmap();
-            picPreview.Image = originalBmp;
+            originalGifPath = path;
+
+            previewImage?.Dispose();
+            previewImage = Image.FromFile(path);
+            picPreview.Image = previewImage;
 
             txtWidth.Text = magickImage.Width.ToString();
             txtHeight.Text = magickImage.Height.ToString();
@@ -179,7 +184,6 @@ namespace GifRGB565GUI
             if (magickCollection != null && gifFrameCount > 0)
                 return (int)((MagickImage)magickCollection[0]).Page.Width;
             if (magickImage != null) return (int)magickImage.Width;
-            if (originalBmp != null) return originalBmp.Width;
             return 0;
         }
 
@@ -188,13 +192,12 @@ namespace GifRGB565GUI
             if (magickCollection != null && gifFrameCount > 0)
                 return (int)((MagickImage)magickCollection[0]).Page.Height;
             if (magickImage != null) return (int)magickImage.Height;
-            if (originalBmp != null) return originalBmp.Height;
             return 0;
         }
 
         private void BtnResize_Click(object? sender, EventArgs e)
         {
-            if (magickImage == null && originalBmp == null)
+            if (magickImage == null)
             {
                 MessageBox.Show("No hay imagen cargada.", "Redimensionar", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
@@ -221,7 +224,6 @@ namespace GifRGB565GUI
             ApplyResizeMagickInPlace(clone, w, h);
             resizedBmp = clone.ToBitmap();
 
-            picPreview.Image = resizedBmp;
             btnSave.Enabled = true;
             ShowResultPanel(w, h);
         }
@@ -240,25 +242,12 @@ namespace GifRGB565GUI
                     ApplyResizeMagickInPlace((MagickImage)frame, w, h);
                 }
 
-                var resultPath = Path.Combine(Path.GetTempPath(), $"resize_preview_{Guid.NewGuid():N}.gif");
+                var resultPath = Path.Combine(Path.GetTempPath(), $"resize_result_{Guid.NewGuid():N}.gif");
                 collection.Write(resultPath);
 
-                Cleanup();
-                isGif = true;
-                currentFilePath = resultPath;
-
-                magickCollection = new MagickImageCollection();
-                magickCollection.Read(resultPath);
-                gifFrameCount = magickCollection.Count;
-                gifFrameDelays = new int[gifFrameCount];
-                for (int i = 0; i < gifFrameCount; i++)
-                    gifFrameDelays[i] = Math.Max(1, (int)magickCollection[i].AnimationDelay);
-
-                magickImage = new MagickImage(resultPath);
-
                 resizedBmp?.Dispose();
-                resizedBmp = magickImage.ToBitmap();
-                picPreview.Image = resizedBmp;
+                using var resultMagick = new MagickImage(resultPath);
+                resizedBmp = resultMagick.ToBitmap();
 
                 btnSave.Enabled = true;
                 ShowResultPanel(w, h);
@@ -330,6 +319,54 @@ namespace GifRGB565GUI
             panelResult.Visible = true;
         }
 
+        private void BtnCrop_Click(object? sender, EventArgs e)
+        {
+            if (currentFilePath.Length == 0 || !File.Exists(currentFilePath))
+            {
+                MessageBox.Show("No hay imagen cargada.", "Recortar", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            using var cropForm = new CropForm(currentFilePath);
+            if (cropForm.ShowDialog(this) == DialogResult.OK && cropForm.Tag is CropResult result)
+            {
+                Cleanup();
+                currentFilePath = result.ResultPath;
+                isGif = result.IsGif;
+
+                if (isGif)
+                {
+                    magickCollection = new MagickImageCollection();
+                    magickCollection.Read(result.ResultPath);
+                    gifFrameCount = magickCollection.Count;
+                    gifFrameDelays = new int[gifFrameCount];
+                    for (int i = 0; i < gifFrameCount; i++)
+                        gifFrameDelays[i] = Math.Max(1, (int)magickCollection[i].AnimationDelay);
+                }
+
+                magickImage = new MagickImage(result.ResultPath);
+
+                previewImage?.Dispose();
+                previewImage = Image.FromFile(result.ResultPath);
+                picPreview.Image = previewImage;
+
+                long size = new FileInfo(result.ResultPath).Length;
+                string sizeStr = size > 1024 * 1024 ? $"{size / (1024.0 * 1024.0):F2}MiB" : $"{size / 1024.0:F2}KiB";
+                string info = $"Tamaño: {sizeStr}, ancho: {result.Width}px, altura: {result.Height}px";
+                if (isGif) info += $", fotogramas: {gifFrameCount}, tipo: gif";
+                lblFileInfo.Text = info;
+
+                txtWidth.Text = result.Width.ToString();
+                txtHeight.Text = result.Height.ToString();
+                suppressEvents = true;
+                txtPercent.Text = "100";
+                suppressEvents = false;
+
+                btnSave.Enabled = false;
+                panelResult.Visible = false;
+            }
+        }
+
         private void BtnSave_Click(object? sender, EventArgs e)
         {
             if (resizedBmp == null)
@@ -339,18 +376,44 @@ namespace GifRGB565GUI
             }
 
             using var dlg = new SaveFileDialog();
-            dlg.Filter = "PNG|*.png|JPEG|*.jpg|BMP|*.bmp|Todos|*.*";
+            dlg.Filter = isGif ? "GIF|*.gif|PNG|*.png|Todos|*.*" : "PNG|*.png|JPEG|*.jpg|BMP|*.bmp|Todos|*.*";
             dlg.FileName = Path.GetFileNameWithoutExtension(currentFilePath) + "_resized";
             if (dlg.ShowDialog() == DialogResult.OK)
             {
-                var format = Path.GetExtension(dlg.FileName).ToLower() switch
+                string ext = Path.GetExtension(dlg.FileName).ToLower();
+                if (ext == ".gif" && isGif && magickCollection != null && gifFrameCount > 1)
+                    SaveResizedAnimatedGif(dlg.FileName);
+                else
                 {
-                    ".jpg" or ".jpeg" => ImageFormat.Jpeg,
-                    ".bmp" => ImageFormat.Bmp,
-                    _ => ImageFormat.Png
-                };
-                resizedBmp.Save(dlg.FileName, format);
+                    var format = ext switch
+                    {
+                        ".jpg" or ".jpeg" => ImageFormat.Jpeg,
+                        ".bmp" => ImageFormat.Bmp,
+                        ".gif" => ImageFormat.Gif,
+                        _ => ImageFormat.Png
+                    };
+                    resizedBmp.Save(dlg.FileName, format);
+                }
                 lblFileInfo.Text = $"Guardado: {dlg.FileName}";
+            }
+        }
+
+        private void SaveResizedAnimatedGif(string path)
+        {
+            if (magickCollection == null || !int.TryParse(txtWidth.Text, out int w) || !int.TryParse(txtHeight.Text, out int h))
+                return;
+
+            try
+            {
+                using var collection = (MagickImageCollection)magickCollection.Clone();
+                collection.Coalesce();
+                foreach (IMagickImage<byte> frame in collection)
+                    ApplyResizeMagickInPlace((MagickImage)frame, w, h);
+                collection.Write(path);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error guardando GIF: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -360,15 +423,17 @@ namespace GifRGB565GUI
             magickImage = null;
             magickCollection?.Dispose();
             magickCollection = null;
+            previewImage?.Dispose();
+            previewImage = null;
             gifFrameDelays = null;
             gifFrameCount = 0;
             isGif = false;
+            originalGifPath = null;
         }
 
         protected override void OnFormClosing(FormClosingEventArgs e)
         {
             Cleanup();
-            originalBmp?.Dispose();
             resizedBmp?.Dispose();
             picResult.Image?.Dispose();
             base.OnFormClosing(e);
