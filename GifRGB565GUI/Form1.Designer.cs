@@ -356,16 +356,22 @@ namespace GifRGB565GUI
             // 
             ayudaAtajosToolStripMenuItem.Name = "ayudaAtajosToolStripMenuItem";
             ayudaAtajosToolStripMenuItem.Size = new Size(207, 22);
+            ayudaAtajosToolStripMenuItem.Text = "Atajos de teclado";
+            ayudaAtajosToolStripMenuItem.Click += ayudaAtajosToolStripMenuItem_Click;
             // 
             // ayudaCompararToolStripMenuItem
             // 
             ayudaCompararToolStripMenuItem.Name = "ayudaCompararToolStripMenuItem";
             ayudaCompararToolStripMenuItem.Size = new Size(207, 22);
+            ayudaCompararToolStripMenuItem.Text = "Comparar imágenes";
+            ayudaCompararToolStripMenuItem.Click += ayudaCompararToolStripMenuItem_Click;
             // 
             // acercaToolStripMenuItem
             // 
             acercaToolStripMenuItem.Name = "acercaToolStripMenuItem";
             acercaToolStripMenuItem.Size = new Size(207, 22);
+            acercaToolStripMenuItem.Text = "Acerca de";
+            acercaToolStripMenuItem.Click += acercaToolStripMenuItem_Click;
             // 
             // btnCancelar
             // 
