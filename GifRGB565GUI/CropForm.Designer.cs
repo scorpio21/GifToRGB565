@@ -165,6 +165,9 @@ namespace GifRGB565GUI
             btnCrop.FlatStyle = FlatStyle.Flat;
             btnCrop.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
             btnCrop.ForeColor = Color.White;
+            btnCrop.Image = global::GifRGB565GUI.Properties.Resources.icon_crop;
+            btnCrop.ImageAlign = ContentAlignment.MiddleLeft;
+            btnCrop.TextImageRelation = TextImageRelation.ImageBeforeText;
             btnCrop.Location = new Point(10, 100);
             btnCrop.Size = new Size(180, 32);
             btnCrop.Text = "¡Recorta la imagen!";

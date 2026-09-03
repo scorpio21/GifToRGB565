@@ -281,6 +281,9 @@ namespace GifRGB565GUI
             btnResize.FlatStyle = FlatStyle.Flat;
             btnResize.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
             btnResize.ForeColor = Color.White;
+            btnResize.Image = global::GifRGB565GUI.Properties.Resources.icon_resize;
+            btnResize.ImageAlign = ContentAlignment.MiddleLeft;
+            btnResize.TextImageRelation = TextImageRelation.ImageBeforeText;
             btnResize.Location = new Point(15, 165);
             btnResize.Name = "btnResize";
             btnResize.Size = new Size(180, 35);
@@ -294,6 +297,9 @@ namespace GifRGB565GUI
             btnCrop.BackColor = Color.FromArgb(60, 60, 70);
             btnCrop.FlatStyle = FlatStyle.Flat;
             btnCrop.ForeColor = Color.White;
+            btnCrop.Image = global::GifRGB565GUI.Properties.Resources.icon_crop;
+            btnCrop.ImageAlign = ContentAlignment.MiddleLeft;
+            btnCrop.TextImageRelation = TextImageRelation.ImageBeforeText;
             btnCrop.Location = new Point(210, 165);
             btnCrop.Name = "btnCrop";
             btnCrop.Size = new Size(100, 35);
@@ -308,6 +314,9 @@ namespace GifRGB565GUI
             btnSave.Enabled = false;
             btnSave.FlatStyle = FlatStyle.Flat;
             btnSave.ForeColor = Color.White;
+            btnSave.Image = global::GifRGB565GUI.Properties.Resources.icon_save;
+            btnSave.ImageAlign = ContentAlignment.MiddleLeft;
+            btnSave.TextImageRelation = TextImageRelation.ImageBeforeText;
             btnSave.Location = new Point(320, 165);
             btnSave.Name = "btnSave";
             btnSave.Size = new Size(100, 35);
