@@ -2,6 +2,7 @@ using System;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
+using System.Text.Json;
 using System.Windows.Forms;
 using ImageMagick;
 
@@ -9,6 +10,9 @@ namespace GifRGB565GUI
 {
     public partial class ResizeForm : Form
     {
+        private static readonly string SettingsPath = Path.Combine(AppContext.BaseDirectory, "resize_settings.json");
+        private static readonly JsonSerializerOptions JsonOpts = new() { WriteIndented = true };
+
         private Bitmap? resizedBmp;
         private string currentFilePath = "";
         private string? originalGifPath;
@@ -30,6 +34,7 @@ namespace GifRGB565GUI
             txtHeight.TextChanged += txtHeight_TextChanged;
             txtPercent.TextChanged += txtPercent_TextChanged;
             cmbPreset.SelectedIndex = 0;
+            LoadSettings();
         }
 
         private void ResizeForm_DragEnter(object? sender, DragEventArgs e)
@@ -251,6 +256,8 @@ namespace GifRGB565GUI
                 ResizeAnimatedGif(w, h);
             else
                 ResizeStaticImage(w, h);
+
+            if (chkRemember.Checked) SaveSettings();
         }
 
         private void ResizeStaticImage(int w, int h)
@@ -402,6 +409,8 @@ namespace GifRGB565GUI
 
                 btnSave.Enabled = false;
                 panelResult.Visible = false;
+
+                if (chkRemember.Checked) SaveSettings();
             }
         }
 
@@ -455,6 +464,62 @@ namespace GifRGB565GUI
             }
         }
 
+        private void LoadSettings()
+        {
+            try
+            {
+                if (!File.Exists(SettingsPath)) return;
+                string json = File.ReadAllText(SettingsPath);
+                var s = JsonSerializer.Deserialize<ResizeSettings>(json, JsonOpts);
+                if (s == null) return;
+
+                chkRemember.Checked = s.Remember;
+                if (!s.Remember) return;
+
+                suppressEvents = true;
+                if (s.Width > 0) txtWidth.Text = s.Width.ToString();
+                if (s.Height > 0) txtHeight.Text = s.Height.ToString();
+                if (s.Method >= 0 && s.Method < cmbMethod.Items.Count) cmbMethod.SelectedIndex = s.Method;
+                if (s.Aspect >= 0 && s.Aspect < cmbAspect.Items.Count) cmbAspect.SelectedIndex = s.Aspect;
+                if (s.Preset >= 0 && s.Preset < cmbPreset.Items.Count) cmbPreset.SelectedIndex = s.Preset;
+                chkKeepAspect.Checked = s.KeepAspect;
+                suppressEvents = false;
+            }
+            catch { }
+        }
+
+        private void SaveSettings()
+        {
+            try
+            {
+                int.TryParse(txtWidth.Text, out int w);
+                int.TryParse(txtHeight.Text, out int h);
+                var s = new ResizeSettings
+                {
+                    Remember = chkRemember.Checked,
+                    Width = w,
+                    Height = h,
+                    Method = cmbMethod.SelectedIndex,
+                    Aspect = cmbAspect.SelectedIndex,
+                    Preset = cmbPreset.SelectedIndex,
+                    KeepAspect = chkKeepAspect.Checked
+                };
+                File.WriteAllText(SettingsPath, JsonSerializer.Serialize(s, JsonOpts));
+            }
+            catch { }
+        }
+
+        private class ResizeSettings
+        {
+            public bool Remember { get; set; }
+            public int Width { get; set; }
+            public int Height { get; set; }
+            public int Method { get; set; }
+            public int Aspect { get; set; }
+            public int Preset { get; set; }
+            public bool KeepAspect { get; set; } = true;
+        }
+
         private void Cleanup()
         {
             magickImage?.Dispose();
@@ -471,6 +536,7 @@ namespace GifRGB565GUI
 
         protected override void OnFormClosing(FormClosingEventArgs e)
         {
+            if (chkRemember.Checked) SaveSettings();
             Cleanup();
             resizedBmp?.Dispose();
             picResult.Image?.Dispose();

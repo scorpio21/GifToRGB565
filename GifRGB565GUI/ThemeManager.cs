@@ -46,6 +46,18 @@ namespace GifRGB565GUI
                 return;
             }
 
+            if (c is StatusStrip ss)
+            {
+                ss.BackColor = menuBg;
+                ss.ForeColor = fg;
+                foreach (ToolStripItem item in ss.Items)
+                {
+                    if (item is ToolStripStatusLabel label)
+                        label.ForeColor = fg;
+                }
+                return;
+            }
+
             if (c is TextBox || c is ListBox)
             {
                 c.BackColor = ctrl;

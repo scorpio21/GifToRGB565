@@ -464,11 +464,13 @@ namespace GifRGB565GUI
             animTimer.Stop();
             animTimer.Enabled = false;
 
+            int total = usingGif ? gifFrames.Length : (usingHeader && headerFrames != null ? headerFrames.Count : frameFiles.Length);
+
             // Estado de botones
             btnPlay.Enabled = true;
             btnStop.Enabled = false;
-            btnNext.Enabled = false;
-            btnPrev.Enabled = false;
+            btnPrev.Enabled = currentFrameIndex > 0;
+            btnNext.Enabled = total > 0 && currentFrameIndex < total - 1;
         }
 
         private void animTimer_Tick(object sender, EventArgs e)
