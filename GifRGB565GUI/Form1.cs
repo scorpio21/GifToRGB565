@@ -421,7 +421,7 @@ namespace GifRGB565GUI
             {
                 currentFrameIndex = 0;
                 lstFrames.SelectedIndex = 0;
-                picPreview.Image = Image.FromFile(frameFiles[0]);
+                picPreview.Image = new Bitmap(frameFiles[0]);
                 ShowRgb565Preview(0);
             }
 
@@ -443,7 +443,7 @@ namespace GifRGB565GUI
             else if (usingHeader && headerFrames != null)
                 picPreview.Image = ConvertRgb565ToBitmap(headerFrames[currentFrameIndex], headerWidth, headerHeight);
             else
-                picPreview.Image = Image.FromFile(frameFiles[currentFrameIndex]);
+                picPreview.Image = new Bitmap(frameFiles[currentFrameIndex]);
 
             UpdateFrameButtons();
             ShowRgb565Preview(currentFrameIndex);
@@ -518,7 +518,7 @@ namespace GifRGB565GUI
             else if (usingHeader && headerFrames != null)
                 picPreview.Image = ConvertRgb565ToBitmap(headerFrames[currentFrameIndex], headerWidth, headerHeight);
             else
-                picPreview.Image = Image.FromFile(frameFiles[currentFrameIndex]);
+                picPreview.Image = new Bitmap(frameFiles[currentFrameIndex]);
 
             lstFrames.SelectedIndex = currentFrameIndex;
             ShowRgb565Preview(currentFrameIndex);
@@ -579,8 +579,14 @@ namespace GifRGB565GUI
                 return;
             }
 
-            int width = usingGif ? gifFrames[0].Width : (usingHeader ? headerWidth : Image.FromFile(frameFiles[0]).Width);
-            int height = usingGif ? gifFrames[0].Height : (usingHeader ? headerHeight : Image.FromFile(frameFiles[0]).Height);
+            int width, height;
+            if (usingGif) { width = gifFrames[0].Width; height = gifFrames[0].Height; }
+            else if (usingHeader) { width = headerWidth; height = headerHeight; }
+            else
+            {
+                using var bmp0 = new Bitmap(frameFiles[0]);
+                width = bmp0.Width; height = bmp0.Height;
+            }
 
             // Prepare progress bar
             try
@@ -838,8 +844,13 @@ namespace GifRGB565GUI
             int totalFrames = usingGif ? gifFrames.Length : frameFiles.Length;
             if (totalFrames == 0) { MessageBox.Show("No hay frames cargados."); return; }
 
-            int width = usingGif ? gifFrames[0].Width : Image.FromFile(frameFiles[0]).Width;
-            int height = usingGif ? gifFrames[0].Height : Image.FromFile(frameFiles[0]).Height;
+            int width, height;
+            if (usingGif) { width = gifFrames[0].Width; height = gifFrames[0].Height; }
+            else
+            {
+                using var bmp0 = new Bitmap(frameFiles[0]);
+                width = bmp0.Width; height = bmp0.Height;
+            }
 
             List<ushort[]> framesData = new List<ushort[]>(totalFrames);
             for (int i = 0; i < totalFrames; i++)
@@ -955,7 +966,11 @@ namespace GifRGB565GUI
             int w = 0, h = 0;
             if (usingGif && gifFrames.Length > 0) { w = gifFrames[0].Width; h = gifFrames[0].Height; }
             else if (usingHeader) { w = headerWidth; h = headerHeight; }
-            else if (frameFiles.Length > 0) { var bmp = Image.FromFile(frameFiles[0]); w = bmp.Width; h = bmp.Height; bmp.Dispose(); }
+            else if (frameFiles.Length > 0 && File.Exists(frameFiles[0]))
+            {
+                using var bmp = new Bitmap(frameFiles[0]);
+                w = bmp.Width; h = bmp.Height;
+            }
 
             lblStatusDims.Text = $"{w}x{h}";
             lblStatusFrames.Text = $"{total} frames";
@@ -1731,8 +1746,8 @@ namespace GifRGB565GUI
                 picPreview.Image = gifFrames[currentFrameIndex];
             else if (usingHeader && headerFrames != null)
                 picPreview.Image = ConvertRgb565ToBitmap(headerFrames[currentFrameIndex], headerWidth, headerHeight);
-            else if (frameFiles.Length > 0)
-                picPreview.Image = Image.FromFile(frameFiles[currentFrameIndex]);
+            else if (frameFiles.Length > 0 && File.Exists(frameFiles[currentFrameIndex]))
+                picPreview.Image = new Bitmap(frameFiles[currentFrameIndex]);
             ShowRgb565Preview(currentFrameIndex);
         }
 
@@ -1785,8 +1800,8 @@ namespace GifRGB565GUI
                 picPreview.Image = gifFrames[currentFrameIndex];
             else if (usingHeader && headerFrames != null)
                 picPreview.Image = ConvertRgb565ToBitmap(headerFrames[currentFrameIndex], headerWidth, headerHeight);
-            else if (frameFiles.Length > 0)
-                picPreview.Image = Image.FromFile(frameFiles[currentFrameIndex]);
+            else if (frameFiles.Length > 0 && File.Exists(frameFiles[currentFrameIndex]))
+                picPreview.Image = new Bitmap(frameFiles[currentFrameIndex]);
             ShowRgb565Preview(currentFrameIndex);
         }
 
