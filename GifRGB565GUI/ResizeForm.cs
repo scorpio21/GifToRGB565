@@ -10,7 +10,9 @@ namespace GifRGB565GUI
 {
     public partial class ResizeForm : Form
     {
-        private static readonly string SettingsPath = Path.Combine(AppContext.BaseDirectory, "resize_settings.json");
+        private static readonly string SettingsPath = Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+            "GifToRGB565", "resize_settings.json");
         private static readonly JsonSerializerOptions JsonOpts = new() { WriteIndented = true };
 
         private Bitmap? resizedBmp;
@@ -504,6 +506,7 @@ namespace GifRGB565GUI
                     Preset = cmbPreset.SelectedIndex,
                     KeepAspect = chkKeepAspect.Checked
                 };
+                Directory.CreateDirectory(Path.GetDirectoryName(SettingsPath)!);
                 File.WriteAllText(SettingsPath, JsonSerializer.Serialize(s, JsonOpts));
             }
             catch { }

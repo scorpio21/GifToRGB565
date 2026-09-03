@@ -28,7 +28,8 @@ namespace GifRGB565GUI
         private CancellationTokenSource? _generateCts;
 
         private static readonly string ConfigPath = Path.Combine(
-            AppContext.BaseDirectory, "last_output.json");
+            Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+            "GifToRGB565", "last_output.json");
 
         private static string SanitizeFileName(string name)
         {
@@ -49,6 +50,7 @@ namespace GifRGB565GUI
                 var recent = LoadRecentFiles();
                 var recentJson = string.Join(",", recent.Select(r => $"\"{r.Replace("\\", "\\\\")}\""));
                 var json = $"{{\"lastName\":\"{lastName}\",\"theme\":\"{theme}\",\"recentFiles\":[{recentJson}]}}";
+                Directory.CreateDirectory(Path.GetDirectoryName(ConfigPath)!);
                 File.WriteAllText(ConfigPath, json);
             }
             catch { }
@@ -112,6 +114,7 @@ namespace GifRGB565GUI
                 var theme = ThemeManager.IsDark ? "dark" : "light";
                 var recentJson = string.Join(",", recent.Select(r => $"\"{r.Replace("\\", "\\\\")}\""));
                 var json = $"{{\"lastName\":\"{lastName}\",\"theme\":\"{theme}\",\"recentFiles\":[{recentJson}]}}";
+                Directory.CreateDirectory(Path.GetDirectoryName(ConfigPath)!);
                 File.WriteAllText(ConfigPath, json);
             }
             catch { }
@@ -420,7 +423,11 @@ namespace GifRGB565GUI
 
         private void lstFrames_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (lstFrames.SelectedIndex < 0) return;
+            if (lstFrames.SelectedIndex < 0)
+            {
+                UpdateFrameButtons();
+                return;
+            }
 
             currentFrameIndex = lstFrames.SelectedIndex;
 
@@ -431,7 +438,7 @@ namespace GifRGB565GUI
             else
                 picPreview.Image = Image.FromFile(frameFiles[currentFrameIndex]);
 
-
+            UpdateFrameButtons();
         }
 
         private void btnPlay_Click(object sender, EventArgs e)
@@ -1263,16 +1270,72 @@ namespace GifRGB565GUI
             ImageConverter.EnableNoiseReduction = chkNoise.Checked;
             ImageConverter.EnableSharpen = chkSharpen.Checked;
 
-            using var src = new Bitmap(picPreview.Image);
-            var rgb565 = ImageConverter.ToRGB565(src);
-            var rgb565Bmp = ConvertRgb565ToBitmap(rgb565.ToArray(), src.Width, src.Height);
+            var compareForm = new CompareForm();
 
-            using var compareForm = new CompareForm();
-            compareForm.SetImages(src, rgb565Bmp);
+            int totalFrames = usingGif ? gifFrames.Length : (usingHeader && headerFrames != null ? headerFrames.Count : frameFiles.Length);
+
+            if (usingGif && gifFrames.Length > 1)
+            {
+                var origArr = new Bitmap[gifFrames.Length];
+                var rgb565Arr = new Bitmap[gifFrames.Length];
+
+                var delays = new int[gifFrames.Length];
+
+                for (int i = 0; i < gifFrames.Length; i++)
+                {
+                    origArr[i] = (Bitmap)gifFrames[i].Clone();
+                    var rgb565 = ImageConverter.ToRGB565(gifFrames[i]);
+                    rgb565Arr[i] = ConvertRgb565ToBitmap(rgb565.ToArray(), gifFrames[i].Width, gifFrames[i].Height);
+                    delays[i] = 50;
+                }
+
+                try
+                {
+                    using var gifSource = Image.FromFile(txtFolder.Text);
+                    FrameDimension fdSrc = new FrameDimension(gifSource.FrameDimensionsList[0]);
+                    int count = gifSource.GetFrameCount(fdSrc);
+                    for (int i = 0; i < count && i < delays.Length; i++)
+                    {
+                        gifSource.SelectActiveFrame(fdSrc, i);
+                        int delay = gifSource.GetPropertyItem(0x5100).Value[i * 4] | (gifSource.GetPropertyItem(0x5100).Value[i * 4 + 1] << 8);
+                        delays[i] = Math.Max(10, delay * 10);
+                    }
+                }
+                catch { }
+
+                compareForm.SetAnimatedImages(origArr, rgb565Arr, delays);
+            }
+            else
+            {
+                using var src = new Bitmap(picPreview.Image);
+                var rgb565 = ImageConverter.ToRGB565(src);
+                var rgb565Bmp = ConvertRgb565ToBitmap(rgb565.ToArray(), src.Width, src.Height);
+                compareForm.SetImages(src, rgb565Bmp);
+            }
+
             compareForm.ShowDialog(this);
         }
 
         private void exportarFramesToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+        }
+
+        private void exportPngToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            ExportFrames(ImageFormat.Png, ".png", -1);
+        }
+
+        private void exportJpgToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            ExportFrames(ImageFormat.Jpeg, ".jpg", 85);
+        }
+
+        private void exportBmpToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            ExportFrames(ImageFormat.Bmp, ".bmp", -1);
+        }
+
+        private void ExportFrames(ImageFormat format, string ext, int jpegQuality)
         {
             using (var dlg = new FolderBrowserDialog())
             {
@@ -1285,6 +1348,16 @@ namespace GifRGB565GUI
                     int total = usingGif ? gifFrames.Length : (usingHeader && headerFrames != null ? headerFrames.Count : frameFiles.Length);
                     if (total == 0) { MessageBox.Show("No hay frames cargados para exportar."); return; }
 
+                    EncoderParameters? encoderParams = null;
+                    if (jpegQuality > 0)
+                    {
+                        var qualityEncoder = System.Drawing.Imaging.Encoder.Quality;
+                        encoderParams = new EncoderParameters(1);
+                        encoderParams.Param[0] = new EncoderParameter(qualityEncoder, (long)jpegQuality);
+                    }
+
+                    var codec = ImageCodecInfo.GetImageEncoders().FirstOrDefault(c => c.FormatID == format.Guid);
+
                     for (int i = 0; i < total; i++)
                     {
                         Bitmap bmp;
@@ -1295,9 +1368,12 @@ namespace GifRGB565GUI
                         else
                             bmp = new Bitmap(frameFiles[i]);
 
-                        string filename = Path.Combine(outDir, $"frame_{i:000}.png");
-                        bmp.Save(filename, ImageFormat.Png);
-                        // If we created a temp bitmap from header or file, dispose it
+                        string filename = Path.Combine(outDir, $"frame_{i:000}{ext}");
+                        if (encoderParams != null && codec != null)
+                            bmp.Save(filename, codec, encoderParams);
+                        else
+                            bmp.Save(filename, format);
+
                         if (!usingGif && !(usingHeader && headerFrames != null)) bmp.Dispose();
 
                         Log($"Exportado: {filename}");
@@ -1511,6 +1587,226 @@ namespace GifRGB565GUI
                 {
                     Log($"Error leyendo header: {ex.Message}");
                 }
+            }
+        }
+
+        private void RefreshFrameList()
+        {
+            lstFrames.Items.Clear();
+
+            if (usingGif)
+            {
+                for (int i = 0; i < gifFrames.Length; i++)
+                    lstFrames.Items.Add($"Frame {i}");
+            }
+            else if (usingHeader && headerFrames != null)
+            {
+                for (int i = 0; i < headerFrames.Count; i++)
+                    lstFrames.Items.Add($"Frame {i}");
+            }
+            else
+            {
+                foreach (var f in frameFiles)
+                    lstFrames.Items.Add(Path.GetFileName(f));
+            }
+
+            UpdateFrameButtons();
+            UpdateStatusBar();
+        }
+
+        private void UpdateFrameButtons()
+        {
+            int total = usingGif ? gifFrames.Length : (usingHeader && headerFrames != null ? headerFrames.Count : frameFiles.Length);
+            bool hasFrames = total > 0;
+            bool hasSelection = lstFrames.SelectedIndex >= 0;
+
+            btnMoveUp.Enabled = hasSelection && lstFrames.SelectedIndex > 0;
+            btnMoveDown.Enabled = hasSelection && lstFrames.SelectedIndex < total - 1;
+            btnDelete.Enabled = hasSelection;
+        }
+
+        private void btnMoveUp_Click(object? sender, EventArgs e)
+        {
+            int idx = lstFrames.SelectedIndex;
+            if (idx <= 0) return;
+
+            if (usingGif)
+            {
+                var tmp = gifFrames[idx];
+                gifFrames[idx] = gifFrames[idx - 1];
+                gifFrames[idx - 1] = tmp;
+            }
+            else if (usingHeader && headerFrames != null)
+            {
+                var tmp = headerFrames[idx];
+                headerFrames[idx] = headerFrames[idx - 1];
+                headerFrames[idx - 1] = tmp;
+            }
+            else if (frameFiles.Length > 0)
+            {
+                var tmp = frameFiles[idx];
+                frameFiles[idx] = frameFiles[idx - 1];
+                frameFiles[idx - 1] = tmp;
+
+                try
+                {
+                    string dir = Path.GetDirectoryName(tmp) ?? "";
+                    string ext1 = Path.GetExtension(frameFiles[idx]);
+                    string ext2 = Path.GetExtension(frameFiles[idx - 1]);
+                    string tempPath = Path.Combine(dir, "__reorder_temp__" + ext1);
+                    File.Move(frameFiles[idx], tempPath);
+                    File.Move(frameFiles[idx - 1], frameFiles[idx]);
+                    File.Move(tempPath, frameFiles[idx - 1]);
+                }
+                catch (Exception ex)
+                {
+                    Log($"Error reordenando archivos: {ex.Message}");
+                }
+            }
+
+            RefreshFrameList();
+            lstFrames.SelectedIndex = idx - 1;
+            currentFrameIndex = idx - 1;
+
+            if (usingGif)
+                picPreview.Image = gifFrames[currentFrameIndex];
+            else if (usingHeader && headerFrames != null)
+                picPreview.Image = ConvertRgb565ToBitmap(headerFrames[currentFrameIndex], headerWidth, headerHeight);
+            else if (frameFiles.Length > 0)
+                picPreview.Image = Image.FromFile(frameFiles[currentFrameIndex]);
+        }
+
+        private void btnMoveDown_Click(object? sender, EventArgs e)
+        {
+            int idx = lstFrames.SelectedIndex;
+            int total = usingGif ? gifFrames.Length : (usingHeader && headerFrames != null ? headerFrames.Count : frameFiles.Length);
+            if (idx < 0 || idx >= total - 1) return;
+
+            if (usingGif)
+            {
+                var tmp = gifFrames[idx];
+                gifFrames[idx] = gifFrames[idx + 1];
+                gifFrames[idx + 1] = tmp;
+            }
+            else if (usingHeader && headerFrames != null)
+            {
+                var tmp = headerFrames[idx];
+                headerFrames[idx] = headerFrames[idx + 1];
+                headerFrames[idx + 1] = tmp;
+            }
+            else if (frameFiles.Length > 0)
+            {
+                var tmp = frameFiles[idx];
+                frameFiles[idx] = frameFiles[idx + 1];
+                frameFiles[idx + 1] = tmp;
+
+                try
+                {
+                    string dir = Path.GetDirectoryName(tmp) ?? "";
+                    string ext1 = Path.GetExtension(frameFiles[idx]);
+                    string ext2 = Path.GetExtension(frameFiles[idx + 1]);
+                    string tempPath = Path.Combine(dir, "__reorder_temp__" + ext1);
+                    File.Move(frameFiles[idx], tempPath);
+                    File.Move(frameFiles[idx + 1], frameFiles[idx]);
+                    File.Move(tempPath, frameFiles[idx + 1]);
+                }
+                catch (Exception ex)
+                {
+                    Log($"Error reordenando archivos: {ex.Message}");
+                }
+            }
+
+            RefreshFrameList();
+            lstFrames.SelectedIndex = idx + 1;
+            currentFrameIndex = idx + 1;
+
+            if (usingGif)
+                picPreview.Image = gifFrames[currentFrameIndex];
+            else if (usingHeader && headerFrames != null)
+                picPreview.Image = ConvertRgb565ToBitmap(headerFrames[currentFrameIndex], headerWidth, headerHeight);
+            else if (frameFiles.Length > 0)
+                picPreview.Image = Image.FromFile(frameFiles[currentFrameIndex]);
+        }
+
+        private void btnDelete_Click(object? sender, EventArgs e)
+        {
+            int idx = lstFrames.SelectedIndex;
+            if (idx < 0) return;
+
+            int total = usingGif ? gifFrames.Length : (usingHeader && headerFrames != null ? headerFrames.Count : frameFiles.Length);
+
+            var result = MessageBox.Show(
+                $"¿Eliminar el frame {idx}?",
+                "Eliminar frame",
+                MessageBoxButtons.YesNo,
+                MessageBoxIcon.Question);
+
+            if (result != DialogResult.Yes) return;
+
+            if (usingGif)
+            {
+                if (gifFrames.Length == 1)
+                {
+                    gifFrames = Array.Empty<Bitmap>();
+                }
+                else
+                {
+                    var newList = new List<Bitmap>(gifFrames);
+                    newList[idx].Dispose();
+                    newList.RemoveAt(idx);
+                    gifFrames = newList.ToArray();
+                }
+            }
+            else if (usingHeader && headerFrames != null)
+            {
+                if (headerFrames.Count == 1)
+                {
+                    headerFrames = null;
+                    usingHeader = false;
+                }
+                else
+                {
+                    headerFrames.RemoveAt(idx);
+                }
+            }
+            else if (frameFiles.Length > 0)
+            {
+                try
+                {
+                    File.Delete(frameFiles[idx]);
+                }
+                catch (Exception ex)
+                {
+                    Log($"Error eliminando archivo: {ex.Message}");
+                }
+
+                var newList = new List<string>(frameFiles);
+                newList.RemoveAt(idx);
+                frameFiles = newList.ToArray();
+            }
+
+            total = usingGif ? gifFrames.Length : (usingHeader && headerFrames != null ? headerFrames.Count : frameFiles.Length);
+
+            RefreshFrameList();
+
+            if (total == 0)
+            {
+                currentFrameIndex = 0;
+                picPreview.Image = null;
+                Log("Sin frames");
+            }
+            else
+            {
+                int newIdx = Math.Min(idx, total - 1);
+                lstFrames.SelectedIndex = newIdx;
+                currentFrameIndex = newIdx;
+
+                if (usingGif)
+                    picPreview.Image = gifFrames[newIdx];
+                else if (usingHeader && headerFrames != null)
+                    picPreview.Image = ConvertRgb565ToBitmap(headerFrames[newIdx], headerWidth, headerHeight);
+                else if (frameFiles.Length > 0)
+                    picPreview.Image = Image.FromFile(frameFiles[newIdx]);
             }
         }
     }

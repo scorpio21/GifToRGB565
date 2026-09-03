@@ -69,10 +69,16 @@ namespace GifRGB565GUI
         private System.Windows.Forms.CheckBox chkGzip;
         private System.Windows.Forms.Button btnSimulate;
         private System.Windows.Forms.ToolStripMenuItem exportarFramesToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem exportPngToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem exportJpgToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem exportBmpToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem redimensionarToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem compararToolStripMenuItem;
         private System.Windows.Forms.Button btnCancelar;
         private System.Windows.Forms.ComboBox cmbGzipLevel;
+        private System.Windows.Forms.Button btnMoveUp;
+        private System.Windows.Forms.Button btnMoveDown;
+        private System.Windows.Forms.Button btnDelete;
 
         protected override void Dispose(bool disposing)
         {
@@ -103,6 +109,9 @@ namespace GifRGB565GUI
             utilidadesToolStripMenuItem = new ToolStripMenuItem();
             cargarHeaderToolStripMenuItem = new ToolStripMenuItem();
             exportarFramesToolStripMenuItem = new ToolStripMenuItem();
+            exportPngToolStripMenuItem = new ToolStripMenuItem();
+            exportJpgToolStripMenuItem = new ToolStripMenuItem();
+            exportBmpToolStripMenuItem = new ToolStripMenuItem();
             redimensionarToolStripMenuItem = new ToolStripMenuItem();
             compararToolStripMenuItem = new ToolStripMenuItem();
             ayudaToolStripMenuItem = new ToolStripMenuItem();
@@ -139,6 +148,9 @@ namespace GifRGB565GUI
             chkSharpen = new CheckBox();
             chkGzip = new CheckBox();
             btnSimulate = new Button();
+            btnMoveUp = new Button();
+            btnMoveDown = new Button();
+            btnDelete = new Button();
             recentSeparator = new ToolStripSeparator();
             lblOutName = new Label();
             txtOutName = new TextBox();
@@ -269,10 +281,31 @@ namespace GifRGB565GUI
             // 
             // exportarFramesToolStripMenuItem
             // 
+            exportarFramesToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { exportPngToolStripMenuItem, exportJpgToolStripMenuItem, exportBmpToolStripMenuItem });
             exportarFramesToolStripMenuItem.Name = "exportarFramesToolStripMenuItem";
             exportarFramesToolStripMenuItem.Size = new Size(229, 22);
             exportarFramesToolStripMenuItem.Text = "Exportar todos los Frames";
-            exportarFramesToolStripMenuItem.Click += exportarFramesToolStripMenuItem_Click;
+            // 
+            // exportPngToolStripMenuItem
+            // 
+            exportPngToolStripMenuItem.Name = "exportPngToolStripMenuItem";
+            exportPngToolStripMenuItem.Size = new Size(180, 22);
+            exportPngToolStripMenuItem.Text = "PNG";
+            exportPngToolStripMenuItem.Click += exportPngToolStripMenuItem_Click;
+            // 
+            // exportJpgToolStripMenuItem
+            // 
+            exportJpgToolStripMenuItem.Name = "exportJpgToolStripMenuItem";
+            exportJpgToolStripMenuItem.Size = new Size(180, 22);
+            exportJpgToolStripMenuItem.Text = "JPEG (calidad 85)";
+            exportJpgToolStripMenuItem.Click += exportJpgToolStripMenuItem_Click;
+            // 
+            // exportBmpToolStripMenuItem
+            // 
+            exportBmpToolStripMenuItem.Name = "exportBmpToolStripMenuItem";
+            exportBmpToolStripMenuItem.Size = new Size(180, 22);
+            exportBmpToolStripMenuItem.Text = "BMP";
+            exportBmpToolStripMenuItem.Click += exportBmpToolStripMenuItem_Click;
             // 
             // redimensionarToolStripMenuItem
             // 
@@ -460,7 +493,7 @@ namespace GifRGB565GUI
             // 
             // btnPlay
             // 
-            btnPlay.Location = new Point(5, 600);
+            btnPlay.Location = new Point(5, 622);
             btnPlay.Name = "btnPlay";
             btnPlay.Size = new Size(120, 30);
             btnPlay.TabIndex = 11;
@@ -470,7 +503,7 @@ namespace GifRGB565GUI
             // 
             // btnStop
             // 
-            btnStop.Location = new Point(143, 600);
+            btnStop.Location = new Point(143, 622);
             btnStop.Name = "btnStop";
             btnStop.Size = new Size(120, 30);
             btnStop.TabIndex = 12;
@@ -485,7 +518,7 @@ namespace GifRGB565GUI
             // 
             // speedSlider
             // 
-            speedSlider.Location = new Point(269, 608);
+            speedSlider.Location = new Point(269, 630);
             speedSlider.Maximum = 200;
             speedSlider.Minimum = 10;
             speedSlider.Name = "speedSlider";
@@ -497,7 +530,7 @@ namespace GifRGB565GUI
             // 
             // lblSpeed
             // 
-            lblSpeed.Location = new Point(499, 616);
+            lblSpeed.Location = new Point(499, 638);
             lblSpeed.Name = "lblSpeed";
             lblSpeed.Size = new Size(60, 30);
             lblSpeed.TabIndex = 9;
@@ -505,7 +538,7 @@ namespace GifRGB565GUI
             // 
             // btnNext
             // 
-            btnNext.Location = new Point(143, 640);
+            btnNext.Location = new Point(143, 662);
             btnNext.Name = "btnNext";
             btnNext.Size = new Size(120, 30);
             btnNext.TabIndex = 7;
@@ -515,7 +548,7 @@ namespace GifRGB565GUI
             // 
             // btnPrev
             // 
-            btnPrev.Location = new Point(5, 640);
+            btnPrev.Location = new Point(5, 662);
             btnPrev.Name = "btnPrev";
             btnPrev.Size = new Size(120, 30);
             btnPrev.TabIndex = 8;
@@ -527,7 +560,7 @@ namespace GifRGB565GUI
             // 
             chkLoop.Checked = true;
             chkLoop.CheckState = CheckState.Checked;
-            chkLoop.Location = new Point(278, 659);
+            chkLoop.Location = new Point(278, 681);
             chkLoop.Name = "chkLoop";
             chkLoop.Size = new Size(163, 30);
             chkLoop.TabIndex = 6;
@@ -575,7 +608,7 @@ namespace GifRGB565GUI
             // 
             btnSimulate.BackColor = Color.Blue;
             btnSimulate.ForeColor = Color.Yellow;
-            btnSimulate.Location = new Point(447, 659);
+            btnSimulate.Location = new Point(447, 681);
             btnSimulate.Name = "btnSimulate";
             btnSimulate.Size = new Size(120, 30);
             btnSimulate.TabIndex = 1;
@@ -583,6 +616,36 @@ namespace GifRGB565GUI
             btnSimulate.Text = "Simular .h";
             btnSimulate.UseVisualStyleBackColor = false;
             btnSimulate.Click += btnSimulate_Click;
+            // 
+            // btnMoveUp
+            // 
+            btnMoveUp.Location = new Point(5, 586);
+            btnMoveUp.Name = "btnMoveUp";
+            btnMoveUp.Size = new Size(80, 18);
+            btnMoveUp.TabIndex = 25;
+            btnMoveUp.Text = "▲ Subir";
+            btnMoveUp.UseVisualStyleBackColor = true;
+            btnMoveUp.Click += btnMoveUp_Click;
+            // 
+            // btnMoveDown
+            // 
+            btnMoveDown.Location = new Point(87, 586);
+            btnMoveDown.Name = "btnMoveDown";
+            btnMoveDown.Size = new Size(80, 18);
+            btnMoveDown.TabIndex = 26;
+            btnMoveDown.Text = "▼ Bajar";
+            btnMoveDown.UseVisualStyleBackColor = true;
+            btnMoveDown.Click += btnMoveDown_Click;
+            // 
+            // btnDelete
+            // 
+            btnDelete.Location = new Point(169, 586);
+            btnDelete.Name = "btnDelete";
+            btnDelete.Size = new Size(80, 18);
+            btnDelete.TabIndex = 27;
+            btnDelete.Text = "✕ Eliminar";
+            btnDelete.UseVisualStyleBackColor = true;
+            btnDelete.Click += btnDelete_Click;
             // 
             // recentSeparator
             // 
@@ -656,6 +719,9 @@ namespace GifRGB565GUI
             ClientSize = new Size(579, 754);
             Controls.Add(cmbGzipLevel);
             Controls.Add(btnCancelar);
+            Controls.Add(btnDelete);
+            Controls.Add(btnMoveDown);
+            Controls.Add(btnMoveUp);
             Controls.Add(statusStrip1);
             Controls.Add(menuStrip1);
             Controls.Add(btnSimulate);
