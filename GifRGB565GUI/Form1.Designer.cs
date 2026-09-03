@@ -55,6 +55,8 @@ namespace GifRGB565GUI
         private System.Windows.Forms.TextBox txtLog;
         private System.Windows.Forms.ListBox lstFrames;
         private System.Windows.Forms.PictureBox picPreview;
+        private System.Windows.Forms.PictureBox picRGB565;
+        private System.Windows.Forms.Label lblRGB565;
         private System.Windows.Forms.Button btnPlay;
         private System.Windows.Forms.Button btnStop;
         private System.Windows.Forms.Timer animTimer;
@@ -135,6 +137,8 @@ namespace GifRGB565GUI
             txtLog = new TextBox();
             lstFrames = new ListBox();
             picPreview = new PictureBox();
+            picRGB565 = new PictureBox();
+            lblRGB565 = new Label();
             btnPlay = new Button();
             btnStop = new Button();
             animTimer = new System.Windows.Forms.Timer(components);
@@ -163,6 +167,7 @@ namespace GifRGB565GUI
             lblVersion = new ToolStripStatusLabel();
             menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)picPreview).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)picRGB565).BeginInit();
             ((System.ComponentModel.ISupportInitialize)speedSlider).BeginInit();
             statusStrip1.SuspendLayout();
             SuspendLayout();
@@ -446,7 +451,7 @@ namespace GifRGB565GUI
             // 
             txtFolder.Location = new Point(199, 36);
             txtFolder.Name = "txtFolder";
-            txtFolder.Size = new Size(371, 23);
+            txtFolder.Size = new Size(671, 23);
             txtFolder.TabIndex = 18;
             // 
             // btnGenerate
@@ -463,7 +468,7 @@ namespace GifRGB565GUI
             // 
             progressBar.Location = new Point(199, 89);
             progressBar.Name = "progressBar";
-            progressBar.Size = new Size(371, 30);
+            progressBar.Size = new Size(681, 30);
             progressBar.TabIndex = 16;
             // 
             // txtLog
@@ -472,7 +477,7 @@ namespace GifRGB565GUI
             txtLog.Multiline = true;
             txtLog.Name = "txtLog";
             txtLog.ScrollBars = ScrollBars.Vertical;
-            txtLog.Size = new Size(558, 186);
+            txtLog.Size = new Size(858, 186);
             txtLog.TabIndex = 15;
             // 
             // lstFrames
@@ -492,6 +497,26 @@ namespace GifRGB565GUI
             picPreview.SizeMode = PictureBoxSizeMode.Zoom;
             picPreview.TabIndex = 13;
             picPreview.TabStop = false;
+            // 
+            // lblRGB565
+            // 
+            lblRGB565.AutoSize = true;
+            lblRGB565.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
+            lblRGB565.Location = new Point(570, 365);
+            lblRGB565.Name = "lblRGB565";
+            lblRGB565.Size = new Size(55, 15);
+            lblRGB565.TabIndex = 28;
+            lblRGB565.Text = "RGB565";
+            // 
+            // picRGB565
+            // 
+            picRGB565.BorderStyle = BorderStyle.FixedSingle;
+            picRGB565.Location = new Point(570, 384);
+            picRGB565.Name = "picRGB565";
+            picRGB565.Size = new Size(300, 200);
+            picRGB565.SizeMode = PictureBoxSizeMode.Zoom;
+            picRGB565.TabIndex = 29;
+            picRGB565.TabStop = false;
             // 
             // btnPlay
             // 
@@ -667,7 +692,7 @@ namespace GifRGB565GUI
             // 
             txtOutName.Location = new Point(199, 63);
             txtOutName.Name = "txtOutName";
-            txtOutName.Size = new Size(308, 23);
+            txtOutName.Size = new Size(671, 23);
             txtOutName.TabIndex = 18;
             // 
             // statusStrip1
@@ -718,7 +743,9 @@ namespace GifRGB565GUI
             // 
             // Form1
             // 
-            ClientSize = new Size(579, 754);
+            ClientSize = new Size(880, 754);
+            Controls.Add(picRGB565);
+            Controls.Add(lblRGB565);
             Controls.Add(cmbGzipLevel);
             Controls.Add(btnCancelar);
             Controls.Add(btnDelete);
@@ -756,6 +783,7 @@ namespace GifRGB565GUI
             menuStrip1.ResumeLayout(false);
             menuStrip1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)picPreview).EndInit();
+            ((System.ComponentModel.ISupportInitialize)picRGB565).EndInit();
             ((System.ComponentModel.ISupportInitialize)speedSlider).EndInit();
             statusStrip1.ResumeLayout(false);
             statusStrip1.PerformLayout();
