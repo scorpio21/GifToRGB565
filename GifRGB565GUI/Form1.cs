@@ -1709,9 +1709,7 @@ namespace GifRGB565GUI
                 try
                 {
                     string dir = Path.GetDirectoryName(tmp) ?? "";
-                    string ext1 = Path.GetExtension(frameFiles[idx]);
-                    string ext2 = Path.GetExtension(frameFiles[idx - 1]);
-                    string tempPath = Path.Combine(dir, "__reorder_temp__" + ext1);
+                    string tempPath = Path.Combine(dir, $"__reorder_temp_{Guid.NewGuid():N}__" + Path.GetExtension(tmp));
                     File.Move(frameFiles[idx], tempPath);
                     File.Move(frameFiles[idx - 1], frameFiles[idx]);
                     File.Move(tempPath, frameFiles[idx - 1]);
@@ -1762,9 +1760,7 @@ namespace GifRGB565GUI
                 try
                 {
                     string dir = Path.GetDirectoryName(tmp) ?? "";
-                    string ext1 = Path.GetExtension(frameFiles[idx]);
-                    string ext2 = Path.GetExtension(frameFiles[idx + 1]);
-                    string tempPath = Path.Combine(dir, "__reorder_temp__" + ext1);
+                    string tempPath = Path.Combine(dir, $"__reorder_temp_{Guid.NewGuid():N}__" + Path.GetExtension(tmp));
                     File.Move(frameFiles[idx], tempPath);
                     File.Move(frameFiles[idx + 1], frameFiles[idx]);
                     File.Move(tempPath, frameFiles[idx + 1]);
