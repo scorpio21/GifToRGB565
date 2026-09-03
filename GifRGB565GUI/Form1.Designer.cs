@@ -44,6 +44,7 @@ namespace GifRGB565GUI
         private System.Windows.Forms.ToolStripStatusLabel lblStatusSize;
         private System.Windows.Forms.ToolStripStatusLabel lblStatusFormat;
         private System.Windows.Forms.ToolStripStatusLabel lblVersion;
+        private System.Windows.Forms.ToolStripStatusLabel lblSpring;
 
         private System.Windows.Forms.Button btnSelectFolder;
         private System.Windows.Forms.TextBox txtFolder;
@@ -147,6 +148,7 @@ namespace GifRGB565GUI
             lblStatusSize = new ToolStripStatusLabel();
             lblStatusFormat = new ToolStripStatusLabel();
             lblVersion = new ToolStripStatusLabel();
+            lblSpring = new ToolStripStatusLabel();
             menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)picPreview).BeginInit();
             ((System.ComponentModel.ISupportInitialize)speedSlider).BeginInit();
@@ -388,29 +390,29 @@ namespace GifRGB565GUI
             // 
             // btnSelectFolder
             // 
-            btnSelectFolder.Image = global::GifRGB565GUI.Properties.Resources.icon_Abrir;
+            btnSelectFolder.Image = Properties.Resources.icon_Abrir;
             btnSelectFolder.ImageAlign = ContentAlignment.MiddleLeft;
-            btnSelectFolder.TextImageRelation = TextImageRelation.ImageBeforeText;
             btnSelectFolder.Location = new Point(12, 31);
             btnSelectFolder.Name = "btnSelectFolder";
-            btnSelectFolder.Size = new Size(150, 30);
+            btnSelectFolder.Size = new Size(181, 30);
             btnSelectFolder.TabIndex = 19;
             btnSelectFolder.Text = "Seleccionar GIF/Carpeta";
+            btnSelectFolder.TextImageRelation = TextImageRelation.ImageBeforeText;
             btnSelectFolder.UseVisualStyleBackColor = true;
             btnSelectFolder.Click += btnSelectFolder_Click;
             // 
             // txtFolder
             // 
-            txtFolder.Location = new Point(170, 36);
+            txtFolder.Location = new Point(199, 36);
             txtFolder.Name = "txtFolder";
-            txtFolder.Size = new Size(400, 23);
+            txtFolder.Size = new Size(371, 23);
             txtFolder.TabIndex = 18;
             // 
             // btnGenerate
             // 
             btnGenerate.Location = new Point(12, 89);
             btnGenerate.Name = "btnGenerate";
-            btnGenerate.Size = new Size(150, 30);
+            btnGenerate.Size = new Size(181, 30);
             btnGenerate.TabIndex = 17;
             btnGenerate.Text = "Generar .h";
             btnGenerate.UseVisualStyleBackColor = true;
@@ -418,9 +420,9 @@ namespace GifRGB565GUI
             // 
             // progressBar
             // 
-            progressBar.Location = new Point(170, 89);
+            progressBar.Location = new Point(199, 89);
             progressBar.Name = "progressBar";
-            progressBar.Size = new Size(400, 30);
+            progressBar.Size = new Size(371, 30);
             progressBar.TabIndex = 16;
             // 
             // txtLog
@@ -567,11 +569,11 @@ namespace GifRGB565GUI
             // 
             btnSimulate.BackColor = Color.Blue;
             btnSimulate.ForeColor = Color.Yellow;
-            btnSimulate.Tag = "accent";
             btnSimulate.Location = new Point(447, 659);
             btnSimulate.Name = "btnSimulate";
             btnSimulate.Size = new Size(120, 30);
             btnSimulate.TabIndex = 1;
+            btnSimulate.Tag = "accent";
             btnSimulate.Text = "Simular .h";
             btnSimulate.UseVisualStyleBackColor = false;
             btnSimulate.Click += btnSimulate_Click;
@@ -583,7 +585,7 @@ namespace GifRGB565GUI
             // 
             // lblOutName
             // 
-            lblOutName.Location = new Point(65, 64);
+            lblOutName.Location = new Point(96, 64);
             lblOutName.Name = "lblOutName";
             lblOutName.Size = new Size(97, 23);
             lblOutName.TabIndex = 18;
@@ -592,14 +594,14 @@ namespace GifRGB565GUI
             // 
             // txtOutName
             // 
-            txtOutName.Location = new Point(172, 62);
+            txtOutName.Location = new Point(199, 63);
             txtOutName.Name = "txtOutName";
             txtOutName.Size = new Size(308, 23);
             txtOutName.TabIndex = 18;
             // 
             // statusStrip1
             // 
-            statusStrip1.Items.AddRange(new ToolStripItem[] { lblStatusDims, lblStatusFrames, lblStatusSize, lblStatusFormat, lblVersion });
+            statusStrip1.Items.AddRange(new ToolStripItem[] { lblStatusDims, lblStatusFrames, lblStatusSize, lblStatusFormat, lblSpring, lblVersion });
             statusStrip1.Location = new Point(0, 732);
             statusStrip1.Name = "statusStrip1";
             statusStrip1.Size = new Size(579, 22);
@@ -636,6 +638,12 @@ namespace GifRGB565GUI
             lblVersion.Size = new Size(37, 17);
             lblVersion.Text = "v1.1.4";
             lblVersion.TextAlign = ContentAlignment.MiddleRight;
+            // 
+            // lblSpring
+            // 
+            lblSpring.Name = "lblSpring";
+            lblSpring.Size = new Size(0, 17);
+            lblSpring.Spring = true;
             // 
             // Form1
             // 
