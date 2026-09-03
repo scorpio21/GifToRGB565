@@ -41,6 +41,9 @@ namespace GifRGB565GUI
             lblAspectTitle = new Label();
             cmbAspect = new ComboBox();
             chkRemember = new CheckBox();
+            cmbPreset = new ComboBox();
+            lblPreset = new Label();
+            chkKeepAspect = new CheckBox();
             panelToolbar.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)picPreview).BeginInit();
             panelResult.SuspendLayout();
@@ -215,6 +218,9 @@ namespace GifRGB565GUI
             panelOptions.Controls.Add(lblAspectTitle);
             panelOptions.Controls.Add(cmbAspect);
             panelOptions.Controls.Add(chkRemember);
+            panelOptions.Controls.Add(cmbPreset);
+            panelOptions.Controls.Add(lblPreset);
+            panelOptions.Controls.Add(chkKeepAspect);
             panelOptions.Dock = DockStyle.Bottom;
             panelOptions.Location = new Point(0, 345);
             panelOptions.Name = "panelOptions";
@@ -341,6 +347,39 @@ namespace GifRGB565GUI
             chkRemember.Text = "Recuerda los ajustes";
             chkRemember.UseVisualStyleBackColor = true;
             // 
+            // lblPreset
+            // 
+            lblPreset.AutoSize = true;
+            lblPreset.ForeColor = Color.White;
+            lblPreset.Location = new Point(15, 155);
+            lblPreset.Name = "lblPreset";
+            lblPreset.Size = new Size(46, 15);
+            lblPreset.TabIndex = 16;
+            lblPreset.Text = "Tamaño:";
+            // 
+            // cmbPreset
+            // 
+            cmbPreset.DropDownStyle = ComboBoxStyle.DropDownList;
+            cmbPreset.Items.AddRange(new object[] { "Personalizado", "50%", "25%", "10%", "160x120", "320x240", "640x480", "800x600", "1024x768" });
+            cmbPreset.Location = new Point(95, 152);
+            cmbPreset.Name = "cmbPreset";
+            cmbPreset.Size = new Size(160, 23);
+            cmbPreset.TabIndex = 17;
+            cmbPreset.SelectedIndexChanged += cmbPreset_SelectedIndexChanged;
+            // 
+            // chkKeepAspect
+            // 
+            chkKeepAspect.AutoSize = true;
+            chkKeepAspect.Checked = true;
+            chkKeepAspect.CheckState = CheckState.Checked;
+            chkKeepAspect.ForeColor = Color.White;
+            chkKeepAspect.Location = new Point(270, 155);
+            chkKeepAspect.Name = "chkKeepAspect";
+            chkKeepAspect.Size = new Size(120, 19);
+            chkKeepAspect.TabIndex = 18;
+            chkKeepAspect.Text = "Mantener proporción";
+            chkKeepAspect.UseVisualStyleBackColor = true;
+            // 
             // ResizeForm
             // 
             AllowDrop = true;
@@ -392,5 +431,8 @@ namespace GifRGB565GUI
         private Button btnCrop;
         private Button btnSave;
         private CheckBox chkRemember;
+        private Label lblPreset;
+        private ComboBox cmbPreset;
+        private CheckBox chkKeepAspect;
     }
 }

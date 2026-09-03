@@ -29,6 +29,7 @@ namespace GifRGB565GUI
             txtWidth.TextChanged += txtWidth_TextChanged;
             txtHeight.TextChanged += txtHeight_TextChanged;
             txtPercent.TextChanged += txtPercent_TextChanged;
+            cmbPreset.SelectedIndex = 0;
         }
 
         private void ResizeForm_DragEnter(object? sender, DragEventArgs e)
@@ -139,10 +140,16 @@ namespace GifRGB565GUI
         {
             if (suppressEvents) return;
             int origW = GetOriginalWidth();
+            int origH = GetOriginalHeight();
             if (origW <= 0) return;
             if (int.TryParse(txtWidth.Text, out int w) && w > 0)
             {
                 suppressEvents = true;
+                if (chkKeepAspect.Checked && origH > 0)
+                {
+                    int h = (int)((double)w / origW * origH);
+                    txtHeight.Text = h.ToString();
+                }
                 double pct = (double)w / origW * 100;
                 txtPercent.Text = ((int)pct).ToString();
                 suppressEvents = false;
@@ -152,11 +159,17 @@ namespace GifRGB565GUI
         private void txtHeight_TextChanged(object? sender, EventArgs e)
         {
             if (suppressEvents) return;
+            int origW = GetOriginalWidth();
             int origH = GetOriginalHeight();
             if (origH <= 0) return;
             if (int.TryParse(txtHeight.Text, out int h) && h > 0)
             {
                 suppressEvents = true;
+                if (chkKeepAspect.Checked && origW > 0)
+                {
+                    int w = (int)((double)h / origH * origW);
+                    txtWidth.Text = w.ToString();
+                }
                 double pct = (double)h / origH * 100;
                 txtPercent.Text = ((int)pct).ToString();
                 suppressEvents = false;
@@ -177,6 +190,31 @@ namespace GifRGB565GUI
                 txtHeight.Text = ((int)(origH * pct / 100)).ToString();
                 suppressEvents = false;
             }
+        }
+
+        private void cmbPreset_SelectedIndexChanged(object? sender, EventArgs e)
+        {
+            if (suppressEvents) return;
+            int origW = GetOriginalWidth();
+            int origH = GetOriginalHeight();
+            if (origW <= 0 || origH <= 0) return;
+
+            int idx = cmbPreset.SelectedIndex;
+            suppressEvents = true;
+
+            switch (idx)
+            {
+                case 1: txtPercent.Text = "50"; break;
+                case 2: txtPercent.Text = "25"; break;
+                case 3: txtPercent.Text = "10"; break;
+                case 4: txtWidth.Text = "160"; txtHeight.Text = "120"; break;
+                case 5: txtWidth.Text = "320"; txtHeight.Text = "240"; break;
+                case 6: txtWidth.Text = "640"; txtHeight.Text = "480"; break;
+                case 7: txtWidth.Text = "800"; txtHeight.Text = "600"; break;
+                case 8: txtWidth.Text = "1024"; txtHeight.Text = "768"; break;
+            }
+
+            suppressEvents = false;
         }
 
         private int GetOriginalWidth()
