@@ -31,6 +31,8 @@ namespace GifRGB565GUI
         private System.Windows.Forms.ToolStripMenuItem ayudaRescaleToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem ayudaAtajosToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem ayudaCompararToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem ayudaRedimensionarToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem ayudaRecortarToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem acercaToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem verToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem temaToolStripMenuItem;
@@ -110,6 +112,8 @@ namespace GifRGB565GUI
             ayudaRescaleToolStripMenuItem = new ToolStripMenuItem();
             ayudaAtajosToolStripMenuItem = new ToolStripMenuItem();
             ayudaCompararToolStripMenuItem = new ToolStripMenuItem();
+            ayudaRedimensionarToolStripMenuItem = new ToolStripMenuItem();
+            ayudaRecortarToolStripMenuItem = new ToolStripMenuItem();
             acercaToolStripMenuItem = new ToolStripMenuItem();
             btnCancelar = new Button();
             cmbGzipLevel = new ComboBox();
@@ -284,7 +288,7 @@ namespace GifRGB565GUI
             // ayudaToolStripMenuItem
             // 
             ayudaToolStripMenuItem.Alignment = ToolStripItemAlignment.Right;
-            ayudaToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { ayudaDitherToolStripMenuItem, ayudaNoiseToolStripMenuItem, ayudaSharpenToolStripMenuItem, ayudaGzipToolStripMenuItem, ayudaDragDropToolStripMenuItem, ayudaRescaleToolStripMenuItem, ayudaAtajosToolStripMenuItem, ayudaCompararToolStripMenuItem, acercaToolStripMenuItem });
+            ayudaToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { ayudaDitherToolStripMenuItem, ayudaNoiseToolStripMenuItem, ayudaSharpenToolStripMenuItem, ayudaGzipToolStripMenuItem, ayudaDragDropToolStripMenuItem, ayudaRescaleToolStripMenuItem, ayudaRedimensionarToolStripMenuItem, ayudaRecortarToolStripMenuItem, ayudaAtajosToolStripMenuItem, ayudaCompararToolStripMenuItem, acercaToolStripMenuItem });
             ayudaToolStripMenuItem.Name = "ayudaToolStripMenuItem";
             ayudaToolStripMenuItem.Size = new Size(53, 20);
             ayudaToolStripMenuItem.Text = "Ayuda";
@@ -340,6 +344,20 @@ namespace GifRGB565GUI
             // 
             ayudaCompararToolStripMenuItem.Name = "ayudaCompararToolStripMenuItem";
             ayudaCompararToolStripMenuItem.Size = new Size(174, 22);
+            // 
+            // ayudaRedimensionarToolStripMenuItem
+            // 
+            ayudaRedimensionarToolStripMenuItem.Name = "ayudaRedimensionarToolStripMenuItem";
+            ayudaRedimensionarToolStripMenuItem.Size = new Size(200, 22);
+            ayudaRedimensionarToolStripMenuItem.Text = "Redimensionar imágenes";
+            ayudaRedimensionarToolStripMenuItem.Click += ayudaRedimensionarToolStripMenuItem_Click;
+            // 
+            // ayudaRecortarToolStripMenuItem
+            // 
+            ayudaRecortarToolStripMenuItem.Name = "ayudaRecortarToolStripMenuItem";
+            ayudaRecortarToolStripMenuItem.Size = new Size(200, 22);
+            ayudaRecortarToolStripMenuItem.Text = "Recortar imágenes";
+            ayudaRecortarToolStripMenuItem.Click += ayudaRecortarToolStripMenuItem_Click;
             // 
             // acercaToolStripMenuItem
             // 

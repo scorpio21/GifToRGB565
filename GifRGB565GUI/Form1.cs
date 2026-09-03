@@ -1004,6 +1004,34 @@ namespace GifRGB565GUI
                 "Comparar", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
+        private void ayudaRedimensionarToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            MessageBox.Show(
+                "Redimensionar imágenes:\n\n" +
+                "Accede desde Menú → Utilidades → Redimensionar imágenes.\n\n" +
+                "• Soporta imágenes estáticas (PNG, JPG, BMP, WebP) y GIFs animados.\n" +
+                "• Para GIFs animados usa Magick.NET con Coalesce (como ezgif).\n" +
+                "• Métodos: Lanczos (calidad), Bilineal, Vecino cercano (rápido).\n" +
+                "• Modos de aspect ratio: centrar y recortar, estirar, forzar proporción, relleno transparente.\n" +
+                "• Los campos Ancho, Altura y Porcentaje están sincronizados.\n" +
+                "• El preview animado se mantiene al redimensionar.",
+                "Redimensionar imágenes", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+
+        private void ayudaRecortarToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            MessageBox.Show(
+                "Recortar imágenes:\n\n" +
+                "Se abre desde el botón 'Recortar' en el formulario de redimensionar.\n\n" +
+                "• Selección visual: arrastra sobre la imagen para crear el área de recorte.\n" +
+                "• Mover selección: haz clic dentro del rectángulo y arrastra.\n" +
+                "• Campos Izquierda/Arriba/Ancho/Altura sincronizados con la selección.\n" +
+                "• Relación de aspecto bloqueable (1:1, 4:3, 16:9, 3:2).\n" +
+                "• Autocorte: recorta píxeles transparentes automáticamente.\n" +
+                "• Funciona con imágenes estáticas y GIFs animados.",
+                "Recortar imágenes", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+
         private void acercaToolStripMenuItem_Click(object sender, EventArgs e)
         {
             string version = "v1.0"; // actualizar si hay versión real
