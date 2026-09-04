@@ -1717,24 +1717,30 @@ namespace GifRGB565GUI
             }
             else if (frameFiles.Length > 0)
             {
-                var tmp = frameFiles[idx];
-                frameFiles[idx] = frameFiles[idx - 1];
-                frameFiles[idx - 1] = tmp;
+                picPreview.Image?.Dispose();
+                picPreview.Image = null;
+                picRGB565.Image?.Dispose();
+                picRGB565.Image = null;
+
+                string fileA = frameFiles[idx];
+                string fileB = frameFiles[idx - 1];
+                string dir = Path.GetDirectoryName(fileA) ?? "";
+                string tempPath = Path.Combine(dir, $"__reorder_temp_{Guid.NewGuid():N}__" + Path.GetExtension(fileA));
 
                 try
                 {
-                    picPreview.Image?.Dispose();
-                    picPreview.Image = null;
+                    File.Move(fileA, tempPath);
+                    File.Move(fileB, fileA);
+                    File.Move(tempPath, fileB);
 
-                    string dir = Path.GetDirectoryName(tmp) ?? "";
-                    string tempPath = Path.Combine(dir, $"__reorder_temp_{Guid.NewGuid():N}__" + Path.GetExtension(tmp));
-                    File.Move(frameFiles[idx], tempPath);
-                    File.Move(frameFiles[idx - 1], frameFiles[idx]);
-                    File.Move(tempPath, frameFiles[idx - 1]);
+                    frameFiles[idx] = fileB;
+                    frameFiles[idx - 1] = fileA;
                 }
                 catch (Exception ex)
                 {
                     Log($"Error reordenando archivos: {ex.Message}");
+                    if (File.Exists(tempPath) && !File.Exists(fileA))
+                        File.Move(tempPath, fileA);
                 }
             }
 
@@ -1771,24 +1777,30 @@ namespace GifRGB565GUI
             }
             else if (frameFiles.Length > 0)
             {
-                var tmp = frameFiles[idx];
-                frameFiles[idx] = frameFiles[idx + 1];
-                frameFiles[idx + 1] = tmp;
+                picPreview.Image?.Dispose();
+                picPreview.Image = null;
+                picRGB565.Image?.Dispose();
+                picRGB565.Image = null;
+
+                string fileA = frameFiles[idx];
+                string fileB = frameFiles[idx + 1];
+                string dir = Path.GetDirectoryName(fileA) ?? "";
+                string tempPath = Path.Combine(dir, $"__reorder_temp_{Guid.NewGuid():N}__" + Path.GetExtension(fileA));
 
                 try
                 {
-                    picPreview.Image?.Dispose();
-                    picPreview.Image = null;
+                    File.Move(fileA, tempPath);
+                    File.Move(fileB, fileA);
+                    File.Move(tempPath, fileB);
 
-                    string dir = Path.GetDirectoryName(tmp) ?? "";
-                    string tempPath = Path.Combine(dir, $"__reorder_temp_{Guid.NewGuid():N}__" + Path.GetExtension(tmp));
-                    File.Move(frameFiles[idx], tempPath);
-                    File.Move(frameFiles[idx + 1], frameFiles[idx]);
-                    File.Move(tempPath, frameFiles[idx + 1]);
+                    frameFiles[idx] = fileB;
+                    frameFiles[idx + 1] = fileA;
                 }
                 catch (Exception ex)
                 {
                     Log($"Error reordenando archivos: {ex.Message}");
+                    if (File.Exists(tempPath) && !File.Exists(fileA))
+                        File.Move(tempPath, fileA);
                 }
             }
 
