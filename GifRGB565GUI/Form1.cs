@@ -1371,6 +1371,55 @@ namespace GifRGB565GUI
             compareForm.ShowDialog(this);
         }
 
+        private void debugRgb565ToolStripMenuItem_Click(object? sender, EventArgs e)
+        {
+            if (picPreview.Image == null)
+            {
+                MessageBox.Show("No hay imagen cargada.", "Debug RGB565", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            ImageConverter.EnableDithering = chkDither.Checked;
+            ImageConverter.EnableNoiseReduction = chkNoise.Checked;
+            ImageConverter.EnableSharpen = chkSharpen.Checked;
+
+            Bitmap src;
+            ushort[] rgb565;
+            int w, h;
+
+            if (usingGif && gifFrames.Length > 0)
+            {
+                src = new Bitmap(gifFrames[currentFrameIndex]);
+                w = src.Width;
+                h = src.Height;
+                rgb565 = ImageConverter.ToRGB565(src).ToArray();
+            }
+            else if (frameFiles.Length > 0 && currentFrameIndex < frameFiles.Length)
+            {
+                using var loaded = Image.FromFile(frameFiles[currentFrameIndex]);
+                src = new Bitmap(loaded);
+                w = src.Width;
+                h = src.Height;
+                rgb565 = ImageConverter.ToRGB565(src).ToArray();
+            }
+            else if (usingHeader && headerFrames != null && currentFrameIndex < headerFrames.Count)
+            {
+                var hdrData = headerFrames[currentFrameIndex];
+                w = headerWidth;
+                h = headerHeight;
+                rgb565 = hdrData;
+                src = ConvertRgb565ToBitmap(hdrData, w, h);
+            }
+            else
+            {
+                MessageBox.Show("No hay frame seleccionado.", "Debug RGB565", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            using var debugForm = new RGB565DebugForm(src, rgb565, w, h);
+            debugForm.ShowDialog(this);
+        }
+
         private void exportarFramesToolStripMenuItem_Click(object sender, EventArgs e)
         {
         }
