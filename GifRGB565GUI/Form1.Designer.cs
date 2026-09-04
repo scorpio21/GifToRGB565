@@ -81,6 +81,12 @@ namespace GifRGB565GUI
         private System.Windows.Forms.Button btnMoveUp;
         private System.Windows.Forms.Button btnMoveDown;
         private System.Windows.Forms.Button btnDelete;
+        private System.Windows.Forms.Button btnAddToQueue;
+        private System.Windows.Forms.ListBox lstQueue;
+        private System.Windows.Forms.Button btnRemoveFromQueue;
+        private System.Windows.Forms.Button btnClearQueue;
+        private System.Windows.Forms.Button btnProcessQueue;
+        private System.Windows.Forms.Label lblQueueProgress;
 
         protected override void Dispose(bool disposing)
         {
@@ -155,6 +161,12 @@ namespace GifRGB565GUI
             btnMoveUp = new Button();
             btnMoveDown = new Button();
             btnDelete = new Button();
+            btnAddToQueue = new Button();
+            lstQueue = new ListBox();
+            btnRemoveFromQueue = new Button();
+            btnClearQueue = new Button();
+            btnProcessQueue = new Button();
+            lblQueueProgress = new Label();
             recentSeparator = new ToolStripSeparator();
             lblOutName = new Label();
             txtOutName = new TextBox();
@@ -471,6 +483,67 @@ namespace GifRGB565GUI
             progressBar.Size = new Size(681, 30);
             progressBar.TabIndex = 16;
             // 
+            // btnAddToQueue
+            // 
+            btnAddToQueue.Location = new Point(12, 105);
+            btnAddToQueue.Name = "btnAddToQueue";
+            btnAddToQueue.Size = new Size(181, 24);
+            btnAddToQueue.TabIndex = 30;
+            btnAddToQueue.Text = "Agregar a cola";
+            btnAddToQueue.UseVisualStyleBackColor = true;
+            btnAddToQueue.Click += btnAddToQueue_Click;
+            // 
+            // lstQueue
+            // 
+            lstQueue.ItemHeight = 15;
+            lstQueue.Location = new Point(12, 323);
+            lstQueue.Name = "lstQueue";
+            lstQueue.Size = new Size(250, 100);
+            lstQueue.TabIndex = 31;
+            lstQueue.Visible = false;
+            // 
+            // btnRemoveFromQueue
+            // 
+            btnRemoveFromQueue.Location = new Point(12, 427);
+            btnRemoveFromQueue.Name = "btnRemoveFromQueue";
+            btnRemoveFromQueue.Size = new Size(80, 24);
+            btnRemoveFromQueue.TabIndex = 32;
+            btnRemoveFromQueue.Text = "Quitar";
+            btnRemoveFromQueue.UseVisualStyleBackColor = true;
+            btnRemoveFromQueue.Visible = false;
+            btnRemoveFromQueue.Click += btnRemoveFromQueue_Click;
+            // 
+            // btnClearQueue
+            // 
+            btnClearQueue.Location = new Point(94, 427);
+            btnClearQueue.Name = "btnClearQueue";
+            btnClearQueue.Size = new Size(80, 24);
+            btnClearQueue.TabIndex = 33;
+            btnClearQueue.Text = "Limpiar";
+            btnClearQueue.UseVisualStyleBackColor = true;
+            btnClearQueue.Visible = false;
+            btnClearQueue.Click += btnClearQueue_Click;
+            // 
+            // btnProcessQueue
+            // 
+            btnProcessQueue.Location = new Point(178, 427);
+            btnProcessQueue.Name = "btnProcessQueue";
+            btnProcessQueue.Size = new Size(84, 24);
+            btnProcessQueue.TabIndex = 34;
+            btnProcessQueue.Text = "Procesar cola";
+            btnProcessQueue.UseVisualStyleBackColor = true;
+            btnProcessQueue.Visible = false;
+            btnProcessQueue.Click += btnProcessQueue_Click;
+            // 
+            // lblQueueProgress
+            // 
+            lblQueueProgress.Location = new Point(12, 455);
+            lblQueueProgress.Name = "lblQueueProgress";
+            lblQueueProgress.Size = new Size(250, 20);
+            lblQueueProgress.TabIndex = 35;
+            lblQueueProgress.Text = "";
+            lblQueueProgress.Visible = false;
+            // 
             // txtLog
             // 
             txtLog.Location = new Point(12, 131);
@@ -747,6 +820,12 @@ namespace GifRGB565GUI
             Controls.Add(picRGB565);
             Controls.Add(lblRGB565);
             Controls.Add(cmbGzipLevel);
+            Controls.Add(lblQueueProgress);
+            Controls.Add(btnProcessQueue);
+            Controls.Add(btnClearQueue);
+            Controls.Add(btnRemoveFromQueue);
+            Controls.Add(lstQueue);
+            Controls.Add(btnAddToQueue);
             Controls.Add(btnCancelar);
             Controls.Add(btnDelete);
             Controls.Add(btnMoveDown);

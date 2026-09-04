@@ -28,6 +28,9 @@ namespace GifRGB565GUI
         private CancellationTokenSource? _generateCts;
         private CancellationTokenSource? _exportCts;
 
+        private List<string> batchQueue = new();
+        private CancellationTokenSource? _batchCts;
+
         private static readonly string ConfigPath = Path.Combine(
             Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
             "GifToRGB565", "last_output.json");
@@ -1906,6 +1909,231 @@ namespace GifRGB565GUI
                 else if (frameFiles.Length > 0)
                     picPreview.Image = Image.FromFile(frameFiles[newIdx]);
                 ShowRgb565Preview(newIdx);
+            }
+        }
+
+        private void btnAddToQueue_Click(object? sender, EventArgs e)
+        {
+            using var ofd = new OpenFileDialog();
+            ofd.Title = "Agregar GIFs a la cola";
+            ofd.Filter = "GIF Animado|*.gif|Todos los archivos|*.*";
+            ofd.Multiselect = true;
+            if (ofd.ShowDialog() != DialogResult.OK) return;
+
+            foreach (var f in ofd.FileNames)
+            {
+                if (!batchQueue.Contains(f))
+                    batchQueue.Add(f);
+            }
+
+            UpdateQueueUI();
+        }
+
+        private void btnRemoveFromQueue_Click(object? sender, EventArgs e)
+        {
+            if (lstQueue.SelectedIndex < 0) return;
+            batchQueue.RemoveAt(lstQueue.SelectedIndex);
+            UpdateQueueUI();
+        }
+
+        private void btnClearQueue_Click(object? sender, EventArgs e)
+        {
+            batchQueue.Clear();
+            UpdateQueueUI();
+        }
+
+        private void UpdateQueueUI()
+        {
+            lstQueue.Items.Clear();
+            for (int i = 0; i < batchQueue.Count; i++)
+            {
+                var fi = new FileInfo(batchQueue[i]);
+                string sizeStr = fi.Length > 1024 * 1024
+                    ? $"{fi.Length / (1024.0 * 1024.0):F1}MiB"
+                    : $"{fi.Length / 1024.0:F1}KiB";
+                lstQueue.Items.Add($"{fi.Name} ({sizeStr})");
+            }
+
+            bool hasItems = batchQueue.Count > 0;
+            lstQueue.Visible = hasItems;
+            btnRemoveFromQueue.Visible = hasItems;
+            btnClearQueue.Visible = hasItems;
+            btnProcessQueue.Visible = hasItems;
+            lblQueueProgress.Visible = hasItems;
+            lblQueueProgress.Text = hasItems ? $"Cola: {batchQueue.Count} archivo(s)" : "";
+        }
+
+        private async void btnProcessQueue_Click(object? sender, EventArgs e)
+        {
+            if (batchQueue.Count == 0) return;
+
+            _batchCts = new CancellationTokenSource();
+            var ct = _batchCts.Token;
+
+            btnProcessQueue.Enabled = false;
+            btnAddToQueue.Enabled = false;
+            btnCancelar.Visible = true;
+
+            ImageConverter.EnableDithering = chkDither.Checked;
+            ImageConverter.EnableNoiseReduction = chkNoise.Checked;
+            ImageConverter.EnableSharpen = chkSharpen.Checked;
+
+            int total = batchQueue.Count;
+            int processed = 0;
+            int errors = 0;
+
+            progressBar.Maximum = total;
+            progressBar.Value = 0;
+
+            Log($"=== Inicio batch: {total} archivo(s) ===");
+
+            string outputDir = Path.GetDirectoryName(batchQueue[0]) ?? Path.GetTempPath();
+
+            for (int i = 0; i < total; i++)
+            {
+                if (ct.IsCancellationRequested)
+                {
+                    Log("Batch cancelado por el usuario.");
+                    break;
+                }
+
+                string filePath = batchQueue[i];
+                string fileName = Path.GetFileNameWithoutExtension(filePath);
+                lblQueueProgress.Text = $"Procesando {i + 1}/{total}: {fileName}";
+                Log($"[{i + 1}/{total}] Procesando: {Path.GetFileName(filePath)}");
+
+                try
+                {
+                    await Task.Run(() => ProcessBatchFile(filePath, outputDir, ct), ct);
+                    processed++;
+                    Log($"  OK: {Path.GetFileName(filePath)}");
+                }
+                catch (OperationCanceledException)
+                {
+                    Log("Batch cancelado.");
+                    break;
+                }
+                catch (Exception ex)
+                {
+                    errors++;
+                    Log($"  ERROR: {ex.Message}");
+                }
+
+                progressBar.Value = i + 1;
+            }
+
+            Log($"=== Batch finalizado: {processed} ok, {errors} errores ===");
+            lblQueueProgress.Text = $"Completado: {processed}/{total}";
+
+            btnProcessQueue.Enabled = true;
+            btnAddToQueue.Enabled = true;
+            btnCancelar.Visible = false;
+        }
+
+        private void ProcessBatchFile(string filePath, string outputDir, CancellationToken ct)
+        {
+            ct.ThrowIfCancellationRequested();
+
+            using var magickImage = new ImageMagick.MagickImage(filePath);
+            int w = (int)magickImage.Width;
+            int h = (int)magickImage.Height;
+
+            using var collection = new ImageMagick.MagickImageCollection(filePath);
+            int frameCount = collection.Count;
+
+            var framesData = new List<List<ushort>>();
+            for (int f = 0; f < frameCount; f++)
+            {
+                ct.ThrowIfCancellationRequested();
+                using var frame = (ImageMagick.MagickImage)collection[f].Clone();
+                using var ms = new MemoryStream();
+                frame.Write(ms);
+                ms.Position = 0;
+                using var bitmap = new Bitmap(ms);
+                List<ushort> data = ImageConverter.ToRGB565(bitmap);
+                framesData.Add(data);
+            }
+
+            string outName = Path.GetFileNameWithoutExtension(filePath);
+
+            switch (currentExportFormat)
+            {
+                case ExportFormat.N64:
+                    string hPath = Path.Combine(outputDir, $"{outName}.h");
+                    GenerateHeaderAtPath(hPath, w, h, framesData);
+                    break;
+
+                case ExportFormat.BIN:
+                    string binPath = Path.Combine(outputDir, $"{outName}.bin");
+                    ExportBinFromFrames(binPath, w, h, framesData, false);
+                    break;
+
+                case ExportFormat.BINGZ:
+                    string gzPath = Path.Combine(outputDir, $"{outName}.bin.gz");
+                    ExportBinFromFrames(gzPath, w, h, framesData, true);
+                    break;
+            }
+        }
+
+        private void GenerateHeaderAtPath(string path, int w, int h, List<List<ushort>> framesData)
+        {
+            using var sw = new StreamWriter(path);
+            int totalFrames = framesData.Count;
+            sw.WriteLine($"int frames = {totalFrames};");
+            sw.WriteLine($"int animation_width = {w};");
+            sw.WriteLine($"int animation_height = {h};");
+            sw.WriteLine();
+            sw.Write($"const unsigned short PROGMEM n64[{totalFrames}][{w * h}] = {{");
+            for (int f = 0; f < totalFrames; f++)
+            {
+                sw.WriteLine();
+                sw.Write("{");
+                var frame = framesData[f];
+                for (int p = 0; p < frame.Count; p++)
+                {
+                    sw.Write($"0x{frame[p]:X4}");
+                    if (p < frame.Count - 1) sw.Write(",");
+                }
+                sw.Write("}");
+                if (f < totalFrames - 1) sw.Write(",");
+            }
+            sw.WriteLine();
+            sw.WriteLine("};");
+        }
+
+        private void ExportBinFromFrames(string path, int w, int h, List<List<ushort>> framesData, bool gzip)
+        {
+            using var ms = new MemoryStream();
+            byte[] header = new byte[12];
+            BitConverter.GetBytes(w).CopyTo(header, 0);
+            BitConverter.GetBytes(h).CopyTo(header, 4);
+            BitConverter.GetBytes(framesData.Count).CopyTo(header, 8);
+            ms.Write(header, 0, 12);
+
+            foreach (var frame in framesData)
+            {
+                ushort[] arr = frame.ToArray();
+                byte[] frameBytes = new byte[arr.Length * 2];
+                Buffer.BlockCopy(arr, 0, frameBytes, 0, frameBytes.Length);
+                ms.Write(frameBytes, 0, frameBytes.Length);
+            }
+
+            ms.Position = 0;
+            using var fs = File.Create(path);
+            if (gzip)
+            {
+                var level = cmbGzipLevel.SelectedIndex switch
+                {
+                    0 => CompressionLevel.Fastest,
+                    2 => CompressionLevel.SmallestSize,
+                    _ => CompressionLevel.Optimal
+                };
+                using var gz = new GZipStream(fs, level);
+                ms.CopyTo(gz);
+            }
+            else
+            {
+                ms.CopyTo(fs);
             }
         }
     }
