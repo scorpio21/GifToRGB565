@@ -421,7 +421,7 @@ namespace GifRGB565GUI
             {
                 currentFrameIndex = 0;
                 lstFrames.SelectedIndex = 0;
-                picPreview.Image = new Bitmap(frameFiles[0]);
+                picPreview.Image = LoadBitmapUnlocked(frameFiles[0]);
                 ShowRgb565Preview(0);
             }
 
@@ -443,7 +443,7 @@ namespace GifRGB565GUI
             else if (usingHeader && headerFrames != null)
                 picPreview.Image = ConvertRgb565ToBitmap(headerFrames[currentFrameIndex], headerWidth, headerHeight);
             else
-                picPreview.Image = new Bitmap(frameFiles[currentFrameIndex]);
+                picPreview.Image = LoadBitmapUnlocked(frameFiles[currentFrameIndex]);
 
             UpdateFrameButtons();
             ShowRgb565Preview(currentFrameIndex);
@@ -518,7 +518,7 @@ namespace GifRGB565GUI
             else if (usingHeader && headerFrames != null)
                 picPreview.Image = ConvertRgb565ToBitmap(headerFrames[currentFrameIndex], headerWidth, headerHeight);
             else
-                picPreview.Image = new Bitmap(frameFiles[currentFrameIndex]);
+                picPreview.Image = LoadBitmapUnlocked(frameFiles[currentFrameIndex]);
 
             lstFrames.SelectedIndex = currentFrameIndex;
             ShowRgb565Preview(currentFrameIndex);
@@ -584,7 +584,7 @@ namespace GifRGB565GUI
             else if (usingHeader) { width = headerWidth; height = headerHeight; }
             else
             {
-                using var bmp0 = new Bitmap(frameFiles[0]);
+                using var bmp0 = LoadBitmapUnlocked(frameFiles[0]);
                 width = bmp0.Width; height = bmp0.Height;
             }
 
@@ -848,7 +848,7 @@ namespace GifRGB565GUI
             if (usingGif) { width = gifFrames[0].Width; height = gifFrames[0].Height; }
             else
             {
-                using var bmp0 = new Bitmap(frameFiles[0]);
+                using var bmp0 = LoadBitmapUnlocked(frameFiles[0]);
                 width = bmp0.Width; height = bmp0.Height;
             }
 
@@ -931,7 +931,7 @@ namespace GifRGB565GUI
             }
             else if (!usingGif && !usingHeader && frameFiles.Length > index)
             {
-                using var src = new Bitmap(frameFiles[index]);
+                using var src = LoadBitmapUnlocked(frameFiles[index]);
                 var rgb565 = ImageConverter.ToRGB565(src);
                 rgb565Bmp = ConvertRgb565ToBitmap(rgb565.ToArray(), src.Width, src.Height);
             }
@@ -968,7 +968,7 @@ namespace GifRGB565GUI
             else if (usingHeader) { w = headerWidth; h = headerHeight; }
             else if (frameFiles.Length > 0 && File.Exists(frameFiles[0]))
             {
-                using var bmp = new Bitmap(frameFiles[0]);
+                using var bmp = LoadBitmapUnlocked(frameFiles[0]);
                 w = bmp.Width; h = bmp.Height;
             }
 
@@ -1698,6 +1698,13 @@ namespace GifRGB565GUI
             btnDelete.Enabled = hasSelection;
         }
 
+        private static Bitmap LoadBitmapUnlocked(string path)
+        {
+            var bytes = File.ReadAllBytes(path);
+            var ms = new MemoryStream(bytes);
+            return new Bitmap(ms);
+        }
+
         private void btnMoveUp_Click(object? sender, EventArgs e)
         {
             int idx = lstFrames.SelectedIndex;
@@ -1753,7 +1760,7 @@ namespace GifRGB565GUI
             else if (usingHeader && headerFrames != null)
                 picPreview.Image = ConvertRgb565ToBitmap(headerFrames[currentFrameIndex], headerWidth, headerHeight);
             else if (frameFiles.Length > 0 && File.Exists(frameFiles[currentFrameIndex]))
-                picPreview.Image = new Bitmap(frameFiles[currentFrameIndex]);
+                picPreview.Image = LoadBitmapUnlocked(frameFiles[currentFrameIndex]);
             ShowRgb565Preview(currentFrameIndex);
         }
 
@@ -1813,7 +1820,7 @@ namespace GifRGB565GUI
             else if (usingHeader && headerFrames != null)
                 picPreview.Image = ConvertRgb565ToBitmap(headerFrames[currentFrameIndex], headerWidth, headerHeight);
             else if (frameFiles.Length > 0 && File.Exists(frameFiles[currentFrameIndex]))
-                picPreview.Image = new Bitmap(frameFiles[currentFrameIndex]);
+                picPreview.Image = LoadBitmapUnlocked(frameFiles[currentFrameIndex]);
             ShowRgb565Preview(currentFrameIndex);
         }
 

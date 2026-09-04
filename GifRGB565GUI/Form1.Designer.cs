@@ -177,7 +177,7 @@ namespace GifRGB565GUI
             menuStrip1.Items.AddRange(new ToolStripItem[] { archivoToolStripMenuItem, verToolStripMenuItem, compresionToolStripMenuItem, utilidadesToolStripMenuItem, ayudaToolStripMenuItem });
             menuStrip1.Location = new Point(0, 0);
             menuStrip1.Name = "menuStrip1";
-            menuStrip1.Size = new Size(579, 24);
+            menuStrip1.Size = new Size(880, 24);
             menuStrip1.TabIndex = 0;
             // 
             // archivoToolStripMenuItem
@@ -498,25 +498,25 @@ namespace GifRGB565GUI
             picPreview.TabIndex = 13;
             picPreview.TabStop = false;
             // 
+            // picRGB565
+            // 
+            picRGB565.BorderStyle = BorderStyle.FixedSingle;
+            picRGB565.Location = new Point(569, 394);
+            picRGB565.Name = "picRGB565";
+            picRGB565.Size = new Size(300, 200);
+            picRGB565.SizeMode = PictureBoxSizeMode.Zoom;
+            picRGB565.TabIndex = 29;
+            picRGB565.TabStop = false;
+            // 
             // lblRGB565
             // 
             lblRGB565.AutoSize = true;
             lblRGB565.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
             lblRGB565.Location = new Point(570, 365);
             lblRGB565.Name = "lblRGB565";
-            lblRGB565.Size = new Size(55, 15);
+            lblRGB565.Size = new Size(53, 15);
             lblRGB565.TabIndex = 28;
             lblRGB565.Text = "RGB565";
-            // 
-            // picRGB565
-            // 
-            picRGB565.BorderStyle = BorderStyle.FixedSingle;
-            picRGB565.Location = new Point(570, 384);
-            picRGB565.Name = "picRGB565";
-            picRGB565.Size = new Size(300, 200);
-            picRGB565.SizeMode = PictureBoxSizeMode.Zoom;
-            picRGB565.TabIndex = 29;
-            picRGB565.TabStop = false;
             // 
             // btnPlay
             // 
@@ -700,7 +700,7 @@ namespace GifRGB565GUI
             statusStrip1.Items.AddRange(new ToolStripItem[] { lblStatusDims, lblStatusFrames, lblStatusSize, lblStatusFormat, lblSpring, lblVersion });
             statusStrip1.Location = new Point(0, 732);
             statusStrip1.Name = "statusStrip1";
-            statusStrip1.Size = new Size(579, 22);
+            statusStrip1.Size = new Size(880, 22);
             statusStrip1.TabIndex = 19;
             statusStrip1.Text = "statusStrip1";
             // 
@@ -731,7 +731,7 @@ namespace GifRGB565GUI
             // lblSpring
             // 
             lblSpring.Name = "lblSpring";
-            lblSpring.Size = new Size(355, 17);
+            lblSpring.Size = new Size(656, 17);
             lblSpring.Spring = true;
             // 
             // lblVersion
