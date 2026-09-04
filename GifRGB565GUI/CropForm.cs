@@ -26,6 +26,10 @@ namespace GifRGB565GUI
 
         private int moveOffsetX, moveOffsetY;
 
+        private enum HandleType { None, TopLeft, TopRight, BottomLeft, BottomRight, Top, Bottom, Left, Right }
+        private HandleType activeHandle = HandleType.None;
+        private const int HandleHitSize = 8;
+
         public CropForm(string filePath)
         {
             InitializeComponent();
@@ -196,30 +200,63 @@ namespace GifRGB565GUI
 
             var imgPt = ScreenToImage(e.Location);
 
-            if (hasSelection && selection.Contains(imgPt))
+            if (hasSelection)
             {
-                isMoving = true;
-                moveOffsetX = imgPt.X - selection.X;
-                moveOffsetY = imgPt.Y - selection.Y;
+                var handle = HitTestHandle(e.Location);
+                if (handle != HandleType.None)
+                {
+                    activeHandle = handle;
+                    dragStart = imgPt;
+                    return;
+                }
+
+                if (selection.Contains(imgPt))
+                {
+                    isMoving = true;
+                    moveOffsetX = imgPt.X - selection.X;
+                    moveOffsetY = imgPt.Y - selection.Y;
+                    return;
+                }
             }
-            else
-            {
-                isDragging = true;
-                dragStart = imgPt;
-                dragEnd = imgPt;
-                hasSelection = true;
-            }
+
+            isDragging = true;
+            dragStart = imgPt;
+            dragEnd = imgPt;
+            hasSelection = true;
         }
 
         private void PicPreview_MouseMove(object? sender, MouseEventArgs e)
         {
-            if (!isDragging && !isMoving) return;
+            if (activeHandle != HandleType.None && e.Button == MouseButtons.Left)
+            {
+                var imgPt = ScreenToImage(e.Location);
+                ResizeByHandle(imgPt);
+                UpdateFieldsAndRedraw();
+                return;
+            }
 
-            var imgPt = ScreenToImage(e.Location);
+            if (!isDragging && !isMoving)
+            {
+                if (hasSelection && previewImage != null)
+                {
+                    var handle = HitTestHandle(e.Location);
+                    picPreview.Cursor = handle switch
+                    {
+                        HandleType.TopLeft or HandleType.BottomRight => Cursors.SizeNWSE,
+                        HandleType.TopRight or HandleType.BottomLeft => Cursors.SizeNESW,
+                        HandleType.Top or HandleType.Bottom => Cursors.SizeNS,
+                        HandleType.Left or HandleType.Right => Cursors.SizeWE,
+                        _ => selection.Contains(ScreenToImage(e.Location)) ? Cursors.SizeAll : Cursors.Cross
+                    };
+                }
+                return;
+            }
+
+            var imgPt2 = ScreenToImage(e.Location);
 
             if (isDragging)
             {
-                dragEnd = imgPt;
+                dragEnd = imgPt2;
                 int x = Math.Min(dragStart.X, dragEnd.X);
                 int y = Math.Min(dragStart.Y, dragEnd.Y);
                 int w = Math.Abs(dragEnd.X - dragStart.X);
@@ -247,13 +284,70 @@ namespace GifRGB565GUI
             }
             else if (isMoving)
             {
-                int nx = imgPt.X - moveOffsetX;
-                int ny = imgPt.Y - moveOffsetY;
+                int nx = imgPt2.X - moveOffsetX;
+                int ny = imgPt2.Y - moveOffsetY;
                 nx = Math.Clamp(nx, 0, origW - selection.Width);
                 ny = Math.Clamp(ny, 0, origH - selection.Height);
                 selection.Location = new Point(nx, ny);
             }
 
+            UpdateFieldsAndRedraw();
+        }
+
+        private void ResizeByHandle(Point imgPt)
+        {
+            int x = selection.X, y = selection.Y;
+            int r = selection.Right, b = selection.Bottom;
+            int minSize = 10;
+
+            switch (activeHandle)
+            {
+                case HandleType.TopLeft: x = Math.Min(imgPt.X, r - minSize); y = Math.Min(imgPt.Y, b - minSize); break;
+                case HandleType.TopRight: r = Math.Max(imgPt.X, x + minSize); y = Math.Min(imgPt.Y, b - minSize); break;
+                case HandleType.BottomLeft: x = Math.Min(imgPt.X, r - minSize); b = Math.Max(imgPt.Y, y + minSize); break;
+                case HandleType.BottomRight: r = Math.Max(imgPt.X, x + minSize); b = Math.Max(imgPt.Y, y + minSize); break;
+                case HandleType.Top: y = Math.Min(imgPt.Y, b - minSize); break;
+                case HandleType.Bottom: b = Math.Max(imgPt.Y, y + minSize); break;
+                case HandleType.Left: x = Math.Min(imgPt.X, r - minSize); break;
+                case HandleType.Right: r = Math.Max(imgPt.X, x + minSize); break;
+            }
+
+            x = Math.Clamp(x, 0, origW);
+            y = Math.Clamp(y, 0, origH);
+            r = Math.Clamp(r, 0, origW);
+            b = Math.Clamp(b, 0, origH);
+
+            string lockRatio = cmbAspectLock.SelectedItem?.ToString() ?? "No";
+            if (lockRatio != "No" && lockRatio.Contains(':'))
+            {
+                var parts = lockRatio.Split(':');
+                if (int.TryParse(parts[0], out int rW) && int.TryParse(parts[1], out int rH) && rW > 0 && rH > 0)
+                {
+                    float ratio = (float)rW / rH;
+                    int w = r - x;
+                    int h = b - y;
+                    if (activeHandle == HandleType.Top || activeHandle == HandleType.Bottom)
+                    {
+                        w = (int)(h * ratio);
+                        if (activeHandle == HandleType.TopLeft || activeHandle == HandleType.Left || activeHandle == HandleType.Top)
+                            x = selection.Right - w;
+                        r = x + w;
+                    }
+                    else
+                    {
+                        h = (int)(w / ratio);
+                        if (activeHandle == HandleType.TopLeft || activeHandle == HandleType.Top || activeHandle == HandleType.Left)
+                            y = selection.Bottom - h;
+                        b = y + h;
+                    }
+                }
+            }
+
+            selection = new Rectangle(x, y, r - x, b - y);
+        }
+
+        private void UpdateFieldsAndRedraw()
+        {
             txtLeft.Text = selection.X.ToString();
             txtTop.Text = selection.Y.ToString();
             txtWidth.Text = selection.Width.ToString();
@@ -265,6 +359,48 @@ namespace GifRGB565GUI
         {
             isDragging = false;
             isMoving = false;
+            activeHandle = HandleType.None;
+        }
+
+        private HandleType HitTestHandle(Point screenPt)
+        {
+            if (!hasSelection || previewImage == null) return HandleType.None;
+
+            var imgRect = GetImageRect();
+            if (imgRect.Width <= 0 || imgRect.Height <= 0) return HandleType.None;
+
+            float scaleX = (float)imgRect.Width / origW;
+            float scaleY = (float)imgRect.Height / origH;
+
+            int sx = imgRect.X + (int)(selection.X * scaleX);
+            int sy = imgRect.Y + (int)(selection.Y * scaleY);
+            int sw = (int)(selection.Width * scaleX);
+            int sh = (int)(selection.Height * scaleY);
+
+            Point[] handles =
+            {
+                new(sx, sy), new(sx + sw, sy),
+                new(sx, sy + sh), new(sx + sw, sy + sh),
+                new(sx + sw / 2, sy), new(sx + sw / 2, sy + sh),
+                new(sx, sy + sh / 2), new(sx + sw, sy + sh / 2),
+            };
+            HandleType[] types =
+            {
+                HandleType.TopLeft, HandleType.TopRight,
+                HandleType.BottomLeft, HandleType.BottomRight,
+                HandleType.Top, HandleType.Bottom,
+                HandleType.Left, HandleType.Right,
+            };
+
+            for (int i = 0; i < handles.Length; i++)
+            {
+                int dx = Math.Abs(screenPt.X - handles[i].X);
+                int dy = Math.Abs(screenPt.Y - handles[i].Y);
+                if (dx <= HandleHitSize && dy <= HandleHitSize)
+                    return types[i];
+            }
+
+            return HandleType.None;
         }
 
         private void TxtFields_TextChanged(object? sender, EventArgs e)
